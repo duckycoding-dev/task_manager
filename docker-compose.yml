@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres
+    restart: always
+    # set shared memory limit when using docker-compose
+    shm_size: 256mb
+    # or set shared memory limit when deploy via swarm stack
+    volumes:
+      - type: tmpfs
+        target: /dev/shm
+        tmpfs:
+          size: 1073741824 # = 1GB
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: duckycoding-dev
+      POSTGRES_DB: reusable_task_manager_backend
+    ports:
+      - '5432:5432'
+    container_name: reusable_task_manager_backend-db

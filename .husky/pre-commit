@@ -1,0 +1,4 @@
+bun test
+echo "🤭 Running lint-staged before commmitting..."
+echo "🤗 Checking code with eslint and prettier before committing..."
+npx lint-staged
