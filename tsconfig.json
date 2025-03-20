@@ -52,14 +52,12 @@
     }
   },
   "include": ["./src/**/*.ts"],
-  "exclude": ["./node_modules", "*.config.js", "./dist"]
+  "exclude": ["./node_modules", "*.config.js", "./dist", "./.vscode"]
 }
-
-
 
 // {
 //   "extends": "../../tsconfig.json",
 //   "compilerOptions": {
-//     
+//
 //   },
 // }

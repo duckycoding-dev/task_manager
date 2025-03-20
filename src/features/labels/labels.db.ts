@@ -1,10 +1,13 @@
 import { pgTable, uuid, text, primaryKey } from 'drizzle-orm/pg-core';
 import { tasks } from '../tasks/tasks.db';
+import { users } from '../auth/auth.db';
 
 // 🚀 Labels Table (Tags for Tasks)
 export const labels = pgTable('labels', {
   id: uuid('id').defaultRandom().primaryKey(),
-  userId: text('user_id').notNull(), // From BetterAuth
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }), // From BetterAuth
   name: text('name').notNull(),
   color: text('color'),
 });

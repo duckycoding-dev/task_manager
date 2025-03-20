@@ -8,11 +8,11 @@ export type TasksService = {
 };
 
 export const createTasksService = (
-  userRepository: TasksRepository,
+  tasksRepository: TasksRepository,
 ): TasksService => {
   return {
     getTask: async (id) => {
-      const task = await userRepository.getTask(id);
+      const task = await tasksRepository.getTask(id);
       if (!task) {
         throw new AppError('NOT_FOUND', {
           message: 'Task not found',

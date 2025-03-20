@@ -8,6 +8,7 @@ import type {
 } from '../types/app_context';
 import { configureOpenAPI } from './configure-open-api';
 import { formatZodError } from './mapping';
+import { auth } from './auth';
 
 export function createRouter() {
   const router = new OpenAPIHono<AppContext>({
@@ -53,6 +54,11 @@ export function createApp(): AppOpenAPI {
   const app = createRouter();
 
   configureOpenAPI(app);
+  app.on(['POST', 'GET'], '/auth/**', (c) => {
+    console.log('auth handler', auth.api.signUpEmail);
+    return auth.handler(c.req.raw);
+  });
   app.onError(errorHandler);
+
   return app;
 }

@@ -27,6 +27,7 @@ const EnvSchema = z.object({
   POSTGRES_HOST: z.string().default('localhost'),
   DB_MIGRATING: stringBoolean,
   DB_SEEDING: stringBoolean,
+  BETTER_AUTH_URL: z.string(),
 });
 
 export type Env = z.infer<typeof EnvSchema>;

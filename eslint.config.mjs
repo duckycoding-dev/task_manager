@@ -10,10 +10,7 @@ import eslintConfigPrettier from 'eslint-config-prettier';
 export default [
   { files: ['./src/**/*.{js,mjs,cjs,ts}'] },
   {
-    ignores: [
-      '**/node_modules/**',
-      '**/dist/**',
-    ],
+    ignores: ['./node_modules/**', './dist/**', './.vscode/templates/**/*'],
   },
   { languageOptions: { globals: globals.node } },
   pluginJs.configs.recommended,

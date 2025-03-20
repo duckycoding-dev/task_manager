@@ -4,8 +4,8 @@
  */
 const configs = {
   '*.{js,jsx,ts,tsx}': (stagedFiles) => [
-    'eslint .',
-    `prettier --ignore-unknown --write ${stagedFiles.join(' ')}`,
+    'eslint . --ignore-pattern .vscode',
+    `prettier --ignore-unknown --write ${stagedFiles.filter((file) => !file.includes('.vscode')).join(' ')}`,
   ],
 };
 

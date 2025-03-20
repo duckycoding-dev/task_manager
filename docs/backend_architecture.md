@@ -138,7 +138,7 @@ From this we can define the Zod schemas using `drizzle-zod` and then infer the t
 
 ### .types.ts (optional)
 
-Here we can define some types that will only be used locally and not be shared with other packages: for example, if need to write a script like we did to import vocabulary, and we want to do it in a TypeSafe way, we can define them here.
+Here we can define some types that will only be used locally and not be shared with other packages.
 
 ### Middlewares - TODO
 
