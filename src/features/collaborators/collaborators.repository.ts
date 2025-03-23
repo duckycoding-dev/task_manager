@@ -1,20 +1,27 @@
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { eq } from 'drizzle-orm';
-import { type {{namePascal}}, {{nameCamel}}Schema } from './{{nameCamel}}.db';
+import {
+  type Collaborators,
+  collaboratorsSchema,
+  collaborators,
+} from './collaborators.db';
 import { formatZodError } from 'utils/mapping/';
 import { AppError } from 'utils/errors/';
 
-export type {{namePascal}}Repository = {
-  get: (id: string) => Promise<{{namePascal}} | undefined>;
+export type CollaboratorsRepository = {
+  get: (id: string) => Promise<Collaborators | undefined>;
   // ... other methods
 };
 
-export const create{{namePascal}}Repository = (
+export const createCollaboratorsRepository = (
   db: PostgresJsDatabase,
-): {{namePascal}}Repository => {
+): CollaboratorsRepository => {
   return {
     get: async (id) => {
-      const res = await db.select().from({{nameCamel}}).where(eq({{nameCamel}}.id, id));
+      const res = await db
+        .select()
+        .from(collaborators)
+        .where(eq(collaborators.id, id));
       if (res.length === 0) {
         return undefined;
       }
@@ -23,7 +30,7 @@ export const create{{namePascal}}Repository = (
         return undefined;
       }
 
-      const parsed = {{nameCamel}}Schema.safeParse(data);
+      const parsed = collaboratorsSchema.safeParse(data);
       if (parsed.success) {
         return parsed.data;
       }

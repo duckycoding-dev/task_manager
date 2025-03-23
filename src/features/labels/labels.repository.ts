@@ -1,20 +1,20 @@
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { eq } from 'drizzle-orm';
-import { type {{namePascal}}, {{nameCamel}}Schema } from './{{nameCamel}}.db';
+import { type Labels, labelsSchema, labels } from './labels.db';
 import { formatZodError } from 'utils/mapping/';
 import { AppError } from 'utils/errors/';
 
-export type {{namePascal}}Repository = {
-  get: (id: string) => Promise<{{namePascal}} | undefined>;
+export type LabelsRepository = {
+  get: (id: string) => Promise<Labels | undefined>;
   // ... other methods
 };
 
-export const create{{namePascal}}Repository = (
+export const createLabelsRepository = (
   db: PostgresJsDatabase,
-): {{namePascal}}Repository => {
+): LabelsRepository => {
   return {
     get: async (id) => {
-      const res = await db.select().from({{nameCamel}}).where(eq({{nameCamel}}.id, id));
+      const res = await db.select().from(labels).where(eq(labels.id, id));
       if (res.length === 0) {
         return undefined;
       }
@@ -23,7 +23,7 @@ export const create{{namePascal}}Repository = (
         return undefined;
       }
 
-      const parsed = {{nameCamel}}Schema.safeParse(data);
+      const parsed = labelsSchema.safeParse(data);
       if (parsed.success) {
         return parsed.data;
       }

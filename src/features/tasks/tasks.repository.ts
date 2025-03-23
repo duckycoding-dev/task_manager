@@ -1,12 +1,14 @@
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { eq } from 'drizzle-orm';
-import { tasks } from '../tasks/tasks.db';
-import { type Tasks, tasksSchema } from './tasks.db';
+import { type Task, selectTaskSchema, tasks as tasksModel } from './tasks.db';
 import { formatZodError } from 'utils/mapping/';
 import { AppError } from 'utils/errors/';
+import type { GetTasksQuery } from './tasks.types';
 
 export type TasksRepository = {
-  getTask: (id: string) => Promise<Tasks | undefined>;
+  getTasks: (
+    filters: Omit<GetTasksQuery, 'dueDate'> & { dueDate?: Date },
+  ) => Promise<Task[]>;
   // ... other methods
 };
 
@@ -14,21 +16,29 @@ export const createTasksRepository = (
   db: PostgresJsDatabase,
 ): TasksRepository => {
   return {
-    getTask: async (id) => {
-      const res = await db.select().from(tasks).where(eq(tasks.id, id));
-      if (res.length === 0) {
-        return undefined;
+    getTasks: async (filters) => {
+      const { dueDate, priority, projectId, status } = filters;
+      const query = db.select().from(tasksModel);
+
+      if (projectId) {
+        query.where(eq(tasksModel.projectId, projectId));
       }
-      const task = res[0];
-      if (!task) {
-        return undefined;
+      if (dueDate) {
+        query.where(eq(tasksModel.dueDate, dueDate));
+      }
+      if (priority) {
+        query.where(eq(tasksModel.priority, priority));
+      }
+      if (status) {
+        query.where(eq(tasksModel.status, status));
       }
 
-      const parsed = tasksSchema.safeParse(task);
+      const tasks = await query;
+
+      const parsed = selectTaskSchema.array().safeParse(tasks);
       if (parsed.success) {
         return parsed.data;
       }
-      console.log(parsed.error);
       throw new AppError('VALIDATION', {
         message: formatZodError(parsed.error),
         cause: parsed.data,

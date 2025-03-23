@@ -1,9 +1,12 @@
 import { AppError } from '../../utils/errors';
 import type { TasksRepository } from './tasks.repository';
-import type { Tasks } from './tasks.db';
+import type { Task } from './tasks.db';
+import type { GetTasksQuery } from './tasks.types';
 
 export type TasksService = {
-  getTask: (id: string) => Promise<Tasks>;
+  getTasks: (
+    filters: Omit<GetTasksQuery, 'dueDate'> & { dueDate?: Date },
+  ) => Promise<Task[]>;
   // ... other methods
 };
 
@@ -11,8 +14,8 @@ export const createTasksService = (
   tasksRepository: TasksRepository,
 ): TasksService => {
   return {
-    getTask: async (id) => {
-      const task = await tasksRepository.getTask(id);
+    getTasks: async (filters) => {
+      const task = await tasksRepository.getTasks(filters);
       if (!task) {
         throw new AppError('NOT_FOUND', {
           message: 'Task not found',

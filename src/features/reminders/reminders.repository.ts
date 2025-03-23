@@ -1,20 +1,20 @@
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { eq } from 'drizzle-orm';
-import { type {{namePascal}}, {{nameCamel}}Schema } from './{{nameCamel}}.db';
+import { type Reminders, remindersSchema, reminders } from './reminders.db';
 import { formatZodError } from 'utils/mapping/';
 import { AppError } from 'utils/errors/';
 
-export type {{namePascal}}Repository = {
-  get: (id: string) => Promise<{{namePascal}} | undefined>;
+export type RemindersRepository = {
+  get: (id: string) => Promise<Reminders | undefined>;
   // ... other methods
 };
 
-export const create{{namePascal}}Repository = (
+export const createRemindersRepository = (
   db: PostgresJsDatabase,
-): {{namePascal}}Repository => {
+): RemindersRepository => {
   return {
     get: async (id) => {
-      const res = await db.select().from({{nameCamel}}).where(eq({{nameCamel}}.id, id));
+      const res = await db.select().from(reminders).where(eq(reminders.id, id));
       if (res.length === 0) {
         return undefined;
       }
@@ -23,7 +23,7 @@ export const create{{namePascal}}Repository = (
         return undefined;
       }
 
-      const parsed = {{nameCamel}}Schema.safeParse(data);
+      const parsed = remindersSchema.safeParse(data);
       if (parsed.success) {
         return parsed.data;
       }

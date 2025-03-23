@@ -16,33 +16,16 @@ export const getTasksQuerySchema = z.object({
 });
 
 // 📌 Path Params Schemas
-export const getTaskParamsSchema = z.object({
-  taskId: z.string().uuid(),
-});
 export const taskIdParamSchema = z.object({ taskId: z.string().uuid() });
 export const projectIdParamSchema = z.object({ projectId: z.string().uuid() });
-export const updateTaskParamsSchema = z.object({
-  taskId: z.string().uuid(),
-});
-export const deleteTaskParamsSchema = z.object({
-  taskId: z.string().uuid(),
-});
-export const markTaskDoneParamsSchema = z.object({
-  taskId: z.string().uuid(),
-});
 export const getProjectTasksParamsSchema = z.object({
   projectId: z.string().uuid(),
 });
 
 // 📌 Types
 export type GetTasksQuery = z.infer<typeof getTasksQuerySchema>;
-export type GetTaskParams = z.infer<typeof getTaskParamsSchema>;
 export type TaskIdParam = z.infer<typeof taskIdParamSchema>;
 export type ProjectIdParam = z.infer<typeof projectIdParamSchema>;
-
-export type UpdateTaskParams = z.infer<typeof updateTaskParamsSchema>;
-export type DeleteTaskParams = z.infer<typeof deleteTaskParamsSchema>;
-export type MarkTaskDoneParams = z.infer<typeof markTaskDoneParamsSchema>;
 export type GetProjectTasksParams = z.infer<typeof getProjectTasksParamsSchema>;
 
 export type GetTasksResponse = Task[];

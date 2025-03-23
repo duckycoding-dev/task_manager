@@ -3,17 +3,17 @@ import { tasksRoutes } from './tasks.routes';
 import type { AppRouteHandler } from '../../types/app_context';
 
 export type TasksController = {
-  getTask: AppRouteHandler<typeof tasksRoutes.getTask>;
-  // ... other methods
+  getTasks: AppRouteHandler<typeof tasksRoutes.getTasks>;
 };
 
 export const createTasksController = (
   tasksService: TasksService,
 ): TasksController => {
   return {
-    getTask: async (c) => {
-      const { id } = c.req.valid('param');
-      const result = await tasksService.getTask(id);
+    getTasks: async (c) => {
+      const filters = c.req.valid('query');
+      const dueDate = filters.dueDate ? new Date(filters.dueDate) : undefined;
+      const result = await tasksService.getTasks({ ...filters, dueDate });
       return c.json(result);
     },
   };
