@@ -1,6 +1,6 @@
 import { createRoute, z } from '@hono/zod-openapi';
 import type { AppRoutes } from '../../types/app_context';
-import { tasksSchema } from './tasks.db';
+import { selectTaskSchema } from './tasks.db';
 
 const getTask = createRoute({
   path: '/:id',
@@ -13,7 +13,7 @@ const getTask = createRoute({
       description: 'Success',
       content: {
         'application/json': {
-          schema: tasksSchema,
+          schema: selectTaskSchema,
         },
       },
     },

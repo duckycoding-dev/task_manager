@@ -133,12 +133,25 @@ For example, if the database stores Dates and we expect to handle only TS Date t
 
 ### .db.ts
 
-Here we defined the database schemas using Drizzle with the `pgTable` adapter for PostgreSQL.\
-From this we can define the Zod schemas using `drizzle-zod` and then infer the type using `Zod.infer<typeof schema>`
+Here we
 
-### .types.ts (optional)
+- define the database schemas using Drizzle with the `pgTable` adapter for PostgreSQL.
+- Drizzle-Generated Zod schemas using `drizzle-zod`
+- Any Enums or Constants used in the Drizzle schema: for enums, export `as const` arrays
+- TypeScript Types inferred from the Zod schema (z.infer<typeof schema>) and from the enums arrays
 
-Here we can define some types that will only be used locally and not be shared with other packages.
+### .types.ts
+
+- Custom Zod Schemas for API Validation
+- API Request & Response Types
+- Query Params & Path Params Types
+
+This ensures separation of concerns:
+
+- DB-related types stay in .db.ts (closely tied to Drizzle ORM).
+- API-related types stay in .types.ts (routes, controllers, services, etc,... use these).
+
+This structure scales well, keeps everything modular, and prevents circular dependencies.
 
 ### Middlewares - TODO
 
