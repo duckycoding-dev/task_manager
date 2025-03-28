@@ -5,7 +5,6 @@ import {
   createErrorResponseDefinition,
   createSuccessResponseDefinition,
 } from 'utils/response/';
-import { errorMap } from 'utils/errors/';
 import { getTasksQuerySchema, taskIdParamSchema } from './tasks.types';
 
 const getTasks = createRoute({
@@ -16,12 +15,12 @@ const getTasks = createRoute({
   },
   responses: {
     ...createSuccessResponseDefinition(selectTaskSchema.array(), {
-      status: errorMap['OK'].status,
+      status: 'OK',
       description: 'Success',
     }),
     ...createErrorResponseDefinition({
       description: 'Error',
-      status: errorMap['INTERNAL_SERVER_ERROR'].status,
+      status: 'INTERNAL_SERVER_ERROR',
     }),
   },
   description: 'Get all tasks for the authenticated user',
@@ -32,12 +31,12 @@ const createTask = createRoute({
   method: 'post',
   responses: {
     ...createSuccessResponseDefinition(selectTaskSchema, {
-      status: errorMap['CREATED'].status,
+      status: 'CREATED',
       description: 'Task created successfully',
     }),
     ...createErrorResponseDefinition({
       description: 'Error',
-      status: errorMap['INTERNAL_SERVER_ERROR'].status,
+      status: 'INTERNAL_SERVER_ERROR',
     }),
   },
   description: 'Create a new task (with optional project)',
@@ -51,12 +50,12 @@ const getTaskById = createRoute({
   },
   responses: {
     ...createSuccessResponseDefinition(selectTaskSchema, {
-      status: errorMap['OK'].status,
+      status: 'OK',
       description: 'Success',
     }),
     ...createErrorResponseDefinition({
       description: 'The searched task was not found',
-      status: errorMap['NOT_FOUND'].status,
+      status: 'NOT_FOUND',
     }),
   },
   description: 'Get a specific task by ID',
@@ -70,12 +69,12 @@ const updateTask = createRoute({
   },
   responses: {
     ...createSuccessResponseDefinition(selectTaskSchema, {
-      status: errorMap['OK'].status,
+      status: 'OK',
       description: 'Task updated successfully',
     }),
     ...createErrorResponseDefinition({
       description: 'The task to be patched was not found',
-      status: errorMap['NOT_FOUND'].status,
+      status: 'NOT_FOUND',
     }),
   },
   description:
@@ -90,12 +89,12 @@ const deleteTask = createRoute({
   },
   responses: {
     ...createSuccessResponseDefinition(selectTaskSchema, {
-      status: errorMap['OK'].status,
+      status: 'OK',
       description: 'Task deleted successfully',
     }),
     ...createErrorResponseDefinition({
       description: 'The task to be deleted was not found',
-      status: errorMap['NOT_FOUND'].status,
+      status: 'NOT_FOUND',
     }),
   },
   description: 'Delete a task',
@@ -109,12 +108,12 @@ const updateTaskStatus = createRoute({
   },
   responses: {
     ...createSuccessResponseDefinition(selectTaskSchema, {
-      status: errorMap['OK'].status,
+      status: 'OK',
       description: 'Task status updated successfully',
     }),
     ...createErrorResponseDefinition({
       description: 'The task to be patched was not found',
-      status: errorMap['NOT_FOUND'].status,
+      status: 'NOT_FOUND',
     }),
   },
   description: 'Change task status (e.g., todo → in_progress)',
@@ -128,12 +127,12 @@ const updateTaskPriority = createRoute({
   },
   responses: {
     ...createSuccessResponseDefinition(selectTaskSchema, {
-      status: errorMap['OK'].status,
+      status: 'OK',
       description: 'Task priority updated successfully',
     }),
     ...createErrorResponseDefinition({
       description: 'The task to be patched was not found',
-      status: errorMap['NOT_FOUND'].status,
+      status: 'NOT_FOUND',
     }),
   },
   description: 'Change task priority',
@@ -147,12 +146,12 @@ const updateTaskRecurring = createRoute({
   },
   responses: {
     ...createSuccessResponseDefinition(selectTaskSchema, {
-      status: errorMap['OK'].status,
+      status: 'OK',
       description: 'Task recurring interval updated successfully',
     }),
     ...createErrorResponseDefinition({
       description: 'The task to be patched was not found',
-      status: errorMap['NOT_FOUND'].status,
+      status: 'NOT_FOUND',
     }),
   },
   description: 'Set or update recurring interval',

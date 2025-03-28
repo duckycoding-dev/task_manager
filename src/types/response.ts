@@ -1,4 +1,4 @@
-import { errorCodes, type ErrorCode } from 'src/utils/errors';
+import { statusCodes, type StatusCode } from 'src/utils/errors';
 import { z } from 'zod';
 
 // Metadata schema
@@ -32,7 +32,7 @@ export const SuccessResponseSchema = <T extends z.ZodType>(dataSchema: T) =>
 export const ErrorResponseSchema = z.object({
   success: z.literal(false),
   error: z.string(),
-  code: z.enum(errorCodes).or(z.string()),
+  code: z.enum(statusCodes).or(z.string()),
   cause: z.unknown().optional(),
   stack: z.string().optional(),
 });
@@ -56,7 +56,7 @@ export type SuccessResponse<T> = {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ErrorResponseSchemaWithoutCode = ErrorResponseSchema.omit({ code: true });
 export type ErrorResponse = z.infer<typeof ErrorResponseSchemaWithoutCode> & {
-  code: ErrorCode;
+  code: StatusCode;
 };
 
 // add to manually define this type because zod is not inferring it correctly wheh dealing with generics and it was causing issues around the codebase

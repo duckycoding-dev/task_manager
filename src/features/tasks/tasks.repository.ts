@@ -37,7 +37,8 @@ export const createTasksRepository = (
 
       const parsed = selectTaskSchema.array().safeParse(tasks);
       if (parsed.success) {
-        return parsed.data;
+        const result: Task[] = parsed.data.map<Task>((d) => d) as Task[];
+        return result;
       }
       throw new AppError('VALIDATION', {
         message: formatZodError(parsed.error),

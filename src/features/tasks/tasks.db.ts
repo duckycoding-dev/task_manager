@@ -37,48 +37,29 @@ export const tasks = pgTable('tasks', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
-// 🔹 Define a separate refine function
-const validateRecurring = (data: {
-  isRecurring: boolean;
-  recurringInterval: string;
-}) => {
-  return data.isRecurring
-    ? data.recurringInterval !== 'none'
-    : data.recurringInterval === 'none';
-};
-
-const refineRecurringSchema = <T extends z.ZodTypeAny>(schema: T) =>
-  schema.refine(validateRecurring, {
-    message:
-      'If isRecurring is false, recurringInterval must be "none". Otherwise, it must be one of "daily", "weekly", or "monthly".',
-    path: ['recurringInterval'],
-  });
-
 // 📌 Select Schema (for response data)
-export const selectTaskSchema = refineRecurringSchema(
-  createSelectSchema(tasks),
-);
+export const selectTaskSchema = createSelectSchema(tasks);
 
 // 📌 Insert Schema (for creating tasks)
-export const insertTaskSchema = refineRecurringSchema(
-  createInsertSchema(tasks).omit({
-    id: true, // ID is auto-generated
-    userId: true, // Derived from authentication
-    createdAt: true,
-    updatedAt: true,
-  }),
-);
+export const insertTaskSchema = createInsertSchema(tasks).omit({
+  id: true, // ID is auto-generated
+  userId: true, // Derived from authentication
+  createdAt: true,
+  updatedAt: true,
+});
 
 // 📌 Update Schema (for partial updates)
-export const updateTaskSchema = refineRecurringSchema(
-  createUpdateSchema(tasks).omit({
-    id: true,
-    userId: true,
-    createdAt: true,
-  }),
-);
+export const updateTaskSchema = createUpdateSchema(tasks).omit({
+  id: true,
+  userId: true,
+  createdAt: true,
+});
 
 // 🔹 Types
 export type Task = z.infer<typeof selectTaskSchema>;
 export type NewTask = z.infer<typeof insertTaskSchema>;
 export type UpdateTask = z.infer<typeof updateTaskSchema>;
+
+export function isTaskArray(obj: unknown): obj is Task {
+  return selectTaskSchema.array().safeParse(obj).success;
+}

@@ -34,7 +34,7 @@
     "@hono/zod-validator": "^0.4.2",
     "@scalar/hono-api-reference": "^0.7.1",
     "better-auth": "^1.2.4",
-    "drizzle-orm": "^0.40.1",
+    "drizzle-orm": "^0.41.0",
     "drizzle-zod": "^0.7.0",
     "hono": "^4.7.0",
     "postgres": "^3.4.5",

@@ -3,7 +3,7 @@ import type { ContentfulStatusCode } from 'hono/utils/http-status';
 import type { ErrorResponse } from 'src/types/response';
 import env from './env';
 
-const DEFAULT_ERROR_MAPPING: ErrorMapping = {
+const DEFAULT_ERROR_MAPPING: StatusCodeMapping = {
   status: 500,
   message: 'Internal Server Error',
   code: 'INTERNAL',
@@ -15,7 +15,7 @@ const DEFAULT_ERROR_RESPONSE: ErrorResponse = {
   code: DEFAULT_ERROR_MAPPING.code,
 };
 
-export const errorCodes = [
+export const statusCodes = [
   'CONTINUE',
   // 'SWITCHING_PROTOCOLS',
   'PROCESSING',
@@ -78,15 +78,15 @@ export const errorCodes = [
   'NETWORK_AUTHENTICATION_REQUIRED',
 ] as const;
 
-export type ErrorCode = (typeof errorCodes)[number] | (string & {}); // Allows custom error types in the future
+export type StatusCode = (typeof statusCodes)[number] | (string & {}); // Allows custom error types in the future
 
-export type ErrorMapping = {
+export type StatusCodeMapping = {
   status: ContentfulStatusCode;
   message: string;
-  code: ErrorCode;
+  code: StatusCode;
 };
 
-export const errorMap: Record<ErrorCode, ErrorMapping> = {
+export const errorMap: Record<StatusCode, StatusCodeMapping> = {
   CONTINUE: { status: 100, message: 'Continue', code: 'CONTINUE' },
   // SWITCHING_PROTOCOLS: {
   //   status: 101,
@@ -310,12 +310,12 @@ type AppErrorOptions = {
  */
 export class AppError extends Error {
   readonly name: 'AppError';
-  readonly code: ErrorCode;
+  readonly code: StatusCode;
   readonly hideToClient: boolean;
   readonly status: ContentfulStatusCode;
 
   constructor(
-    code: ErrorCode = DEFAULT_ERROR_MAPPING.code,
+    code: StatusCode = DEFAULT_ERROR_MAPPING.code,
     options: AppErrorOptions = {},
   ) {
     const mappedError = errorMap[code];

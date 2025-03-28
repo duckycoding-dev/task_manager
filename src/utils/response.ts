@@ -6,7 +6,7 @@ import {
   type SuccessResponse,
 } from 'types/response/';
 import { z } from 'zod';
-import type { ErrorCode } from './errors';
+import { errorMap, type StatusCode } from './errors';
 import type { Context } from 'hono';
 import type { AppContext } from 'types/app_context/';
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
@@ -43,7 +43,7 @@ export function sendSuccess<T>(
 export function sendError(
   c: Context,
   error: string,
-  code: ErrorCode,
+  code: StatusCode,
   {
     cause,
     stack,
@@ -88,15 +88,15 @@ export function sendHtml(
 export function createSuccessResponseDefinition<T extends z.ZodType>(
   dataSchema: T,
   {
-    status = 200,
+    status = 'OK',
     description = 'Success',
   }: {
-    status?: number;
+    status?: StatusCode;
     description?: string;
   } = {},
 ) {
   const successResponse = {
-    [status]: {
+    [errorMap[status]?.status ?? errorMap['OK'].status]: {
       content: {
         'application/json': {
           schema: SuccessResponseSchema(dataSchema),
@@ -113,14 +113,14 @@ export function createSuccessResponseDefinition<T extends z.ZodType>(
  * Create a standard JSON response object for errors in OpenAPI route config
  */
 export function createErrorResponseDefinition({
-  status = 400,
+  status = 'VALIDATION',
   description = 'Error',
 }: {
-  status?: number;
+  status?: StatusCode;
   description?: string;
 } = {}) {
   return {
-    [status]: {
+    [errorMap[status]?.status ?? errorMap['VALIDATION'].status]: {
       content: {
         'application/json': {
           schema: ErrorResponseSchema,
@@ -135,14 +135,14 @@ export function createErrorResponseDefinition({
  * Create a standard HTML response object for OpenAPI route config
  */
 export function createHtmlResponse({
-  status = 200,
+  status = 'OK',
   description = 'HTML content',
 }: {
-  status?: number;
+  status?: StatusCode;
   description?: string;
 } = {}) {
   return {
-    [status]: {
+    [errorMap[status]?.status ?? errorMap['OK'].status]: {
       content: {
         'text/html': {
           schema: z.string(),

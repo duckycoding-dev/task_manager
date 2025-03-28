@@ -13,6 +13,13 @@ const tasksController = createTasksController(tasksService);
 // Create a typed router
 const tasksRouter = createRouter()
   .basePath('/tasks')
-  .openapi(tasksRoutes.getTask, tasksController.getTask);
+  .openapi(tasksRoutes.getTasks, tasksController.getTasks)
+  .openapi(tasksRoutes.createTask, tasksController.createTask)
+  .openapi(tasksRoutes.deleteTask, tasksController.deleteTask)
+  .openapi(tasksRoutes.getTaskById, tasksController.getTaskById)
+  .openapi(tasksRoutes.updateTask, tasksController.updateTask)
+  .openapi(tasksRoutes.updateTaskPriority, tasksController.updateTaskPriority)
+  .openapi(tasksRoutes.updateTaskRecurring, tasksController.updateTaskRecurring)
+  .openapi(tasksRoutes.updateTaskStatus, tasksController.updateTaskStatus);
 
 export default tasksRouter;
