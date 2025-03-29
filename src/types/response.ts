@@ -1,4 +1,7 @@
-import { statusCodes, type StatusCode } from 'src/utils/errors';
+import {
+  verboseStatusCodes,
+  type VerboseStatusCode,
+} from 'utils/status-codes/';
 import { z } from 'zod';
 
 // Metadata schema
@@ -32,8 +35,8 @@ export const SuccessResponseSchema = <T extends z.ZodType>(dataSchema: T) =>
 export const ErrorResponseSchema = z.object({
   success: z.literal(false),
   error: z.string(),
-  code: z.enum(statusCodes).or(z.string()),
-  cause: z.unknown().optional(),
+  verboseCode: z.enum(verboseStatusCodes),
+  cause: z.any().optional(),
   stack: z.string().optional(),
 });
 
@@ -54,9 +57,13 @@ export type SuccessResponse<T> = {
 
 // I had to explicitly omit code from ErrorResponseSchema and redefine its type: without this it is not inferring the type correctly when using " | (string & {}})"
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const ErrorResponseSchemaWithoutCode = ErrorResponseSchema.omit({ code: true });
-export type ErrorResponse = z.infer<typeof ErrorResponseSchemaWithoutCode> & {
-  code: StatusCode;
+const ErrorResponseSchemaWithoutVerboseCode = ErrorResponseSchema.omit({
+  verboseCode: true,
+});
+export type ErrorResponse = z.infer<
+  typeof ErrorResponseSchemaWithoutVerboseCode
+> & {
+  verboseCode: VerboseStatusCode;
 };
 
 // add to manually define this type because zod is not inferring it correctly wheh dealing with generics and it was causing issues around the codebase

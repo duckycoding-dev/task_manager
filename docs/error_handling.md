@@ -22,3 +22,13 @@ This maintains a clear separation between:
 - Error handling (using AppError and the error handler)
 - Success scenarios with content (using c.json(), c.text(), etc.)
 - Success scenarios without content (using c.status() with contentless codes)
+
+If we are throwing errors from a controller, we can enforce typesafety for the error codes based on the OpenAPI definition of the endpoints.\
+We do this by using the `EndpointError class` which extend the AppError class: this is a generic class that needs to explicity type the parameters by passing the type of the handler you are working with.\
+Here's an example on how to use this:
+
+```ts
+throw new EndpointError<typeof tasksRoutes.getTaskById>('INTERAL');
+// Let's say the getTaskById accepts responses with codes 200, 400 and 404
+// You will be able to only provide the corrisponding verbose status codes "OK" | "INTERNAL" | "NOT_FOUND"
+```
