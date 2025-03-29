@@ -1,12 +1,8 @@
 import { createRoute } from '@hono/zod-openapi';
 import type { AppRoutes } from '../../types/app_context';
 import { selectTaskSchema } from './tasks.db';
-import {
-  createErrorResponseDefinition,
-  createJsonResponse,
-} from 'utils/response/';
+import { createErrorResponse, createJsonResponse } from 'utils/response/';
 import { getTasksQuerySchema, taskIdParamSchema } from './tasks.types';
-import { ErrorResponseSchema } from 'types/response/';
 import { statusCodeMap } from 'utils/status-codes/';
 
 const getTasks = createRoute({
@@ -18,26 +14,12 @@ const getTasks = createRoute({
   responses: {
     [statusCodeMap['OK'].status]: createJsonResponse(
       selectTaskSchema.array(),
-      'Success',
+      'Tasks fetched',
     ),
     [statusCodeMap['INTERNAL_SERVER_ERROR'].status]:
-      createErrorResponseDefinition('Error'),
+      createErrorResponse('Error'),
   },
   description: 'Get all tasks for the authenticated user',
-});
-
-const createTask = createRoute({
-  path: '/',
-  method: 'post',
-  responses: {
-    [statusCodeMap['CREATED'].status]: createJsonResponse(
-      selectTaskSchema,
-      'Task created successfully',
-    ),
-    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]:
-      createErrorResponseDefinition('Error'),
-  },
-  description: 'Create a new task (with optional project)',
 });
 
 const getTaskById = createRoute({
@@ -47,20 +29,27 @@ const getTaskById = createRoute({
     params: taskIdParamSchema,
   },
   responses: {
-    [statusCodeMap['NOT_FOUND'].status]: {
-      content: {
-        'application/json': {
-          schema: ErrorResponseSchema,
-        },
-      },
-      description: 'Task not found',
-    },
     [statusCodeMap['OK'].status]: createJsonResponse(
       selectTaskSchema,
-      'Success',
+      'Task fetched',
     ),
+    [statusCodeMap['NOT_FOUND'].status]: createErrorResponse('Task not found'),
   },
   description: 'Get a specific task by ID',
+});
+
+const createTask = createRoute({
+  path: '/',
+  method: 'post',
+  responses: {
+    [statusCodeMap['CREATED'].status]: createJsonResponse(
+      selectTaskSchema,
+      'Task created',
+    ),
+    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]:
+      createErrorResponse('Error'),
+  },
+  description: 'Create a new task (with optional project)',
 });
 
 const updateTask = createRoute({
@@ -72,9 +61,9 @@ const updateTask = createRoute({
   responses: {
     [statusCodeMap['OK'].status]: createJsonResponse(
       selectTaskSchema,
-      'Task updated successfully',
+      'Task updated',
     ),
-    [statusCodeMap['NOT_FOUND'].status]: createErrorResponseDefinition(
+    [statusCodeMap['NOT_FOUND'].status]: createErrorResponse(
       'The task to be patched was not found',
     ),
   },
@@ -91,9 +80,9 @@ const deleteTask = createRoute({
   responses: {
     [statusCodeMap['OK'].status]: createJsonResponse(
       selectTaskSchema,
-      'Task deleted successfully',
+      'Task deleted',
     ),
-    [statusCodeMap['NOT_FOUND'].status]: createErrorResponseDefinition(
+    [statusCodeMap['NOT_FOUND'].status]: createErrorResponse(
       'The task to be deleted was not found',
     ),
   },
@@ -110,9 +99,9 @@ const updateTaskStatus = createRoute({
     [statusCodeMap['OK'].status]: createJsonResponse(
       selectTaskSchema,
 
-      'Task status updated successfully',
+      'Task status updated',
     ),
-    [statusCodeMap['NOT_FOUND'].status]: createErrorResponseDefinition(
+    [statusCodeMap['NOT_FOUND'].status]: createErrorResponse(
       'The task to be patched was not found',
     ),
   },
@@ -128,9 +117,9 @@ const updateTaskPriority = createRoute({
   responses: {
     [statusCodeMap['OK'].status]: createJsonResponse(
       selectTaskSchema,
-      'Task priority updated successfully',
+      'Task priority updated',
     ),
-    [statusCodeMap['NOT_FOUND'].status]: createErrorResponseDefinition(
+    [statusCodeMap['NOT_FOUND'].status]: createErrorResponse(
       'The task to be patched was not found',
     ),
   },
@@ -147,9 +136,9 @@ const updateTaskRecurring = createRoute({
     [statusCodeMap['OK'].status]: createJsonResponse(
       selectTaskSchema,
 
-      'Task recurring interval updated successfully',
+      'Task recurring interval updated',
     ),
-    [statusCodeMap['NOT_FOUND'].status]: createErrorResponseDefinition(
+    [statusCodeMap['NOT_FOUND'].status]: createErrorResponse(
       'The task to be patched was not found',
     ),
   },

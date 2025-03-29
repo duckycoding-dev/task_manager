@@ -1,23 +1,17 @@
 import type { TasksService } from './tasks.service';
 import { tasksRoutes } from './tasks.routes';
 import type { AppRouteHandler } from '../../types/app_context';
-import { sendSuccess } from 'utils/response/';
-import { AppError, EndpointError } from 'utils/errors/';
-import type {
-  HandlerStatusCode,
-  ResponseCodes,
-  StatusCodeToVerboseCode,
-} from 'utils/status-codes/';
+import { EndpointError } from 'utils/errors/';
 
 export type TasksController = {
   getTasks: AppRouteHandler<typeof tasksRoutes.getTasks>;
-  createTask: AppRouteHandler<typeof tasksRoutes.createTask>;
-  deleteTask: AppRouteHandler<typeof tasksRoutes.deleteTask>;
   getTaskById: AppRouteHandler<typeof tasksRoutes.getTaskById>;
-  updateTask: AppRouteHandler<typeof tasksRoutes.updateTask>;
-  updateTaskPriority: AppRouteHandler<typeof tasksRoutes.updateTaskPriority>;
-  updateTaskRecurring: AppRouteHandler<typeof tasksRoutes.updateTaskRecurring>;
-  updateTaskStatus: AppRouteHandler<typeof tasksRoutes.updateTaskStatus>;
+  // createTask: AppRouteHandler<typeof tasksRoutes.createTask>;
+  // deleteTask: AppRouteHandler<typeof tasksRoutes.deleteTask>;
+  // updateTask: AppRouteHandler<typeof tasksRoutes.updateTask>;
+  // updateTaskPriority: AppRouteHandler<typeof tasksRoutes.updateTaskPriority>;
+  // updateTaskRecurring: AppRouteHandler<typeof tasksRoutes.updateTaskRecurring>;
+  // updateTaskStatus: AppRouteHandler<typeof tasksRoutes.updateTaskStatus>;
 };
 
 export const createTasksController = (
@@ -28,6 +22,7 @@ export const createTasksController = (
       const filters = c.req.valid('query');
       const dueDate = filters.dueDate ? new Date(filters.dueDate) : undefined;
       const result = await tasksService.getTasks({ ...filters, dueDate });
+      //return sendSuccessJson(c, result, 200, 'Tasks fetched successfully'); how I want to send the response without manually typing success: true
       return c.json(
         {
           success: true,
@@ -42,20 +37,12 @@ export const createTasksController = (
       const result = await tasksService.getTasksById(taskId);
 
       if (!result) {
-        return c.json(
-          {
-            success: false,
-            error: 'test',
-          },
-          404,
-        );
+        throw new EndpointError<typeof tasksRoutes.getTaskById>('NOT_FOUND', {
+          message: 'Task not found',
+        });
       }
       return c.json(
-        {
-          success: true,
-          data: result,
-          message: `Task ${taskId} fetched successfully`,
-        },
+        { success: true, data: result, message: 'Task fetched successfully' },
         200,
       );
     },

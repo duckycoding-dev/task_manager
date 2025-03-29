@@ -7,13 +7,12 @@ export type TasksService = {
     filters: Omit<GetTasksQuery, 'dueDate'> & { dueDate?: Date },
   ) => Promise<Task[]>;
   getTasksById: (id: string) => Promise<Task | undefined>;
-  createTask: (task: Task) => Promise<Task>;
-  deleteTask: (id: string) => Promise<void>;
-  updateTask: (id: string, task: Partial<Task>) => Promise<Task>;
-  updateTaskPriority: (id: string, priority: string) => Promise<Task>;
-  updateTaskRecurring: (id: string, recurring: string) => Promise<Task>;
-  updateTaskStatus: (id: string, status: string) => Promise<Task>;
-  // ... other methods
+  // createTask: (task: Task) => Promise<Task>;
+  // deleteTask: (id: string) => Promise<void>;
+  // updateTask: (id: string, task: Partial<Task>) => Promise<Task>;
+  // updateTaskPriority: (id: string, priority: string) => Promise<Task>;
+  // updateTaskRecurring: (id: string, recurring: string) => Promise<Task>;
+  // updateTaskStatus: (id: string, status: string) => Promise<Task>;
 };
 
 export const createTasksService = (
@@ -30,16 +29,3 @@ export const createTasksService = (
     },
   };
 };
-
-function test() {
-  type X = {
-    a: number;
-    b: string;
-  };
-  const x = {
-    a: 1,
-    b: 'b',
-  };
-  const y = x as X;
-  return y;
-}
