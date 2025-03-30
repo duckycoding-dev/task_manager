@@ -7,11 +7,16 @@ export type TasksController = {
   getTasks: AppRouteHandler<typeof tasksRoutes.getTasks>;
   getTaskById: AppRouteHandler<typeof tasksRoutes.getTaskById>;
   createTask: AppRouteHandler<typeof tasksRoutes.createTask>;
-  // deleteTask: AppRouteHandler<typeof tasksRoutes.deleteTask>;
-  // updateTask: AppRouteHandler<typeof tasksRoutes.updateTask>;
-  // updateTaskPriority: AppRouteHandler<typeof tasksRoutes.updateTaskPriority>;
-  // updateTaskRecurring: AppRouteHandler<typeof tasksRoutes.updateTaskRecurring>;
-  // updateTaskStatus: AppRouteHandler<typeof tasksRoutes.updateTaskStatus>;
+  updateTask: AppRouteHandler<typeof tasksRoutes.updateTask>;
+  deleteTask: AppRouteHandler<typeof tasksRoutes.deleteTask>;
+  updateTaskPriority: AppRouteHandler<typeof tasksRoutes.updateTaskPriority>;
+  updateTaskRecurringInterval: AppRouteHandler<
+    typeof tasksRoutes.updateTaskRecurringInterval
+  >;
+  updateTaskIsRecurring: AppRouteHandler<
+    typeof tasksRoutes.updateTaskIsRecurring
+  >;
+  updateTaskStatus: AppRouteHandler<typeof tasksRoutes.updateTaskStatus>;
 };
 
 export const createTasksController = (
@@ -57,6 +62,113 @@ export const createTasksController = (
       return c.json(
         { success: true, data: createdTask, message: 'Task created' },
         201,
+      );
+    },
+
+    updateTask: async (c) => {
+      const { taskId } = c.req.valid('param');
+      const task = c.req.valid('json');
+      const updatedTask = await tasksService.updateTask(taskId, task);
+      if (!updatedTask) {
+        throw new EndpointError<typeof tasksRoutes.updateTask>('NOT_FOUND', {
+          message: 'Task not found',
+        });
+      }
+      return c.json(
+        { success: true, data: updatedTask, message: 'Task updated' },
+        200,
+      );
+    },
+
+    deleteTask: async (c) => {
+      const { taskId } = c.req.valid('param');
+      const deleted = await tasksService.deleteTask(taskId);
+      if (!deleted) {
+        throw new EndpointError<typeof tasksRoutes.deleteTask>('NOT_FOUND', {
+          message: 'Task not found',
+        });
+      }
+      return c.json({ success: true, message: 'Task deleted' }, 200);
+    },
+
+    updateTaskPriority: async (c) => {
+      const { taskId } = c.req.valid('param');
+      const priority = c.req.valid('json');
+      const updatedTask = await tasksService.updateTaskPriority(
+        taskId,
+        priority,
+      );
+      if (!updatedTask) {
+        throw new EndpointError<typeof tasksRoutes.updateTaskPriority>(
+          'NOT_FOUND',
+          {
+            message: 'Task not found',
+          },
+        );
+      }
+      return c.json(
+        { success: true, data: updatedTask, message: 'Task updated' },
+        200,
+      );
+    },
+
+    updateTaskRecurringInterval: async (c) => {
+      const { taskId } = c.req.valid('param');
+      const recurringInterval = c.req.valid('json');
+      const updatedTask = await tasksService.updateTaskRecurringInterval(
+        taskId,
+        recurringInterval,
+      );
+      if (!updatedTask) {
+        throw new EndpointError<typeof tasksRoutes.updateTaskRecurringInterval>(
+          'NOT_FOUND',
+          {
+            message: 'Task not found',
+          },
+        );
+      }
+      return c.json(
+        { success: true, data: updatedTask, message: 'Task updated' },
+        200,
+      );
+    },
+
+    updateTaskIsRecurring: async (c) => {
+      const { taskId } = c.req.valid('param');
+      const isRecurring = c.req.valid('json');
+      const updatedTask = await tasksService.updateTaskIsRecurring(
+        taskId,
+        isRecurring,
+      );
+      if (!updatedTask) {
+        throw new EndpointError<typeof tasksRoutes.updateTaskIsRecurring>(
+          'NOT_FOUND',
+          {
+            message: 'Task not found',
+          },
+        );
+      }
+      return c.json(
+        { success: true, data: updatedTask, message: 'Task updated' },
+        200,
+      );
+    },
+
+    updateTaskStatus: async (c) => {
+      const { taskId } = c.req.valid('param');
+      const status = c.req.valid('json');
+      const updatedTask = await tasksService.updateTaskStatus(taskId, status);
+      if (!updatedTask) {
+        throw new EndpointError<typeof tasksRoutes.updateTaskStatus>(
+          'NOT_FOUND',
+          {
+            message: 'Task not found',
+          },
+        );
+      }
+      return c.json(
+        { success: true, data: updatedTask, message: 'Task updated' },
+        200,
       );
     },
   };

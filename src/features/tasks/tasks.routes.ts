@@ -1,9 +1,23 @@
-import { createRoute } from '@hono/zod-openapi';
+import { createRoute, z } from '@hono/zod-openapi';
 import type { AppRoutes } from '../../types/app_context';
-import { insertTaskSchema, selectTaskSchema } from './tasks.db';
-import { createErrorResponse, createJsonResponse } from 'utils/response/';
-import { getTasksQuerySchema, taskIdParamSchema } from './tasks.types';
+import {
+  insertTaskSchema,
+  selectTaskSchema,
+  updateTaskSchema,
+} from './tasks.db';
+import {
+  createErrorResponse,
+  createSuccessJsonResponse,
+} from 'utils/response/';
+import {
+  getTasksQuerySchema,
+  taskIdParamSchema,
+  taskPrioritySchema,
+  taskRecurringSchema,
+  taskStatusSchema,
+} from './tasks.types';
 import { statusCodeMap } from 'utils/status-codes/';
+import { createRequiredJsonBody } from 'utils/request/body/';
 
 const getTasks = createRoute({
   path: '/',
@@ -12,7 +26,7 @@ const getTasks = createRoute({
     query: getTasksQuerySchema,
   },
   responses: {
-    [statusCodeMap['OK'].status]: createJsonResponse(
+    [statusCodeMap['OK'].status]: createSuccessJsonResponse(
       selectTaskSchema.array(),
       'Tasks fetched',
     ),
@@ -30,7 +44,7 @@ const getTaskById = createRoute({
     params: taskIdParamSchema,
   },
   responses: {
-    [statusCodeMap['OK'].status]: createJsonResponse(
+    [statusCodeMap['OK'].status]: createSuccessJsonResponse(
       selectTaskSchema,
       'Task fetched',
     ),
@@ -45,18 +59,10 @@ const createTask = createRoute({
   path: '/',
   method: 'post',
   request: {
-    body: {
-      content: {
-        'application/json': {
-          schema: insertTaskSchema,
-        },
-      },
-      required: true,
-      description: 'The task to create',
-    },
+    body: createRequiredJsonBody(insertTaskSchema, 'The task to create'),
   },
   responses: {
-    [statusCodeMap['CREATED'].status]: createJsonResponse(
+    [statusCodeMap['CREATED'].status]: createSuccessJsonResponse(
       selectTaskSchema,
       'Task created',
     ),
@@ -71,15 +77,18 @@ const updateTask = createRoute({
   method: 'patch',
   request: {
     params: taskIdParamSchema,
+    body: createRequiredJsonBody(updateTaskSchema, 'The task to patch'),
   },
   responses: {
-    [statusCodeMap['OK'].status]: createJsonResponse(
+    [statusCodeMap['OK'].status]: createSuccessJsonResponse(
       selectTaskSchema,
       'Task updated',
     ),
     [statusCodeMap['NOT_FOUND'].status]: createErrorResponse(
       'The task to be patched was not found',
     ),
+    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]:
+      createErrorResponse('Error'),
   },
   description:
     'Update task details (title, description, status, priority, dueDate, etc.)',
@@ -92,13 +101,15 @@ const deleteTask = createRoute({
     params: taskIdParamSchema,
   },
   responses: {
-    [statusCodeMap['OK'].status]: createJsonResponse(
-      selectTaskSchema,
+    [statusCodeMap['OK'].status]: createSuccessJsonResponse(
+      z.never(),
       'Task deleted',
     ),
     [statusCodeMap['NOT_FOUND'].status]: createErrorResponse(
       'The task to be deleted was not found',
     ),
+    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]:
+      createErrorResponse('Error'),
   },
   description: 'Delete a task',
 });
@@ -108,9 +119,10 @@ const updateTaskStatus = createRoute({
   method: 'patch',
   request: {
     params: taskIdParamSchema,
+    body: createRequiredJsonBody(taskStatusSchema, 'The task status to patch'),
   },
   responses: {
-    [statusCodeMap['OK'].status]: createJsonResponse(
+    [statusCodeMap['OK'].status]: createSuccessJsonResponse(
       selectTaskSchema,
 
       'Task status updated',
@@ -118,6 +130,8 @@ const updateTaskStatus = createRoute({
     [statusCodeMap['NOT_FOUND'].status]: createErrorResponse(
       'The task to be patched was not found',
     ),
+    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]:
+      createErrorResponse('Error'),
   },
   description: 'Change task status (e.g., todo → in_progress)',
 });
@@ -127,27 +141,37 @@ const updateTaskPriority = createRoute({
   method: 'patch',
   request: {
     params: taskIdParamSchema,
+    body: createRequiredJsonBody(
+      taskPrioritySchema,
+      'The task priority to patch',
+    ),
   },
   responses: {
-    [statusCodeMap['OK'].status]: createJsonResponse(
+    [statusCodeMap['OK'].status]: createSuccessJsonResponse(
       selectTaskSchema,
       'Task priority updated',
     ),
     [statusCodeMap['NOT_FOUND'].status]: createErrorResponse(
       'The task to be patched was not found',
     ),
+    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]:
+      createErrorResponse('Error'),
   },
   description: 'Change task priority',
 });
 
-const updateTaskRecurring = createRoute({
-  path: '/:taskId/recurring',
+const updateTaskRecurringInterval = createRoute({
+  path: '/:taskId/recurring/interval',
   method: 'patch',
   request: {
     params: taskIdParamSchema,
+    body: createRequiredJsonBody(
+      taskRecurringSchema,
+      'The task recurring interval to patch',
+    ),
   },
   responses: {
-    [statusCodeMap['OK'].status]: createJsonResponse(
+    [statusCodeMap['OK'].status]: createSuccessJsonResponse(
       selectTaskSchema,
 
       'Task recurring interval updated',
@@ -155,6 +179,33 @@ const updateTaskRecurring = createRoute({
     [statusCodeMap['NOT_FOUND'].status]: createErrorResponse(
       'The task to be patched was not found',
     ),
+    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]:
+      createErrorResponse('Error'),
+  },
+  description: 'Set or update recurring interval',
+});
+
+const updateTaskIsRecurring = createRoute({
+  path: '/:taskId/recurring/toggle',
+  method: 'patch',
+  request: {
+    params: taskIdParamSchema,
+    body: createRequiredJsonBody(
+      z.boolean(),
+      'The task recurring interval to patch',
+    ),
+  },
+  responses: {
+    [statusCodeMap['OK'].status]: createSuccessJsonResponse(
+      selectTaskSchema,
+
+      'Task recurring interval updated',
+    ),
+    [statusCodeMap['NOT_FOUND'].status]: createErrorResponse(
+      'The task to be patched was not found',
+    ),
+    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]:
+      createErrorResponse('Error'),
   },
   description: 'Set or update recurring interval',
 });
@@ -167,5 +218,6 @@ export const tasksRoutes = {
   deleteTask,
   updateTaskStatus,
   updateTaskPriority,
-  updateTaskRecurring,
+  updateTaskRecurringInterval,
+  updateTaskIsRecurring,
 } as const satisfies AppRoutes;

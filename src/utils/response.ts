@@ -9,7 +9,7 @@ import { statusCodeMap, type VerboseStatusCode } from './status-codes';
 /**
  * Create a standard JSON response object for successful responses in OpenAPI route config
  */
-export function createJsonResponse<T extends z.ZodType>(
+export function createSuccessJsonResponse<T extends z.ZodType>(
   dataSchema: T,
   description: string,
 ) {
