@@ -1,4 +1,4 @@
-import { AppError } from '../../utils/errors';
+import { AppError } from '../../utils/errors/http-errors';
 import type { LabelsRepository } from './labels.repository';
 import type { Labels } from './labels.db';
 

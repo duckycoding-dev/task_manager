@@ -1,4 +1,4 @@
-import { AppError } from '../../utils/errors';
+import { AppError } from '../../utils/errors/http-errors';
 import type { CollaboratorsRepository } from './collaborators.repository';
 import type { Collaborators } from './collaborators.db';
 

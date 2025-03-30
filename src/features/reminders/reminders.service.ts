@@ -1,4 +1,4 @@
-import { AppError } from '../../utils/errors';
+import { AppError } from '../../utils/errors/http-errors';
 import type { RemindersRepository } from './reminders.repository';
 import type { Reminders } from './reminders.db';
 

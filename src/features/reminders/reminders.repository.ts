@@ -2,7 +2,7 @@ import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { eq } from 'drizzle-orm';
 import { type Reminders, remindersSchema, reminders } from './reminders.db';
 import { formatZodError } from 'utils/mapping/';
-import { AppError } from 'utils/errors/';
+import { AppError } from 'utils/errors/http-errors/';
 
 export type RemindersRepository = {
   get: (id: string) => Promise<Reminders | undefined>;

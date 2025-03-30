@@ -1,6 +1,6 @@
 import { createRoute } from '@hono/zod-openapi';
 import type { AppRoutes } from '../../types/app_context';
-import { selectTaskSchema } from './tasks.db';
+import { insertTaskSchema, selectTaskSchema } from './tasks.db';
 import { createErrorResponse, createJsonResponse } from 'utils/response/';
 import { getTasksQuerySchema, taskIdParamSchema } from './tasks.types';
 import { statusCodeMap } from 'utils/status-codes/';
@@ -16,6 +16,7 @@ const getTasks = createRoute({
       selectTaskSchema.array(),
       'Tasks fetched',
     ),
+    [statusCodeMap['NOT_FOUND'].status]: createErrorResponse('Task not found'),
     [statusCodeMap['INTERNAL_SERVER_ERROR'].status]:
       createErrorResponse('Error'),
   },
@@ -34,6 +35,8 @@ const getTaskById = createRoute({
       'Task fetched',
     ),
     [statusCodeMap['NOT_FOUND'].status]: createErrorResponse('Task not found'),
+    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]:
+      createErrorResponse('Error'),
   },
   description: 'Get a specific task by ID',
 });
@@ -41,6 +44,17 @@ const getTaskById = createRoute({
 const createTask = createRoute({
   path: '/',
   method: 'post',
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: insertTaskSchema,
+        },
+      },
+      required: true,
+      description: 'The task to create',
+    },
+  },
   responses: {
     [statusCodeMap['CREATED'].status]: createJsonResponse(
       selectTaskSchema,

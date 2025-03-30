@@ -1,20 +1,20 @@
 import type { Context } from 'hono';
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
 import type { ErrorResponse } from 'src/types/response';
-import env from './env';
+import env from '../env';
 import {
   DEFAULT_ERROR_MAPPING,
   statusCodeMap,
-  type HandlerStatusCode,
   type VerboseStatusCode,
-} from './status-codes';
-import type { createRoute } from '@hono/zod-openapi';
+} from '../status-codes';
+import type { HandlerStatusCode, ZodOpenAPIRoute } from 'types/utility/';
+import { RepositoryValidationError } from './domain-errors';
 
-const DEFAULT_ERROR_RESPONSE: ErrorResponse = {
+const DEFAULT_ERROR_RESPONSE = {
   success: false,
   error: DEFAULT_ERROR_MAPPING.message,
   verboseCode: 'INTERNAL',
-};
+} as const satisfies ErrorResponse;
 
 type AppErrorOptions = {
   message?: string;
@@ -92,9 +92,7 @@ export class AppError<
  * // You will be able to only provide the corrisponding verbose status codes "OK" | "INTERNAL" | "NOT_FOUND"
 ```
  */
-export class EndpointError<
-  H extends ReturnType<typeof createRoute>,
-> extends AppError {
+export class EndpointError<H extends ZodOpenAPIRoute> extends AppError {
   constructor(
     verboseCode: HandlerStatusCode<H>,
     options: AppErrorOptions = {},
@@ -126,25 +124,36 @@ export const errorHandler = (err: Error | AppError, c: Context): Response => {
     JSON.stringify(serializeError(err), null, 2),
   );
 
-  if (err instanceof AppError) {
+  const cause: unknown = env.NODE_ENV === 'development' ? err.cause : undefined;
+  const stack = env.NODE_ENV === 'development' ? err.stack : undefined;
+
+  if (err instanceof AppError || err instanceof EndpointError) {
     const message: string =
       env.NODE_ENV === 'development' || !err.hideToClient
         ? err.message
         : (statusCodeMap[err.verboseCode]?.message ?? 'Internal Server Error');
 
-    const cause: unknown =
-      env.NODE_ENV === 'development' ? err.cause : undefined;
-    const stack = env.NODE_ENV === 'development' ? err.stack : undefined;
-
     const errorResponse: ErrorResponse = {
       success: false,
       error: message,
       verboseCode: err.verboseCode,
-      cause: cause,
-      stack: stack,
+      cause,
+      stack,
     };
 
     return c.json(errorResponse, err.status);
+  } else if (err instanceof RepositoryValidationError) {
+    const errorResponse: ErrorResponse = {
+      ...DEFAULT_ERROR_RESPONSE,
+      error:
+        env.NODE_ENV === 'development'
+          ? err.message
+          : DEFAULT_ERROR_RESPONSE.error,
+      cause,
+      stack,
+    };
+
+    return c.json(errorResponse, DEFAULT_ERROR_MAPPING.status);
   }
 
   // Handle unexpected errors

@@ -43,7 +43,6 @@ export const selectTaskSchema = createSelectSchema(tasks);
 // 📌 Insert Schema (for creating tasks)
 export const insertTaskSchema = createInsertSchema(tasks).omit({
   id: true, // ID is auto-generated
-  userId: true, // Derived from authentication
   createdAt: true,
   updatedAt: true,
 });
@@ -57,7 +56,7 @@ export const updateTaskSchema = createUpdateSchema(tasks).omit({
 
 // 🔹 Types
 export type Task = z.infer<typeof selectTaskSchema>;
-export type NewTask = z.infer<typeof insertTaskSchema>;
+export type InsertTask = z.infer<typeof insertTaskSchema>;
 export type UpdateTask = z.infer<typeof updateTaskSchema>;
 
 export function isTaskArray(obj: unknown): obj is Task {

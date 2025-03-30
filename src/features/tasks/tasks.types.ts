@@ -2,7 +2,7 @@ import { z } from 'zod';
 import {
   statusOptions,
   priorityOptions,
-  type NewTask,
+  type InsertTask,
   type Task,
   type UpdateTask,
 } from './tasks.db';
@@ -30,7 +30,7 @@ export type GetProjectTasksParams = z.infer<typeof getProjectTasksParamsSchema>;
 
 export type GetTasksResponse = Task[];
 export type GetTaskResponse = Task;
-export type CreateTaskRequest = NewTask;
+export type CreateTaskRequest = InsertTask;
 export type CreateTaskResponse = Task;
 export type UpdateTaskRequest = UpdateTask;
 export type UpdateTaskResponse = Task;

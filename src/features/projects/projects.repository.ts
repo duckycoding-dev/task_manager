@@ -2,7 +2,7 @@ import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { eq } from 'drizzle-orm';
 import { type Projects, projectsSchema, projects } from './projects.db';
 import { formatZodError } from 'utils/mapping/';
-import { AppError } from 'utils/errors/';
+import { AppError } from 'utils/errors/http-errors/';
 
 export type ProjectsRepository = {
   get: (id: string) => Promise<Projects | undefined>;

@@ -1,52 +1,6 @@
-import {
-  ErrorResponseSchema,
-  SuccessResponseSchema,
-  type ResponseMeta,
-  type SuccessResponse,
-} from 'types/response/';
+import { ErrorResponseSchema, SuccessResponseSchema } from 'types/response/';
 import { z } from 'zod';
 import { statusCodeMap, type VerboseStatusCode } from './status-codes';
-import type { Context } from 'hono';
-import type { ContentfulStatusCode } from 'hono/utils/http-status';
-import type { createRoute } from '@hono/zod-openapi';
-import type { AppRouteHandler } from 'types/app_context/';
-
-/**
- * Helper function to send a standardized success JSON response
- * while maintaining type safety and intellisense from OpenAPI schemas
- */
-// export function sendSuccessJson<
-//   T extends ReturnType<typeof createRoute>,
-//   StatusCode extends keyof T['responses'],
-//   ResponseType = z.infer<
-//     T['responses'][number]['content']['application/json']['schema']
-//   >,
-// >(
-//   c: Context,
-//   data: ResponseType,
-//   statusCode: StatusCode,
-//   message = 'Operation successful',
-// ) {
-//   return c.json(
-//     {
-//       success: true,
-//       data,
-//       message,
-//     },
-//     statusCode,
-//   );
-// }
-
-/**
- * Send an HTML response
-//  */
-// export function sendHtml(
-//   c: Context,
-//   html: string,
-//   status: ContentfulStatusCode = 200,
-// ): Response {
-//   return c.html(html, status);
-// }
 
 // =========================================
 // OpenAPI Helper Functions

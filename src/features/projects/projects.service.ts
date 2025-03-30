@@ -1,4 +1,4 @@
-import { AppError } from '../../utils/errors';
+import { AppError } from '../../utils/errors/http-errors';
 import type { ProjectsRepository } from './projects.repository';
 import type { Projects } from './projects.db';
 

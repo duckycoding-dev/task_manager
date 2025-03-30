@@ -6,7 +6,7 @@ import {
   collaborators,
 } from './collaborators.db';
 import { formatZodError } from 'utils/mapping/';
-import { AppError } from 'utils/errors/';
+import { AppError } from 'utils/errors/http-errors/';
 
 export type CollaboratorsRepository = {
   get: (id: string) => Promise<Collaborators | undefined>;

@@ -1,5 +1,5 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
-import { AppError, errorHandler } from './errors';
+import { AppError, errorHandler } from './errors/http-errors';
 import type {
   AppContext,
   AppOpenAPI,
