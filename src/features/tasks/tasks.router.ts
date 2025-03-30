@@ -19,7 +19,14 @@ const tasksRouter = createRouter()
   .openapi(tasksRoutes.getTaskById, tasksController.getTaskById)
   .openapi(tasksRoutes.updateTask, tasksController.updateTask)
   .openapi(tasksRoutes.updateTaskPriority, tasksController.updateTaskPriority)
-  .openapi(tasksRoutes.updateTaskRecurring, tasksController.updateTaskRecurring)
+  .openapi(
+    tasksRoutes.updateTaskRecurringInterval,
+    tasksController.updateTaskRecurringInterval,
+  )
+  .openapi(
+    tasksRoutes.updateTaskIsRecurring,
+    tasksController.updateTaskIsRecurring,
+  )
   .openapi(tasksRoutes.updateTaskStatus, tasksController.updateTaskStatus);
 
 export default tasksRouter;

@@ -102,7 +102,7 @@ const deleteTask = createRoute({
   },
   responses: {
     [statusCodeMap['OK'].status]: createSuccessJsonResponse(
-      z.never(),
+      z.never().openapi({ type: 'null' }),
       'Task deleted',
     ),
     [statusCodeMap['NOT_FOUND'].status]: createErrorResponse(
