@@ -27,7 +27,7 @@ export const createTasksController = (
       const filters = c.req.valid('query');
       const dueDate = filters.dueDate ? new Date(filters.dueDate) : undefined;
       const tasksFound = await tasksService.getTasks({ ...filters, dueDate });
-      if (!tasksFound) {
+      if (tasksFound.length === 0) {
         throw new EndpointError<typeof tasksRoutes.getTasks>('NOT_FOUND', {
           message: 'No tasks found',
         });

@@ -13,6 +13,14 @@ const labelsController = createLabelsController(labelsService);
 // Create a typed router
 const labelsRouter = createRouter()
   .basePath('/labels')
-  .openapi(labelsRoutes.get, labelsController.get);
-
+  .openapi(labelsRoutes.getLabels, labelsController.getLabels)
+  .openapi(labelsRoutes.getLabelById, labelsController.getLabelById)
+  .openapi(labelsRoutes.createLabel, labelsController.createLabel)
+  .openapi(labelsRoutes.updateLabel, labelsController.updateLabel)
+  .openapi(labelsRoutes.deleteLabel, labelsController.deleteLabel)
+  .openapi(labelsRoutes.assignLabelToTask, labelsController.assignLabelToTask)
+  .openapi(
+    labelsRoutes.removeLabelFromTask,
+    labelsController.removeLabelFromTask,
+  );
 export default labelsRouter;

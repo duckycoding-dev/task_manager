@@ -13,7 +13,7 @@ import { RepositoryValidationError } from './domain-errors';
 const DEFAULT_ERROR_RESPONSE = {
   success: false,
   error: DEFAULT_ERROR_MAPPING.message,
-  verboseCode: 'INTERNAL',
+  verboseCode: 'INTERNAL_SERVER_ERROR',
 } as const satisfies ErrorResponse;
 
 type AppErrorOptions = {
@@ -38,7 +38,7 @@ type AppErrorOptions = {
  * ```ts
  * throw new AppError('NOT_FOUND');
  * throw new AppError('VALIDATION', { message: 'Invalid email' });
- * throw new AppError('INTERNAL', { hideToClient: true });
+ * throw new AppError('INTERNAL_SERVER_ERROR', { hideToClient: true });
  * ```
  * @example
  * And advanced use case would be enforcing the available status codes that can be provided based on the API handler response codes defined in the OpenAPI schema.

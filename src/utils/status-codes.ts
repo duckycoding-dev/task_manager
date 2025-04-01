@@ -3,7 +3,7 @@ import type { ContentfulStatusCode } from 'hono/utils/http-status';
 export const DEFAULT_ERROR_MAPPING = {
   status: 500,
   message: 'Internal Server Error',
-  verboseCode: 'INTERNAL',
+  verboseCode: 'INTERNAL_SERVER_ERROR',
 } as const satisfies StatusCodeMapping;
 
 export const verboseStatusCodes = [
@@ -33,7 +33,6 @@ export const verboseStatusCodes = [
   'VALIDATION',
   'ACCESS_DENIED',
   'SERVICE_FAILURE',
-  'INTERNAL',
   'BAD_REQUEST',
   'UNAUTHORIZED',
   'FORBIDDEN',
@@ -164,7 +163,6 @@ export const statusCodeMap = {
     message: 'External service failure',
     verboseCode: 'SERVICE_FAILURE',
   },
-  INTERNAL: DEFAULT_ERROR_MAPPING,
   BAD_REQUEST: {
     status: 400,
     message: 'Bad request',
@@ -259,11 +257,7 @@ export const statusCodeMap = {
     message: 'Unavailable for legal reasons',
     verboseCode: 'UNAVAILABLE_FOR_LEGAL_REASONS',
   },
-  INTERNAL_SERVER_ERROR: {
-    status: 500,
-    message: 'Internal Server Error',
-    verboseCode: 'INTERNAL_SERVER_ERROR',
-  },
+  INTERNAL_SERVER_ERROR: DEFAULT_ERROR_MAPPING,
   NOT_IMPLEMENTED: {
     status: 501,
     message: 'Not Implemented',

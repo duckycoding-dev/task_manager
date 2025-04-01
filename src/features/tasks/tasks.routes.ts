@@ -31,8 +31,9 @@ const getTasks = createRoute({
       'Tasks fetched',
     ),
     [statusCodeMap['NOT_FOUND'].status]: createErrorResponse('Task not found'),
-    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]:
-      createErrorResponse('Error'),
+    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]: createErrorResponse(
+      statusCodeMap['INTERNAL_SERVER_ERROR'].message,
+    ),
   },
   description: 'Get all tasks for the authenticated user',
 });
@@ -49,8 +50,9 @@ const getTaskById = createRoute({
       'Task fetched',
     ),
     [statusCodeMap['NOT_FOUND'].status]: createErrorResponse('Task not found'),
-    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]:
-      createErrorResponse('Error'),
+    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]: createErrorResponse(
+      statusCodeMap['INTERNAL_SERVER_ERROR'].message,
+    ),
   },
   description: 'Get a specific task by ID',
 });
@@ -66,8 +68,9 @@ const createTask = createRoute({
       selectTaskSchema,
       'Task created',
     ),
-    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]:
-      createErrorResponse('Error'),
+    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]: createErrorResponse(
+      statusCodeMap['INTERNAL_SERVER_ERROR'].message,
+    ),
   },
   description: 'Create a new task (with optional project)',
 });
@@ -87,8 +90,9 @@ const updateTask = createRoute({
     [statusCodeMap['NOT_FOUND'].status]: createErrorResponse(
       'The task to be patched was not found',
     ),
-    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]:
-      createErrorResponse('Error'),
+    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]: createErrorResponse(
+      statusCodeMap['INTERNAL_SERVER_ERROR'].message,
+    ),
   },
   description:
     'Update task details (title, description, status, priority, dueDate, etc.)',
@@ -108,8 +112,9 @@ const deleteTask = createRoute({
     [statusCodeMap['NOT_FOUND'].status]: createErrorResponse(
       'The task to be deleted was not found',
     ),
-    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]:
-      createErrorResponse('Error'),
+    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]: createErrorResponse(
+      statusCodeMap['INTERNAL_SERVER_ERROR'].message,
+    ),
   },
   description: 'Delete a task',
 });
@@ -130,8 +135,9 @@ const updateTaskStatus = createRoute({
     [statusCodeMap['NOT_FOUND'].status]: createErrorResponse(
       'The task to be patched was not found',
     ),
-    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]:
-      createErrorResponse('Error'),
+    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]: createErrorResponse(
+      statusCodeMap['INTERNAL_SERVER_ERROR'].message,
+    ),
   },
   description: 'Change task status (e.g., todo → in_progress)',
 });
@@ -154,8 +160,9 @@ const updateTaskPriority = createRoute({
     [statusCodeMap['NOT_FOUND'].status]: createErrorResponse(
       'The task to be patched was not found',
     ),
-    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]:
-      createErrorResponse('Error'),
+    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]: createErrorResponse(
+      statusCodeMap['INTERNAL_SERVER_ERROR'].message,
+    ),
   },
   description: 'Change task priority',
 });
@@ -179,8 +186,9 @@ const updateTaskRecurringInterval = createRoute({
     [statusCodeMap['NOT_FOUND'].status]: createErrorResponse(
       'The task to be patched was not found',
     ),
-    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]:
-      createErrorResponse('Error'),
+    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]: createErrorResponse(
+      statusCodeMap['INTERNAL_SERVER_ERROR'].message,
+    ),
   },
   description: 'Set or update recurring interval',
 });
@@ -204,8 +212,9 @@ const updateTaskIsRecurring = createRoute({
     [statusCodeMap['NOT_FOUND'].status]: createErrorResponse(
       'The task to be patched was not found',
     ),
-    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]:
-      createErrorResponse('Error'),
+    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]: createErrorResponse(
+      statusCodeMap['INTERNAL_SERVER_ERROR'].message,
+    ),
   },
   description: 'Set or update recurring interval',
 });

@@ -58,7 +58,3 @@ export const updateTaskSchema = createUpdateSchema(tasks).omit({
 export type Task = z.infer<typeof selectTaskSchema>;
 export type InsertTask = z.infer<typeof insertTaskSchema>;
 export type UpdateTask = z.infer<typeof updateTaskSchema>;
-
-export function isTaskArray(obj: unknown): obj is Task {
-  return selectTaskSchema.array().safeParse(obj).success;
-}
