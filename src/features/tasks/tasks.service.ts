@@ -12,7 +12,7 @@ export type TasksService = {
     filters: Omit<GetTasksQuery, 'dueDate'> & { dueDate?: Date },
   ) => Promise<Task[]>;
   getTasksById: (id: string) => Promise<Task | undefined>;
-  createTask: (task: InsertTask) => Promise<Task>;
+  createTask: (newTask: InsertTask) => Promise<Task>;
   updateTask: (id: string, task: UpdateTask) => Promise<Task | undefined>;
   deleteTask: (id: string) => Promise<boolean>;
   updateTaskPriority: (
@@ -38,56 +38,41 @@ export const createTasksService = (
 ): TasksService => {
   return {
     getTasks: async (filters) => {
-      const tasks = await tasksRepository.getTasks(filters);
-      return tasks;
+      return await tasksRepository.getTasks(filters);
     },
     getTasksById: async (id) => {
-      const task = await tasksRepository.getTaskById(id);
-      return task;
+      return await tasksRepository.getTaskById(id);
     },
 
     createTask: async (task) => {
-      const createdTask = await tasksRepository.createTask(task);
-      return createdTask;
+      return await tasksRepository.createTask(task);
     },
 
     updateTask: async (id, task) => {
-      const updatedTask = await tasksRepository.updateTask(id, task);
-      return updatedTask;
+      return await tasksRepository.updateTask(id, task);
     },
 
     deleteTask: async (id) => {
-      const deleted = await tasksRepository.deleteTask(id);
-      return deleted;
+      return await tasksRepository.deleteTask(id);
     },
 
     updateTaskPriority: async (id, priority) => {
-      const updatedTask = await tasksRepository.updateTaskPriority(
-        id,
-        priority,
-      );
-      return updatedTask;
+      return await tasksRepository.updateTaskPriority(id, priority);
     },
 
     updateTaskRecurringInterval: async (id, recurringInterval) => {
-      const updatedTask = await tasksRepository.updateTaskRecurringInterval(
+      return await tasksRepository.updateTaskRecurringInterval(
         id,
         recurringInterval,
       );
-      return updatedTask;
     },
 
     updateTaskIsRecurring: async (id, isRecurring) => {
-      const updatedTask = await tasksRepository.updateTaskIsRecurring(
-        id,
-        isRecurring,
-      );
-      return updatedTask;
+      return await tasksRepository.updateTaskIsRecurring(id, isRecurring);
     },
 
     updateTaskStatus: async (id, status) => {
-      const updatedTask = await tasksRepository.updateTaskStatus(id, status);
-      return updatedTask;
+      return await tasksRepository.updateTaskStatus(id, status);
     },
   };
 };

@@ -6,7 +6,10 @@ export type LabelsService = {
   getLabels: (filters: GetLabelsQuery) => Promise<Label[]>;
   getLabelById: (id: string) => Promise<Label | undefined>;
   createLabel: (newLabel: InsertLabel) => Promise<Label>;
-  updateLabel: (id: string, data: UpdateLabel) => Promise<Label | undefined>;
+  updateLabel: (
+    id: string,
+    labelUpdate: UpdateLabel,
+  ) => Promise<Label | undefined>;
   deleteLabel: (id: string) => Promise<boolean>;
   assignLabelToTask: (taskId: string, labelId: string) => Promise<boolean>;
   removeLabelFromTask: (taskId: string, labelId: string) => Promise<boolean>;
@@ -17,20 +20,16 @@ export const createLabelsService = (
 ): LabelsService => {
   return {
     getLabels: async (filters) => {
-      const data = await labelsRepository.getLabels(filters);
-      return data;
+      return await labelsRepository.getLabels(filters);
     },
     getLabelById: async (id) => {
-      const data = await labelsRepository.getLabelById(id);
-      return data;
+      return await labelsRepository.getLabelById(id);
     },
-    createLabel: async (data) => {
-      const label = await labelsRepository.createLabel(data);
-      return label;
+    createLabel: async (newLabel) => {
+      return await labelsRepository.createLabel(newLabel);
     },
-    updateLabel: async (id, data) => {
-      const label = await labelsRepository.updateLabel(id, data);
-      return label;
+    updateLabel: async (id, labelUpdate) => {
+      return await labelsRepository.updateLabel(id, labelUpdate);
     },
     deleteLabel: async (id) => {
       return await labelsRepository.deleteLabel(id);

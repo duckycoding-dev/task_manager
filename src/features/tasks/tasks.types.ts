@@ -1,12 +1,5 @@
 import { z } from 'zod';
-import {
-  statusOptions,
-  priorityOptions,
-  type InsertTask,
-  type Task,
-  type UpdateTask,
-  recurringOptions,
-} from './tasks.db';
+import { statusOptions, priorityOptions, recurringOptions } from './tasks.db';
 
 // 📌 Query Params Schemas
 export const getTasksQuerySchema = z.object({
@@ -37,14 +30,3 @@ export type GetProjectTasksParams = z.infer<typeof getProjectTasksParamsSchema>;
 export type TaskStatusOption = z.infer<typeof taskStatusSchema>;
 export type TaskPriorityOption = z.infer<typeof taskPrioritySchema>;
 export type TaskRecurringOption = z.infer<typeof taskRecurringSchema>;
-
-export type GetTasksResponse = Task[];
-export type GetTaskResponse = Task;
-export type CreateTaskRequest = InsertTask;
-export type CreateTaskResponse = Task;
-export type UpdateTaskRequest = UpdateTask;
-export type UpdateTaskResponse = Task;
-export type DeleteTaskResponse = { success: boolean };
-export type MarkTaskDoneResponse = Task;
-export type GetProjectTasksResponse = Task[];
-export type GetOverdueTasksResponse = Task[];

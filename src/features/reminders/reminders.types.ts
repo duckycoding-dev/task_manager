@@ -1,11 +1,5 @@
 import { z } from 'zod';
 import { selectReminderSchema } from './reminders.db';
-import {
-  type InsertReminder,
-  type Reminder,
-  type UpdateReminder,
-} from './reminders.db';
-
 // 📌 Query Params Schemas
 export const getRemindersQuerySchema = selectReminderSchema
   .omit({
@@ -36,14 +30,3 @@ export type ProjectIdParam = z.infer<typeof projectIdParamSchema>;
 export type GetProjectRemindersParams = z.infer<
   typeof getProjectRemindersParamsSchema
 >;
-
-export type GetRemindersResponse = Reminder[];
-export type GetReminderResponse = Reminder;
-export type CreateReminderRequest = InsertReminder;
-export type CreateReminderResponse = Reminder;
-export type UpdateReminderRequest = UpdateReminder;
-export type UpdateReminderResponse = Reminder;
-export type DeleteReminderResponse = { success: boolean };
-export type MarkReminderDoneResponse = Reminder;
-export type GetProjectRemindersResponse = Reminder[];
-export type GetOverdueRemindersResponse = Reminder[];

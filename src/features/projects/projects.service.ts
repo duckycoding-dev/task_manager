@@ -1,24 +1,45 @@
-import { AppError } from '../../utils/errors/http-errors';
 import type { ProjectsRepository } from './projects.repository';
-import type { Projects } from './projects.db';
+import type { InsertProject, Project, UpdateProject } from './projects.db';
+import type { Task } from '../tasks/tasks.db';
 
 export type ProjectsService = {
-  get: (id: string) => Promise<Projects>;
-  // ... other methods
+  getProjects: () => Promise<Project[]>;
+  getProjectById: (id: string) => Promise<Project | undefined>;
+  createProject: (newProject: InsertProject) => Promise<Project>;
+  updateProject: (
+    id: string,
+    project: UpdateProject,
+  ) => Promise<Project | undefined>;
+  deleteProject: (id: string) => Promise<boolean>;
+  getProjectTasks: (projectId: string) => Promise<Task[]>;
 };
 
 export const createProjectsService = (
   projectsRepository: ProjectsRepository,
 ): ProjectsService => {
   return {
-    get: async (id) => {
-      const data = await projectsRepository.get(id);
-      if (!data) {
-        throw new AppError('NOT_FOUND', {
-          message: 'not found',
-        });
-      }
-      return data;
+    getProjects: async () => {
+      return await projectsRepository.getProjects();
+    },
+
+    getProjectById: async (id) => {
+      return await projectsRepository.getProjectById(id);
+    },
+
+    createProject: async (project) => {
+      return await projectsRepository.createProject(project);
+    },
+
+    updateProject: async (id, project) => {
+      return await projectsRepository.updateProject(id, project);
+    },
+
+    deleteProject: async (id) => {
+      return await projectsRepository.deleteProject(id);
+    },
+
+    getProjectTasks: async (projectId) => {
+      return await projectsRepository.getProjectTasks(projectId);
     },
   };
 };

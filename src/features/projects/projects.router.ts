@@ -13,6 +13,11 @@ const projectsController = createProjectsController(projectsService);
 // Create a typed router
 const projectsRouter = createRouter()
   .basePath('/projects')
-  .openapi(projectsRoutes.get, projectsController.get);
+  .openapi(projectsRoutes.getProjects, projectsController.getProjects)
+  .openapi(projectsRoutes.getProjectById, projectsController.getProjectById)
+  .openapi(projectsRoutes.createProject, projectsController.createProject)
+  .openapi(projectsRoutes.updateProject, projectsController.updateProject)
+  .openapi(projectsRoutes.deleteProject, projectsController.deleteProject)
+  .openapi(projectsRoutes.getProjectTasks, projectsController.getProjectTasks);
 
 export default projectsRouter;

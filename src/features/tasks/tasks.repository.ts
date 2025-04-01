@@ -21,7 +21,7 @@ export type TasksRepository = {
     filters: Omit<GetTasksQuery, 'dueDate'> & { dueDate?: Date },
   ) => Promise<Task[]>;
   getTaskById: (id: string) => Promise<Task | undefined>;
-  createTask: (task: InsertTask) => Promise<Task>;
+  createTask: (newTask: InsertTask) => Promise<Task>;
   updateTask: (id: string, task: UpdateTask) => Promise<Task | undefined>;
   deleteTask: (id: string) => Promise<boolean>;
   updateTaskPriority: (
@@ -93,8 +93,11 @@ export const createTasksRepository = (
         parsed.data,
       );
     },
-    createTask: async (task) => {
-      const createdTask = await db.insert(tasksModel).values(task).returning();
+    createTask: async (newTask) => {
+      const createdTask = await db
+        .insert(tasksModel)
+        .values(newTask)
+        .returning();
       const parsed = selectTaskSchema.safeParse(createdTask[0]);
       if (parsed.success) {
         return parsed.data;
