@@ -15,7 +15,7 @@ export function createRouter() {
     strict: false, // treat trailing slashes as the same route as no trailing slashes
     defaultHook: (result) => {
       if (!result.success) {
-        throw new AppError('VALIDATION', {
+        throw new AppError('BAD_REQUEST', {
           cause: result.target,
           message: formatZodError(result.error),
         });

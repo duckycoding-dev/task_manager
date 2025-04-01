@@ -23,7 +23,7 @@ const getLabels = createRoute({
   responses: {
     [statusCodeMap['OK'].status]: createSuccessJsonResponse(
       z.array(selectLabelSchema),
-      'Labels retrieved',
+      'Labels fetched',
     ),
     [statusCodeMap['NOT_FOUND'].status]: createErrorResponse('Label not found'),
     [statusCodeMap['INTERNAL_SERVER_ERROR'].status]: createErrorResponse(

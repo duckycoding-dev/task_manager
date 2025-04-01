@@ -35,7 +35,7 @@ export const createCollaboratorsRepository = (
         return parsed.data;
       }
       console.log(parsed.error);
-      throw new AppError('VALIDATION', {
+      throw new AppError('BAD_REQUEST', {
         message: formatZodError(parsed.error),
         cause: parsed.data,
       });

@@ -13,6 +13,14 @@ const remindersController = createRemindersController(remindersService);
 // Create a typed router
 const remindersRouter = createRouter()
   .basePath('/reminders')
-  .openapi(remindersRoutes.get, remindersController.get);
+  .openapi(remindersRoutes.getReminders, remindersController.getReminders)
+  .openapi(remindersRoutes.getReminderById, remindersController.getReminderById)
+  .openapi(
+    remindersRoutes.getRemindersByTaskId,
+    remindersController.getRemindersByTaskId,
+  )
+  .openapi(remindersRoutes.createReminder, remindersController.createReminder)
+  .openapi(remindersRoutes.updateReminder, remindersController.updateReminder)
+  .openapi(remindersRoutes.deleteReminder, remindersController.deleteReminder);
 
 export default remindersRouter;

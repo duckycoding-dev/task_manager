@@ -37,7 +37,7 @@ type AppErrorOptions = {
  * @example
  * ```ts
  * throw new AppError('NOT_FOUND');
- * throw new AppError('VALIDATION', { message: 'Invalid email' });
+ * throw new AppError('BAD_REQUEST', { message: 'Invalid email' });
  * throw new AppError('INTERNAL_SERVER_ERROR', { hideToClient: true });
  * ```
  * @example

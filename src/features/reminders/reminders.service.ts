@@ -1,24 +1,36 @@
-import { AppError } from '../../utils/errors/http-errors';
 import type { RemindersRepository } from './reminders.repository';
-import type { Reminders } from './reminders.db';
+import type { InsertReminder, Reminder, UpdateReminder } from './reminders.db';
 
 export type RemindersService = {
-  get: (id: string) => Promise<Reminders>;
-  // ... other methods
+  getReminders: () => Promise<Reminder[]>;
+  getReminderById: (id: string) => Promise<Reminder | undefined>;
+  getRemindersByTaskId: (taskId: string) => Promise<Reminder[]>;
+  createReminder: (newReminder: InsertReminder) => Promise<Reminder>;
+  updateReminder: (id: string, reminder: UpdateReminder) => Promise<Reminder>;
+  deleteReminder: (id: string) => Promise<boolean>;
 };
 
 export const createRemindersService = (
   remindersRepository: RemindersRepository,
 ): RemindersService => {
   return {
-    get: async (id) => {
-      const data = await remindersRepository.get(id);
-      if (!data) {
-        throw new AppError('NOT_FOUND', {
-          message: 'not found',
-        });
-      }
-      return data;
+    getReminderById: async (id) => {
+      return await remindersRepository.getReminderById(id);
+    },
+    getReminders: async () => {
+      return await remindersRepository.getReminders();
+    },
+    getRemindersByTaskId: async (taskId) => {
+      return await remindersRepository.getRemindersByTaskId(taskId);
+    },
+    createReminder: async (newReminder) => {
+      return await remindersRepository.createReminder(newReminder);
+    },
+    updateReminder: async (id, reminder) => {
+      return await remindersRepository.updateReminder(id, reminder);
+    },
+    deleteReminder: async (id) => {
+      return await remindersRepository.deleteReminder(id);
     },
   };
 };

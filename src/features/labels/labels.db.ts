@@ -41,10 +41,12 @@ export const selectLabelSchema = createSelectSchema(labels);
 // 📌 Insert Schema (for creating labels
 export const insertLabelSchema = createInsertSchema(labels).omit({
   id: true, // ID is auto-generated
+  userId: true, // User ID is set from the session
 });
 // 📌 Update Schema (for partial updates
 export const updateLabelSchema = createUpdateSchema(labels).omit({
   id: true,
+  userId: true, // User ID is set from the session
 });
 // 📌 Select Schema (for response data
 export const taskLabelsSchema = createSelectSchema(taskLabels);

@@ -43,6 +43,7 @@ export const selectTaskSchema = createSelectSchema(tasks);
 // 📌 Insert Schema (for creating tasks)
 export const insertTaskSchema = createInsertSchema(tasks).omit({
   id: true, // ID is auto-generated
+  userId: true, // User ID is set from the session
   createdAt: true,
   updatedAt: true,
 });
@@ -50,7 +51,7 @@ export const insertTaskSchema = createInsertSchema(tasks).omit({
 // 📌 Update Schema (for partial updates)
 export const updateTaskSchema = createUpdateSchema(tasks).omit({
   id: true,
-  userId: true,
+  userId: true, // User ID is set from the session
   createdAt: true,
 });
 
