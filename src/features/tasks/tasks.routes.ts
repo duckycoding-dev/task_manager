@@ -18,6 +18,7 @@ import {
 } from './tasks.types';
 import { statusCodeMap } from 'utils/status-codes/';
 import { createRequiredJsonBody } from 'utils/request/body/';
+import { checkAuthMiddleware } from 'utils/auth/';
 
 const getTasks = createRoute({
   path: '/',
@@ -36,6 +37,7 @@ const getTasks = createRoute({
     ),
   },
   description: 'Get all tasks for the authenticated user',
+  middleware: checkAuthMiddleware,
 });
 
 const getTaskById = createRoute({
@@ -55,6 +57,7 @@ const getTaskById = createRoute({
     ),
   },
   description: 'Get a specific task by ID',
+  middleware: checkAuthMiddleware,
 });
 
 const createTask = createRoute({
@@ -73,6 +76,7 @@ const createTask = createRoute({
     ),
   },
   description: 'Create a new task (with optional project)',
+  middleware: checkAuthMiddleware,
 });
 
 const updateTask = createRoute({
@@ -96,6 +100,7 @@ const updateTask = createRoute({
   },
   description:
     'Update task details (title, description, status, priority, dueDate, etc.)',
+  middleware: checkAuthMiddleware,
 });
 
 const deleteTask = createRoute({
@@ -117,6 +122,7 @@ const deleteTask = createRoute({
     ),
   },
   description: 'Delete a task',
+  middleware: checkAuthMiddleware,
 });
 
 const updateTaskStatus = createRoute({
@@ -140,6 +146,7 @@ const updateTaskStatus = createRoute({
     ),
   },
   description: 'Change task status (e.g., todo → in_progress)',
+  middleware: checkAuthMiddleware,
 });
 
 const updateTaskPriority = createRoute({
@@ -165,6 +172,7 @@ const updateTaskPriority = createRoute({
     ),
   },
   description: 'Change task priority',
+  middleware: checkAuthMiddleware,
 });
 
 const updateTaskRecurringInterval = createRoute({
@@ -191,6 +199,7 @@ const updateTaskRecurringInterval = createRoute({
     ),
   },
   description: 'Set or update recurring interval',
+  middleware: checkAuthMiddleware,
 });
 
 const updateTaskIsRecurring = createRoute({
@@ -217,6 +226,7 @@ const updateTaskIsRecurring = createRoute({
     ),
   },
   description: 'Set or update recurring interval',
+  middleware: checkAuthMiddleware,
 });
 
 export const tasksRoutes = {

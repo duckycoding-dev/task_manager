@@ -13,6 +13,7 @@ import {
 } from 'utils/response/';
 import { createRequiredJsonBody } from 'utils/request/body/';
 import { getLabelsQuerySchema, labelIdParamSchema } from './labels.types';
+import { checkAuthMiddleware } from 'utils/auth/';
 
 const getLabels = createRoute({
   path: '/',
@@ -30,6 +31,7 @@ const getLabels = createRoute({
       statusCodeMap['INTERNAL_SERVER_ERROR'].message,
     ),
   },
+  middleware: checkAuthMiddleware,
 });
 
 const getLabelById = createRoute({
@@ -48,6 +50,7 @@ const getLabelById = createRoute({
       statusCodeMap['INTERNAL_SERVER_ERROR'].message,
     ),
   },
+  middleware: checkAuthMiddleware,
 });
 
 const createLabel = createRoute({
@@ -67,6 +70,7 @@ const createLabel = createRoute({
       statusCodeMap['INTERNAL_SERVER_ERROR'].message,
     ),
   },
+  middleware: checkAuthMiddleware,
 });
 
 const updateLabel = createRoute({
@@ -88,6 +92,7 @@ const updateLabel = createRoute({
       statusCodeMap['INTERNAL_SERVER_ERROR'].message,
     ),
   },
+  middleware: checkAuthMiddleware,
 });
 
 const deleteLabel = createRoute({
@@ -106,6 +111,7 @@ const deleteLabel = createRoute({
       statusCodeMap['INTERNAL_SERVER_ERROR'].message,
     ),
   },
+  middleware: checkAuthMiddleware,
 });
 
 const assignLabelToTask = createRoute({
@@ -126,6 +132,7 @@ const assignLabelToTask = createRoute({
       statusCodeMap['INTERNAL_SERVER_ERROR'].message,
     ),
   },
+  middleware: checkAuthMiddleware,
 });
 
 const removeLabelFromTask = createRoute({
@@ -146,6 +153,7 @@ const removeLabelFromTask = createRoute({
       statusCodeMap['INTERNAL_SERVER_ERROR'].message,
     ),
   },
+  middleware: checkAuthMiddleware,
 });
 
 export const labelsRoutes = {

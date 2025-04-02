@@ -12,6 +12,7 @@ import {
 import { statusCodeMap } from 'utils/status-codes/';
 import { taskIdParamSchema } from '../tasks/tasks.types';
 import { createRequiredJsonBody } from 'utils/request/body/';
+import { checkAuthMiddleware } from 'utils/auth/';
 
 const getReminders = createRoute({
   path: '/',
@@ -30,6 +31,7 @@ const getReminders = createRoute({
       statusCodeMap['INTERNAL_SERVER_ERROR'].message,
     ),
   },
+  middleware: checkAuthMiddleware,
 });
 
 const getReminderById = createRoute({
@@ -49,6 +51,7 @@ const getReminderById = createRoute({
       statusCodeMap['INTERNAL_SERVER_ERROR'].message,
     ),
   },
+  middleware: checkAuthMiddleware,
 });
 
 const getRemindersByTaskId = createRoute({
@@ -68,6 +71,7 @@ const getRemindersByTaskId = createRoute({
       statusCodeMap['INTERNAL_SERVER_ERROR'].message,
     ),
   },
+  middleware: checkAuthMiddleware,
 });
 
 const createReminder = createRoute({
@@ -91,6 +95,7 @@ const createReminder = createRoute({
       statusCodeMap['INTERNAL_SERVER_ERROR'].message,
     ),
   },
+  middleware: checkAuthMiddleware,
 });
 
 const deleteReminder = createRoute({
@@ -114,6 +119,7 @@ const deleteReminder = createRoute({
     ),
   },
   description: 'Delete a reminder for a specific task',
+  middleware: checkAuthMiddleware,
 });
 
 const updateReminder = createRoute({
@@ -143,6 +149,7 @@ const updateReminder = createRoute({
     ),
   },
   description: 'Update a reminder for a specific task',
+  middleware: checkAuthMiddleware,
 });
 
 export const remindersRoutes = {

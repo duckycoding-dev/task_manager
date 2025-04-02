@@ -25,6 +25,9 @@ export const createTasksController = (
   return {
     getTasks: async (c) => {
       const filters = c.req.valid('query');
+      const session = c.get('session');
+      const user = c.get('user');
+      console.log(session, user);
       const dueDate = filters.dueDate ? new Date(filters.dueDate) : undefined;
       const tasksFound = await tasksService.getTasks({ ...filters, dueDate });
       if (tasksFound.length === 0) {

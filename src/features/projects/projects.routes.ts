@@ -13,6 +13,7 @@ import { statusCodeMap } from 'utils/status-codes/';
 import { createRequiredJsonBody } from 'utils/request/body/';
 import { projectIdParamSchema } from './projects.types';
 import { selectTaskSchema } from '../tasks/tasks.db';
+import { checkAuthMiddleware } from 'utils/auth/';
 
 const getProjects = createRoute({
   path: '/',
@@ -29,6 +30,7 @@ const getProjects = createRoute({
     ),
   },
   description: 'Get all projects for the authenticated user',
+  middleware: checkAuthMiddleware,
 });
 
 const getProjectById = createRoute({
@@ -49,6 +51,7 @@ const getProjectById = createRoute({
     ),
   },
   description: 'Get a specific project by ID',
+  middleware: checkAuthMiddleware,
 });
 
 const createProject = createRoute({
@@ -67,6 +70,7 @@ const createProject = createRoute({
     ),
   },
   description: 'Create a new project',
+  middleware: checkAuthMiddleware,
 });
 
 const updateProject = createRoute({
@@ -89,6 +93,7 @@ const updateProject = createRoute({
     ),
   },
   description: 'Update project details (name, description)',
+  middleware: checkAuthMiddleware,
 });
 
 const deleteProject = createRoute({
@@ -110,6 +115,7 @@ const deleteProject = createRoute({
     ),
   },
   description: 'Delete a project (set projectId to NULL in associated tasks)',
+  middleware: checkAuthMiddleware,
 });
 
 const getProjectTasks = createRoute({
@@ -131,6 +137,7 @@ const getProjectTasks = createRoute({
     ),
   },
   description: 'Get all tasks for a specific project',
+  middleware: checkAuthMiddleware,
 });
 
 export const projectsRoutes = {
