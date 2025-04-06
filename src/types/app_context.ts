@@ -1,4 +1,9 @@
-import type { OpenAPIHono, RouteConfig, RouteHandler } from '@hono/zod-openapi';
+import type {
+  OpenAPIHono,
+  RouteConfig,
+  RouteConfigToEnv,
+  RouteHandler,
+} from '@hono/zod-openapi';
 import type { Env } from 'hono';
 import type { auth } from 'utils/auth/';
 
@@ -15,7 +20,8 @@ export type AppOpenAPI = OpenAPIHono<AppContext>;
 
 export type AppRouteHandler<R extends RouteConfig> = RouteHandler<
   R,
-  AppContext
+  // RouteConfigToEnv<R> lets us use the context of the route considering the middlewares
+  RouteConfigToEnv<R> extends AppContext ? RouteConfigToEnv<R> : AppContext
 >;
 
 export type AppRoutes = Record<string, RouteConfig>;

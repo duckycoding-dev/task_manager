@@ -5,6 +5,9 @@ import { openAPI } from 'better-auth/plugins';
 import * as authSchemas from 'features/auth/auth.db/';
 import type { MiddlewareHandler } from 'hono';
 import { AppError } from './errors/http-errors';
+import { createMiddleware } from 'hono/factory';
+import type { AppContext } from 'types/app_context/';
+import type { MarkPropertiesRequired } from 'types/utility/';
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -37,12 +40,20 @@ export const addAuthMiddleware: MiddlewareHandler = async (c, next) => {
   return next();
 };
 
-export const checkAuthMiddleware: MiddlewareHandler = async (c, next) => {
+export const checkAuthMiddleware = createMiddleware<{
+  Variables: MarkPropertiesRequired<
+    AppContext['Variables'],
+    'user' | 'session'
+  >;
+  Bindings: AppContext['Bindings'];
+}>(async (c, next) => {
   const session = await auth.api.getSession({ headers: c.req.raw.headers });
   if (!session) {
     throw new AppError('UNAUTHORIZED', {
       message: 'Authentication required',
     });
   }
-  return next();
-};
+  c.set('user', session.user);
+  c.set('session', session.session);
+  await next();
+});

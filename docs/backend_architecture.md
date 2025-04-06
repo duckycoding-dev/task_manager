@@ -103,7 +103,7 @@ export type NameOfTheFeatureController = {
 };
 ```
 
-This ensures that we can use HonoJS's types inferred correctly, for example when parsing the request data `const { id } = c.req.valid('param');`
+This ensures that we can use HonoJS's types inferred correctly, for example when parsing the request data `const { id } = c.req.valid('param');` and for using the correct AppContext (which could be differ from the global one depending on the middlewares used in the route).
 
 ### .service.ts
 
@@ -153,7 +153,49 @@ This ensures separation of concerns:
 
 This structure scales well, keeps everything modular, and prevents circular dependencies.
 
-### Middlewares - TODO
+### Middlewares
+
+#### How to create a middleware
+
+In order to keep type safety working throughout the app, we need to defined middlewares using Hono's `createMiddleware` generic function: this links everything up automatically when using default's Hono routes definition, but we are using Hono Zod OpenAPI.\
+When doing so, we must provide the new Context that must extend (or be) the `AppContext`: when extending it we can, for example, make some of the already defiend properties required; here is an example:
+
+```ts
+const myMiddleware = createMiddleware<{
+  Variables: MarkPropertiesRequired<
+    AppContext['Variables'],
+    'user' | 'session'
+  >;
+  Bindings: AppContext['Bindings'];
+}>;
+```
+
+I've created the `MarkPropertiesRequired` utilty to simplify the AppContext override when it is necessary to do so; if a new property is needed, let's say in the Variables, we can just extend the Variables object normally `...<{Variables: AppContext['Variables'] & {...}, Bindings: AppContext['Bindings']>`
+
+Since we are using Hono Zod OpenAPI, we must provide the created middleware to the openapi route definition (in the `*.routes.ts` files) like so:
+
+```ts
+const myRoute = createRoute({
+  path: '...',
+  method: '...',
+  request: ...,
+  middleware: myMiddleware,
+  responses: ...,
+  description: ...,
+});
+```
+
+If we need to provide multiple middlewares we must do so by declaring an array and mark it `as const`: this is a requirement [documented in the hono zod openapi repository](https://github.com/honojs/middleware/issues/715); e.g.:
+
+```ts
+const myRoute = createRoute({
+  ...
+  middleware: [myMiddleware, mySecondMiddleware] as const
+  ...
+});
+```
+
+Type safety is ensured for our controllers functions defined in separate controller files, again, thanks to the custom made `AppRouteHandler` type defined in `src/types/app_context.ts`, which we use to infer the updated context.
 
 ### Error handler
 
