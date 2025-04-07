@@ -8,9 +8,14 @@ import eslintConfigPrettier from 'eslint-config-prettier';
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
-  { files: ['./src/**/*.{js,mjs,cjs,ts}'] },
+  { files: ['apps/**/*.{js,mjs,cjs,ts}'] },
   {
-    ignores: ['./node_modules/**', './dist/**', './.vscode/templates/**/*'],
+    ignores: [
+      './node_modules/**',
+      './dist/**',
+      'apps/**/dist/**',
+      './.vscode/templates/**/*',
+    ],
   },
   { languageOptions: { globals: globals.node } },
   pluginJs.configs.recommended,

@@ -1,4 +1,5 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
     /* Projects */
     "incremental": true /* Save .tsbuildinfo files to allow for incremental compilation of projects. */,
@@ -42,7 +43,15 @@
 
     /* Completeness */
     "skipLibCheck": true /* Skip type checking all .d.ts files. */,
-    "outDir": "." // prevents this tsconfig from compiling any files
+    "outDir": ".", // prevents this tsconfig from compiling any files,
+    "rootDir": "./src",
+    "lib": ["ESNext"],
+    "jsx": "react-jsx",
+    "jsxImportSource": "hono/jsx",
+    "paths": {
+      "*/": ["./src/*"]
+    }
   },
-  "exclude": ["./node_modules", "*.config.js", "./dist"]
+  "include": ["./src/**/*.ts"],
+  "exclude": ["./node_modules", "*.config.js", "./dist", "../../vscode"]
 }
