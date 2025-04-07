@@ -3,6 +3,11 @@ import { projectsRoutes } from './projects.routes';
 import type { AppRouteHandler } from '../../types/app_context';
 import { EndpointError } from 'utils/errors/http-errors/';
 
+// TODO: implement additional features such as:
+// - inviting adding other users to a project
+// - adding labels to a project
+// - adding tasks to a project
+
 export type ProjectsController = {
   getProjects: AppRouteHandler<typeof projectsRoutes.getProjects>;
   getProjectById: AppRouteHandler<typeof projectsRoutes.getProjectById>;

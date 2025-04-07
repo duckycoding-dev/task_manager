@@ -6,6 +6,7 @@ import {
   projects,
   type InsertProject,
   type UpdateProject,
+  usersProjects,
 } from './projects.db';
 import { formatZodError } from 'utils/mapping/';
 import type { Task } from '../tasks/tasks.db';
@@ -78,6 +79,9 @@ export const createProjectsRepository = (
         .returning();
       const parsed = selectProjectSchema.safeParse(createdProject[0]);
       if (parsed.success) {
+        await db
+          .insert(usersProjects)
+          .values({ userId, projectId: parsed.data.id });
         return parsed.data;
       }
       throw new RepositoryValidationError(
@@ -115,6 +119,10 @@ export const createProjectsRepository = (
       if (deleted.length === 0) {
         return false;
       }
+      await db
+        .delete(usersProjects)
+        .where(and(eq(projects.userId, userId), eq(projects.id, projectId)))
+        .returning();
       return true;
     },
 

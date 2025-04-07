@@ -23,7 +23,7 @@ export const usersProjects = pgTable('users_projects', {
   userId: text('user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }), // From BetterAuth
-  projectId: text('project_id')
+  projectId: uuid('project_id')
     .notNull()
     .references(() => projects.id, { onDelete: 'cascade' }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
