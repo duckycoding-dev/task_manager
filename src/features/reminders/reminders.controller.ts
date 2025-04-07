@@ -20,7 +20,8 @@ export const createRemindersController = (
   return {
     getReminderById: async (c) => {
       const { id } = c.req.valid('param');
-      const reminderFound = await remindersService.getReminderById(id);
+      const { id: userId } = c.get('user');
+      const reminderFound = await remindersService.getReminderById(userId, id);
       if (!reminderFound) {
         throw new EndpointError<typeof remindersRoutes.getReminderById>(
           'NOT_FOUND',
@@ -37,7 +38,8 @@ export const createRemindersController = (
       );
     },
     getReminders: async (c) => {
-      const reminders = await remindersService.getReminders();
+      const { id: userId } = c.get('user');
+      const reminders = await remindersService.getReminders(userId);
       return c.json(
         {
           success: true,
@@ -49,7 +51,11 @@ export const createRemindersController = (
     },
     getRemindersByTaskId: async (c) => {
       const { taskId } = c.req.valid('param');
-      const reminders = await remindersService.getRemindersByTaskId(taskId);
+      const { id: userId } = c.get('user');
+      const reminders = await remindersService.getRemindersByTaskId(
+        userId,
+        taskId,
+      );
       if (reminders.length === 0) {
         throw new EndpointError<typeof remindersRoutes.getRemindersByTaskId>(
           'NOT_FOUND',
@@ -68,7 +74,11 @@ export const createRemindersController = (
 
     createReminder: async (c) => {
       const reminder = c.req.valid('json');
-      const reminderCreated = await remindersService.createReminder(reminder);
+      const { id: userId } = c.get('user');
+      const reminderCreated = await remindersService.createReminder(
+        userId,
+        reminder,
+      );
       return c.json(
         {
           success: true,
@@ -82,7 +92,9 @@ export const createRemindersController = (
     updateReminder: async (c) => {
       const { id } = c.req.valid('param');
       const reminderUpdate = c.req.valid('json');
+      const { id: userId } = c.get('user');
       const reminderUpdated = await remindersService.updateReminder(
+        userId,
         id,
         reminderUpdate,
       );
@@ -103,7 +115,8 @@ export const createRemindersController = (
     },
     deleteReminder: async (c) => {
       const { id } = c.req.valid('param');
-      const reminderDeleted = await remindersService.deleteReminder(id);
+      const { id: userId } = c.get('user');
+      const reminderDeleted = await remindersService.deleteReminder(userId, id);
       if (!reminderDeleted) {
         throw new EndpointError<typeof remindersRoutes.deleteReminder>(
           'NOT_FOUND',

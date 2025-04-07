@@ -25,11 +25,12 @@ export const createTasksController = (
   return {
     getTasks: async (c) => {
       const filters = c.req.valid('query');
-      const session = c.get('session');
-      const user = c.get('user');
-      console.log(session, user);
+      const { id: userId } = c.get('user');
       const dueDate = filters.dueDate ? new Date(filters.dueDate) : undefined;
-      const tasksFound = await tasksService.getTasks({ ...filters, dueDate });
+      const tasksFound = await tasksService.getTasks(userId, {
+        ...filters,
+        dueDate,
+      });
       if (tasksFound.length === 0) {
         throw new EndpointError<typeof tasksRoutes.getTasks>('NOT_FOUND', {
           message: 'No tasks found',
@@ -46,7 +47,8 @@ export const createTasksController = (
     },
     getTaskById: async (c) => {
       const { taskId } = c.req.valid('param');
-      const taskFound = await tasksService.getTasksById(taskId);
+      const { id: userId } = c.get('user');
+      const taskFound = await tasksService.getTasksById(userId, taskId);
 
       if (!taskFound) {
         throw new EndpointError<typeof tasksRoutes.getTaskById>('NOT_FOUND', {
@@ -61,7 +63,8 @@ export const createTasksController = (
 
     createTask: async (c) => {
       const task = c.req.valid('json');
-      const createdTask = await tasksService.createTask(task);
+      const { id: userId } = c.get('user');
+      const createdTask = await tasksService.createTask(userId, task);
       return c.json(
         { success: true, data: createdTask, message: 'Task created' },
         201,
@@ -71,7 +74,8 @@ export const createTasksController = (
     updateTask: async (c) => {
       const { taskId } = c.req.valid('param');
       const task = c.req.valid('json');
-      const updatedTask = await tasksService.updateTask(taskId, task);
+      const { id: userId } = c.get('user');
+      const updatedTask = await tasksService.updateTask(userId, taskId, task);
       if (!updatedTask) {
         throw new EndpointError<typeof tasksRoutes.updateTask>('NOT_FOUND', {
           message: 'Task not found',
@@ -85,7 +89,8 @@ export const createTasksController = (
 
     deleteTask: async (c) => {
       const { taskId } = c.req.valid('param');
-      const deleted = await tasksService.deleteTask(taskId);
+      const { id: userId } = c.get('user');
+      const deleted = await tasksService.deleteTask(userId, taskId);
       if (!deleted) {
         throw new EndpointError<typeof tasksRoutes.deleteTask>('NOT_FOUND', {
           message: 'Task not found',
@@ -97,7 +102,9 @@ export const createTasksController = (
     updateTaskPriority: async (c) => {
       const { taskId } = c.req.valid('param');
       const priority = c.req.valid('json');
+      const { id: userId } = c.get('user');
       const updatedTask = await tasksService.updateTaskPriority(
+        userId,
         taskId,
         priority,
       );
@@ -118,7 +125,9 @@ export const createTasksController = (
     updateTaskRecurringInterval: async (c) => {
       const { taskId } = c.req.valid('param');
       const recurringInterval = c.req.valid('json');
+      const { id: userId } = c.get('user');
       const updatedTask = await tasksService.updateTaskRecurringInterval(
+        userId,
         taskId,
         recurringInterval,
       );
@@ -139,7 +148,9 @@ export const createTasksController = (
     updateTaskIsRecurring: async (c) => {
       const { taskId } = c.req.valid('param');
       const isRecurring = c.req.valid('json');
+      const { id: userId } = c.get('user');
       const updatedTask = await tasksService.updateTaskIsRecurring(
+        userId,
         taskId,
         isRecurring,
       );
@@ -160,7 +171,12 @@ export const createTasksController = (
     updateTaskStatus: async (c) => {
       const { taskId } = c.req.valid('param');
       const status = c.req.valid('json');
-      const updatedTask = await tasksService.updateTaskStatus(taskId, status);
+      const { id: userId } = c.get('user');
+      const updatedTask = await tasksService.updateTaskStatus(
+        userId,
+        taskId,
+        status,
+      );
       if (!updatedTask) {
         throw new EndpointError<typeof tasksRoutes.updateTaskStatus>(
           'NOT_FOUND',

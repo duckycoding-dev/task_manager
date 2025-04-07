@@ -1,5 +1,5 @@
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import {
   type Project,
   selectProjectSchema,
@@ -13,23 +13,33 @@ import { RepositoryValidationError } from 'utils/errors/domain-errors/';
 import { selectTaskSchema, tasks } from '../tasks/tasks.db';
 
 export type ProjectsRepository = {
-  getProjects: () => Promise<Project[]>;
-  getProjectById: (id: string) => Promise<Project | undefined>;
-  createProject: (newProject: InsertProject) => Promise<Project>;
+  getProjects: (userId: string) => Promise<Project[]>;
+  getProjectById: (
+    userId: string,
+    projectId: string,
+  ) => Promise<Project | undefined>;
+  createProject: (
+    userId: string,
+    newProject: InsertProject,
+  ) => Promise<Project>;
   updateProject: (
-    id: string,
+    userId: string,
+    projectId: string,
     project: UpdateProject,
   ) => Promise<Project | undefined>;
-  deleteProject: (id: string) => Promise<boolean>;
-  getProjectTasks: (projectId: string) => Promise<Task[]>;
+  deleteProject: (userId: string, projectId: string) => Promise<boolean>;
+  getProjectTasks: (userId: string, projectId: string) => Promise<Task[]>;
 };
 
 export const createProjectsRepository = (
   db: PostgresJsDatabase,
 ): ProjectsRepository => {
   return {
-    getProjects: async () => {
-      const projectsList = await db.select().from(projects);
+    getProjects: async (userId) => {
+      const projectsList = await db
+        .select()
+        .from(projects)
+        .where(eq(projects.userId, userId));
 
       const parsed = selectProjectSchema.array().safeParse(projectsList);
       if (parsed.success) {
@@ -41,11 +51,11 @@ export const createProjectsRepository = (
       );
     },
 
-    getProjectById: async (id) => {
+    getProjectById: async (userId, projectId) => {
       const project = await db
         .select()
         .from(projects)
-        .where(eq(projects.id, id))
+        .where(and(eq(projects.userId, userId), eq(projects.id, projectId)))
         .limit(1);
 
       if (project.length === 0) {
@@ -61,10 +71,10 @@ export const createProjectsRepository = (
       );
     },
 
-    createProject: async (newProject) => {
+    createProject: async (userId, newProject) => {
       const createdProject = await db
         .insert(projects)
-        .values(newProject)
+        .values({ ...newProject, userId })
         .returning();
       const parsed = selectProjectSchema.safeParse(createdProject[0]);
       if (parsed.success) {
@@ -76,11 +86,11 @@ export const createProjectsRepository = (
       );
     },
 
-    updateProject: async (id, project) => {
+    updateProject: async (userId, projectId, project) => {
       const updatedProject = await db
         .update(projects)
         .set(project)
-        .where(eq(projects.id, id))
+        .where(and(eq(projects.userId, userId), eq(projects.id, projectId)))
         .returning();
 
       if (updatedProject.length === 0) {
@@ -96,10 +106,10 @@ export const createProjectsRepository = (
       );
     },
 
-    deleteProject: async (id) => {
+    deleteProject: async (userId, projectId) => {
       const deleted = await db
         .delete(projects)
-        .where(eq(projects.id, id))
+        .where(and(eq(projects.userId, userId), eq(projects.id, projectId)))
         .returning();
 
       if (deleted.length === 0) {
@@ -108,11 +118,13 @@ export const createProjectsRepository = (
       return true;
     },
 
-    getProjectTasks: async (projectId) => {
+    getProjectTasks: async (userId, projectId) => {
       const projectTasks = await db
         .select()
         .from(tasks)
-        .where(eq(tasks.projectId, projectId));
+        .where(
+          and(eq(projects.userId, userId), eq(tasks.projectId, projectId)),
+        );
 
       const parsed = selectTaskSchema.array().safeParse(projectTasks);
       if (parsed.success) {

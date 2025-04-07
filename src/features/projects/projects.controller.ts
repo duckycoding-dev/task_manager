@@ -17,7 +17,8 @@ export const createProjectsController = (
 ): ProjectsController => {
   return {
     getProjects: async (c) => {
-      const projectsFound = await projectsService.getProjects();
+      const { id: userId } = c.get('user');
+      const projectsFound = await projectsService.getProjects(userId);
       if (projectsFound.length === 0) {
         throw new EndpointError<typeof projectsRoutes.getProjects>(
           'NOT_FOUND',
@@ -38,7 +39,11 @@ export const createProjectsController = (
 
     getProjectById: async (c) => {
       const { projectId } = c.req.valid('param');
-      const projectFound = await projectsService.getProjectById(projectId);
+      const { id: userId } = c.get('user');
+      const projectFound = await projectsService.getProjectById(
+        userId,
+        projectId,
+      );
 
       if (!projectFound) {
         throw new EndpointError<typeof projectsRoutes.getProjectById>(
@@ -56,7 +61,11 @@ export const createProjectsController = (
 
     createProject: async (c) => {
       const project = c.req.valid('json');
-      const createdProject = await projectsService.createProject(project);
+      const { id: userId } = c.get('user');
+      const createdProject = await projectsService.createProject(
+        userId,
+        project,
+      );
       return c.json(
         { success: true, data: createdProject, message: 'Project created' },
         201,
@@ -66,7 +75,9 @@ export const createProjectsController = (
     updateProject: async (c) => {
       const { projectId } = c.req.valid('param');
       const project = c.req.valid('json');
+      const { id: userId } = c.get('user');
       const updatedProject = await projectsService.updateProject(
+        userId,
         projectId,
         project,
       );
@@ -86,7 +97,8 @@ export const createProjectsController = (
 
     deleteProject: async (c) => {
       const { projectId } = c.req.valid('param');
-      const deleted = await projectsService.deleteProject(projectId);
+      const { id: userId } = c.get('user');
+      const deleted = await projectsService.deleteProject(userId, projectId);
       if (!deleted) {
         throw new EndpointError<typeof projectsRoutes.deleteProject>(
           'NOT_FOUND',
@@ -100,7 +112,11 @@ export const createProjectsController = (
 
     getProjectTasks: async (c) => {
       const { projectId } = c.req.valid('param');
-      const tasksFound = await projectsService.getProjectTasks(projectId);
+      const { id: userId } = c.get('user');
+      const tasksFound = await projectsService.getProjectTasks(
+        userId,
+        projectId,
+      );
       if (tasksFound.length === 0) {
         throw new EndpointError<typeof projectsRoutes.getProjectTasks>(
           'NOT_FOUND',

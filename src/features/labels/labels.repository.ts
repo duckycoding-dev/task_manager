@@ -13,21 +13,36 @@ import type { GetLabelsQuery } from './labels.types';
 import { RepositoryValidationError } from 'utils/errors/domain-errors/';
 
 export type LabelsRepository = {
-  getLabels: (filters: GetLabelsQuery) => Promise<Label[]>;
-  getLabelById: (id: string) => Promise<Label | undefined>;
-  createLabel: (newLabel: InsertLabel) => Promise<Label>;
-  updateLabel: (id: string, data: UpdateLabel) => Promise<Label | undefined>;
-  deleteLabel: (id: string) => Promise<boolean>;
-  assignLabelToTask: (taskId: string, labelId: string) => Promise<boolean>;
-  removeLabelFromTask: (taskId: string, labelId: string) => Promise<boolean>;
+  getLabels: (userId: string, filters: GetLabelsQuery) => Promise<Label[]>;
+  getLabelById: (userId: string, labelId: string) => Promise<Label | undefined>;
+  createLabel: (userId: string, newLabel: InsertLabel) => Promise<Label>;
+  updateLabel: (
+    userId: string,
+    labelId: string,
+    data: UpdateLabel,
+  ) => Promise<Label | undefined>;
+  deleteLabel: (userId: string, labelId: string) => Promise<boolean>;
+  assignLabelToTask: (
+    userId: string,
+    taskId: string,
+    labelId: string,
+  ) => Promise<boolean>;
+  removeLabelFromTask: (
+    userId: string,
+    taskId: string,
+    labelId: string,
+  ) => Promise<boolean>;
 };
 
 export const createLabelsRepository = (
   db: PostgresJsDatabase,
 ): LabelsRepository => {
   return {
-    getLabelById: async (id) => {
-      const res = await db.select().from(labels).where(eq(labels.id, id));
+    getLabelById: async (userId, labelId) => {
+      const res = await db
+        .select()
+        .from(labels)
+        .where(and(eq(labels.userId, userId), eq(labels.id, labelId)));
       if (res.length === 0) {
         return undefined;
       }
@@ -41,9 +56,10 @@ export const createLabelsRepository = (
         parsed.data,
       );
     },
-    getLabels: async (filters) => {
-      const { name, userId, color } = filters;
+    getLabels: async (userId, filters) => {
+      const { name, color } = filters;
       const query = db.select().from(labels);
+      query.where(eq(labels.userId, userId));
 
       if (name) {
         query.where(eq(labels.name, name));
@@ -66,8 +82,11 @@ export const createLabelsRepository = (
         parsed.data,
       );
     },
-    createLabel: async (newLabel) => {
-      const createdLabel = await db.insert(labels).values(newLabel).returning();
+    createLabel: async (userId, newLabel) => {
+      const createdLabel = await db
+        .insert(labels)
+        .values({ ...newLabel, userId })
+        .returning();
       const parsed = selectLabelSchema.safeParse(createdLabel[0]);
       if (parsed.success) {
         return parsed.data;
@@ -77,11 +96,11 @@ export const createLabelsRepository = (
         parsed.data,
       );
     },
-    updateLabel: async (id, data) => {
+    updateLabel: async (userId, labelId, data) => {
       const updatedLabel = await db
         .update(labels)
         .set(data)
-        .where(eq(labels.id, id))
+        .where(and(eq(labels.userId, userId), eq(labels.id, labelId)))
         .returning();
       if (updatedLabel.length === 0) {
         return undefined;
@@ -95,17 +114,28 @@ export const createLabelsRepository = (
         parsed.data,
       );
     },
-    deleteLabel: async (id) => {
+    deleteLabel: async (userId, labelId) => {
       const deletedLabel = await db
         .delete(labels)
-        .where(eq(labels.id, id))
+        .where(and(eq(labels.userId, userId), eq(labels.id, labelId)))
         .returning();
       if (deletedLabel.length === 0) {
         return false;
       }
       return true;
     },
-    assignLabelToTask: async (taskId, labelId) => {
+    assignLabelToTask: async (userId, taskId, labelId) => {
+      // First check if the label belongs to the user
+      const userLabel = await db
+        .select()
+        .from(labels)
+        .where(and(eq(labels.id, labelId), eq(labels.userId, userId)))
+        .limit(1);
+
+      if (userLabel.length === 0) {
+        return false; // Label doesn't belong to this user
+      }
+
       const assignedLabel = await db
         .insert(taskLabels)
         .values({ taskId, labelId })
@@ -115,7 +145,17 @@ export const createLabelsRepository = (
       }
       return true;
     },
-    removeLabelFromTask: async (taskId, labelId) => {
+    removeLabelFromTask: async (userId, taskId, labelId) => {
+      // First check if the label belongs to the user
+      const userLabel = await db
+        .select()
+        .from(labels)
+        .where(and(eq(labels.id, labelId), eq(labels.userId, userId)))
+        .limit(1);
+
+      if (userLabel.length === 0) {
+        return false; // Label doesn't belong to this user
+      }
       const removedLabel = await db
         .delete(taskLabels)
         .where(

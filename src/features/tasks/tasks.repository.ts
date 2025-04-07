@@ -1,5 +1,5 @@
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import {
   type InsertTask,
   type Task,
@@ -18,25 +18,34 @@ import { RepositoryValidationError } from 'utils/errors/domain-errors/';
 
 export type TasksRepository = {
   getTasks: (
+    userId: string,
     filters: Omit<GetTasksQuery, 'dueDate'> & { dueDate?: Date },
   ) => Promise<Task[]>;
-  getTaskById: (id: string) => Promise<Task | undefined>;
-  createTask: (newTask: InsertTask) => Promise<Task>;
-  updateTask: (id: string, task: UpdateTask) => Promise<Task | undefined>;
-  deleteTask: (id: string) => Promise<boolean>;
+  getTaskById: (userId: string, id: string) => Promise<Task | undefined>;
+  createTask: (userId: string, newTask: InsertTask) => Promise<Task>;
+  updateTask: (
+    userId: string,
+    id: string,
+    task: UpdateTask,
+  ) => Promise<Task | undefined>;
+  deleteTask: (userId: string, id: string) => Promise<boolean>;
   updateTaskPriority: (
+    userId: string,
     id: string,
     priority: TaskPriorityOption,
   ) => Promise<Task | undefined>;
   updateTaskRecurringInterval: (
+    userId: string,
     id: string,
     recurringInterval: TaskRecurringOption,
   ) => Promise<Task | undefined>;
   updateTaskIsRecurring: (
+    userId: string,
     id: string,
     recurringInterval: boolean,
   ) => Promise<Task | undefined>;
   updateTaskStatus: (
+    userId: string,
     id: string,
     status: TaskStatusOption,
   ) => Promise<Task | undefined>;
@@ -46,9 +55,10 @@ export const createTasksRepository = (
   db: PostgresJsDatabase,
 ): TasksRepository => {
   return {
-    getTasks: async (filters) => {
+    getTasks: async (userId, filters) => {
       const { dueDate, priority, projectId, status } = filters;
       const query = db.select().from(tasksModel);
+      query.where(eq(tasksModel.userId, userId));
 
       if (projectId) {
         query.where(eq(tasksModel.projectId, projectId));
@@ -74,11 +84,11 @@ export const createTasksRepository = (
         parsed.data,
       );
     },
-    getTaskById: async (id) => {
+    getTaskById: async (userId, id) => {
       const task = await db
         .select()
         .from(tasksModel)
-        .where(eq(tasksModel.id, id))
+        .where(and(eq(tasksModel.id, id), eq(tasksModel.userId, userId)))
         .limit(1);
 
       if (task.length === 0) {
@@ -93,10 +103,10 @@ export const createTasksRepository = (
         parsed.data,
       );
     },
-    createTask: async (newTask) => {
+    createTask: async (userId, newTask) => {
       const createdTask = await db
         .insert(tasksModel)
-        .values(newTask)
+        .values({ ...newTask, userId })
         .returning();
       const parsed = selectTaskSchema.safeParse(createdTask[0]);
       if (parsed.success) {
@@ -108,11 +118,11 @@ export const createTasksRepository = (
       );
     },
 
-    updateTask: async (id, task) => {
+    updateTask: async (userId, id, task) => {
       const updatedTask = await db
         .update(tasksModel)
         .set(task)
-        .where(eq(tasksModel.id, id))
+        .where(and(eq(tasksModel.userId, userId), eq(tasksModel.id, id)))
         .returning();
 
       if (updatedTask.length === 0) {
@@ -128,10 +138,10 @@ export const createTasksRepository = (
       );
     },
 
-    deleteTask: async (id) => {
+    deleteTask: async (userId, id) => {
       const deleted = await db
         .delete(tasksModel)
-        .where(eq(tasksModel.id, id))
+        .where(and(eq(tasksModel.userId, userId), eq(tasksModel.id, id)))
         .returning();
 
       if (deleted.length === 0) {
@@ -140,11 +150,11 @@ export const createTasksRepository = (
       return true;
     },
 
-    updateTaskPriority: async (id, priority) => {
+    updateTaskPriority: async (userId, id, priority) => {
       const updatedTask = await db
         .update(tasksModel)
         .set({ priority })
-        .where(eq(tasksModel.id, id))
+        .where(and(eq(tasksModel.userId, userId), eq(tasksModel.id, id)))
         .returning();
 
       if (updatedTask.length === 0) {
@@ -160,11 +170,11 @@ export const createTasksRepository = (
       );
     },
 
-    updateTaskRecurringInterval: async (id, recurringInterval) => {
+    updateTaskRecurringInterval: async (userId, id, recurringInterval) => {
       const updatedTask = await db
         .update(tasksModel)
         .set({ recurringInterval: recurringInterval })
-        .where(eq(tasksModel.id, id))
+        .where(and(eq(tasksModel.userId, userId), eq(tasksModel.id, id)))
         .returning();
 
       if (updatedTask.length === 0) {
@@ -180,11 +190,11 @@ export const createTasksRepository = (
       );
     },
 
-    updateTaskIsRecurring: async (id, isRecurring) => {
+    updateTaskIsRecurring: async (userId, id, isRecurring) => {
       const updatedTask = await db
         .update(tasksModel)
         .set({ isRecurring })
-        .where(eq(tasksModel.id, id))
+        .where(and(eq(tasksModel.userId, userId), eq(tasksModel.id, id)))
         .returning();
 
       if (updatedTask.length === 0) {
@@ -200,11 +210,11 @@ export const createTasksRepository = (
       );
     },
 
-    updateTaskStatus: async (id, status) => {
+    updateTaskStatus: async (userId, id, status) => {
       const updatedTask = await db
         .update(tasksModel)
         .set({ status })
-        .where(eq(tasksModel.id, id))
+        .where(and(eq(tasksModel.userId, userId), eq(tasksModel.id, id)))
         .returning();
 
       if (updatedTask.length === 0) {

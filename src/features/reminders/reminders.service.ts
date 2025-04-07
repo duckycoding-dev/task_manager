@@ -2,35 +2,45 @@ import type { RemindersRepository } from './reminders.repository';
 import type { InsertReminder, Reminder, UpdateReminder } from './reminders.db';
 
 export type RemindersService = {
-  getReminders: () => Promise<Reminder[]>;
-  getReminderById: (id: string) => Promise<Reminder | undefined>;
-  getRemindersByTaskId: (taskId: string) => Promise<Reminder[]>;
-  createReminder: (newReminder: InsertReminder) => Promise<Reminder>;
-  updateReminder: (id: string, reminder: UpdateReminder) => Promise<Reminder>;
-  deleteReminder: (id: string) => Promise<boolean>;
+  getReminders: (userId: string) => Promise<Reminder[]>;
+  getReminderById: (
+    userId: string,
+    id: string,
+  ) => Promise<Reminder | undefined>;
+  getRemindersByTaskId: (userId: string, taskId: string) => Promise<Reminder[]>;
+  createReminder: (
+    userId: string,
+    newReminder: InsertReminder,
+  ) => Promise<Reminder>;
+  updateReminder: (
+    userId: string,
+    id: string,
+    reminder: UpdateReminder,
+  ) => Promise<Reminder>;
+  deleteReminder: (userId: string, id: string) => Promise<boolean>;
 };
 
 export const createRemindersService = (
   remindersRepository: RemindersRepository,
 ): RemindersService => {
   return {
-    getReminderById: async (id) => {
-      return await remindersRepository.getReminderById(id);
+    getReminderById: async (userId, id) => {
+      return await remindersRepository.getReminderById(userId, id);
     },
-    getReminders: async () => {
-      return await remindersRepository.getReminders();
+    getReminders: async (userId) => {
+      return await remindersRepository.getReminders(userId);
     },
-    getRemindersByTaskId: async (taskId) => {
-      return await remindersRepository.getRemindersByTaskId(taskId);
+    getRemindersByTaskId: async (userId, taskId) => {
+      return await remindersRepository.getRemindersByTaskId(userId, taskId);
     },
-    createReminder: async (newReminder) => {
-      return await remindersRepository.createReminder(newReminder);
+    createReminder: async (userId, newReminder) => {
+      return await remindersRepository.createReminder(userId, newReminder);
     },
-    updateReminder: async (id, reminder) => {
-      return await remindersRepository.updateReminder(id, reminder);
+    updateReminder: async (userId, id, reminder) => {
+      return await remindersRepository.updateReminder(userId, id, reminder);
     },
-    deleteReminder: async (id) => {
-      return await remindersRepository.deleteReminder(id);
+    deleteReminder: async (userId, id) => {
+      return await remindersRepository.deleteReminder(userId, id);
     },
   };
 };

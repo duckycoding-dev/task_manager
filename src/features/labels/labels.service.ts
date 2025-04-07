@@ -3,42 +3,55 @@ import type { InsertLabel, Label, UpdateLabel } from './labels.db';
 import type { GetLabelsQuery } from './labels.types';
 
 export type LabelsService = {
-  getLabels: (filters: GetLabelsQuery) => Promise<Label[]>;
-  getLabelById: (id: string) => Promise<Label | undefined>;
-  createLabel: (newLabel: InsertLabel) => Promise<Label>;
+  getLabels: (userId: string, filters: GetLabelsQuery) => Promise<Label[]>;
+  getLabelById: (userId: string, labelId: string) => Promise<Label | undefined>;
+  createLabel: (userId: string, newLabel: InsertLabel) => Promise<Label>;
   updateLabel: (
-    id: string,
+    userId: string,
+    labelId: string,
     labelUpdate: UpdateLabel,
   ) => Promise<Label | undefined>;
-  deleteLabel: (id: string) => Promise<boolean>;
-  assignLabelToTask: (taskId: string, labelId: string) => Promise<boolean>;
-  removeLabelFromTask: (taskId: string, labelId: string) => Promise<boolean>;
+  deleteLabel: (userId: string, labelId: string) => Promise<boolean>;
+  assignLabelToTask: (
+    userId: string,
+    taskId: string,
+    labelId: string,
+  ) => Promise<boolean>;
+  removeLabelFromTask: (
+    userId: string,
+    taskId: string,
+    labelId: string,
+  ) => Promise<boolean>;
 };
 
 export const createLabelsService = (
   labelsRepository: LabelsRepository,
 ): LabelsService => {
   return {
-    getLabels: async (filters) => {
-      return await labelsRepository.getLabels(filters);
+    getLabels: async (userId, filters) => {
+      return await labelsRepository.getLabels(userId, filters);
     },
-    getLabelById: async (id) => {
-      return await labelsRepository.getLabelById(id);
+    getLabelById: async (userId, labelId) => {
+      return await labelsRepository.getLabelById(userId, labelId);
     },
-    createLabel: async (newLabel) => {
-      return await labelsRepository.createLabel(newLabel);
+    createLabel: async (userId, newLabel) => {
+      return await labelsRepository.createLabel(userId, newLabel);
     },
-    updateLabel: async (id, labelUpdate) => {
-      return await labelsRepository.updateLabel(id, labelUpdate);
+    updateLabel: async (userId, labelId, labelUpdate) => {
+      return await labelsRepository.updateLabel(userId, labelId, labelUpdate);
     },
-    deleteLabel: async (id) => {
-      return await labelsRepository.deleteLabel(id);
+    deleteLabel: async (userId, labelId) => {
+      return await labelsRepository.deleteLabel(userId, labelId);
     },
-    assignLabelToTask: async (taskId, labelId) => {
-      return await labelsRepository.assignLabelToTask(taskId, labelId);
+    assignLabelToTask: async (userId, taskId, labelId) => {
+      return await labelsRepository.assignLabelToTask(userId, taskId, labelId);
     },
-    removeLabelFromTask: async (taskId, labelId) => {
-      return await labelsRepository.removeLabelFromTask(taskId, labelId);
+    removeLabelFromTask: async (userId, taskId, labelId) => {
+      return await labelsRepository.removeLabelFromTask(
+        userId,
+        taskId,
+        labelId,
+      );
     },
   };
 };

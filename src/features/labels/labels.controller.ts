@@ -19,7 +19,8 @@ export const createLabelsController = (
   return {
     getLabelById: async (c) => {
       const { id } = c.req.valid('param');
-      const labelFound = await labelsService.getLabelById(id);
+      const { id: userId } = c.get('user');
+      const labelFound = await labelsService.getLabelById(userId, id);
       if (!labelFound) {
         throw new EndpointError<typeof labelsRoutes.getLabelById>('NOT_FOUND', {
           message: 'Label not found',
@@ -36,7 +37,8 @@ export const createLabelsController = (
     },
     getLabels: async (c) => {
       const filters = c.req.valid('query');
-      const labelsFound = await labelsService.getLabels(filters);
+      const { id: userId } = c.get('user');
+      const labelsFound = await labelsService.getLabels(userId, filters);
       if (labelsFound.length === 0) {
         throw new EndpointError<typeof labelsRoutes.getLabels>('NOT_FOUND', {
           message: 'No labels found',
@@ -53,7 +55,8 @@ export const createLabelsController = (
     },
     createLabel: async (c) => {
       const label = c.req.valid('json');
-      const labelCreated = await labelsService.createLabel(label);
+      const { id: userId } = c.get('user');
+      const labelCreated = await labelsService.createLabel(userId, label);
       return c.json(
         {
           success: true,
@@ -66,7 +69,9 @@ export const createLabelsController = (
     updateLabel: async (c) => {
       const { labelId } = c.req.valid('param');
       const labelUpdate = c.req.valid('json');
+      const { id: userId } = c.get('user');
       const labelUpdated = await labelsService.updateLabel(
+        userId,
         labelId,
         labelUpdate,
       );
@@ -86,7 +91,13 @@ export const createLabelsController = (
     },
     deleteLabel: async (c) => {
       const { labelId } = c.req.valid('param');
-      await labelsService.deleteLabel(labelId);
+      const { id: userId } = c.get('user');
+      const labelWasDeleted = await labelsService.deleteLabel(userId, labelId);
+      if (!labelWasDeleted) {
+        throw new EndpointError<typeof labelsRoutes.deleteLabel>('NOT_FOUND', {
+          message: 'Label not found',
+        });
+      }
       return c.json(
         {
           success: true,
@@ -97,7 +108,20 @@ export const createLabelsController = (
     },
     assignLabelToTask: async (c) => {
       const { taskId, labelId } = c.req.valid('param');
-      await labelsService.assignLabelToTask(taskId, labelId);
+      const { id: userId } = c.get('user');
+      const labelWasAssigned = await labelsService.assignLabelToTask(
+        userId,
+        taskId,
+        labelId,
+      );
+      if (!labelWasAssigned) {
+        throw new EndpointError<typeof labelsRoutes.assignLabelToTask>(
+          'NOT_FOUND',
+          {
+            message: 'Label not found',
+          },
+        );
+      }
       return c.json(
         {
           success: true,
@@ -108,7 +132,20 @@ export const createLabelsController = (
     },
     removeLabelFromTask: async (c) => {
       const { taskId, labelId } = c.req.valid('param');
-      await labelsService.removeLabelFromTask(taskId, labelId);
+      const { id: userId } = c.get('user');
+      const labelWasRemoved = await labelsService.removeLabelFromTask(
+        userId,
+        taskId,
+        labelId,
+      );
+      if (!labelWasRemoved) {
+        throw new EndpointError<typeof labelsRoutes.removeLabelFromTask>(
+          'NOT_FOUND',
+          {
+            message: 'Label not found',
+          },
+        );
+      }
       return c.json(
         {
           success: true,
