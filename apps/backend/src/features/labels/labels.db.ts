@@ -49,7 +49,7 @@ export const updateLabelSchema = createUpdateSchema(labels).omit({
   userId: true, // User ID is set from the session
 });
 // 📌 Select Schema (for response data
-export const taskLabelsSchema = createSelectSchema(taskLabels);
+export const selectTaskLabelsSchema = createSelectSchema(taskLabels);
 // 📌 Insert Schema (for creating label
 export const insertTaskLabelsSchema = createInsertSchema(taskLabels).pick({
   taskId: true,
@@ -66,6 +66,6 @@ export const updateTaskLabelsSchema = createUpdateSchema(taskLabels).omit({
 export type Label = z.infer<typeof selectLabelSchema>;
 export type InsertLabel = z.infer<typeof insertLabelSchema>;
 export type UpdateLabel = z.infer<typeof updateLabelSchema>;
-export type TaskLabel = z.infer<typeof taskLabelsSchema>;
+export type TaskLabel = z.infer<typeof selectTaskLabelsSchema>;
 export type InsertTaskLabel = z.infer<typeof insertTaskLabelsSchema>;
 export type UpdateTaskLabel = z.infer<typeof updateTaskLabelsSchema>;

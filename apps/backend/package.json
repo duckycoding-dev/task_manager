@@ -44,10 +44,28 @@
   },
   "exports": {
     "./hc": {
-      "import": {
-        "default": "./dist/hc.js",
-        "types": "./dist/hc.d.ts"
-      }
+      "import": "./dist/hc.js",
+      "types": "./dist/hc.d.ts"
+    },
+    "./auth": {
+      "import": "./dist/utils/auth.js",
+      "types": "./dist/utils/auth.d.ts"
+    },
+    "./labels": {
+      "import": "./dist/features/labels/index.js",
+      "types": "./dist/features/labels/index.d.ts"
+    },
+    "./projects": {
+      "import": "./dist/features/projects/index.js",
+      "types": "./dist/features/projects/index.d.ts"
+    },
+    "./reminders": {
+      "import": "./dist/features/reminders/index.js",
+      "types": "./dist/features/reminders/index.d.ts"
+    },
+    "./tasks": {
+      "import": "./dist/features/tasks/index.js",
+      "types": "./dist/features/tasks/index.d.ts"
     }
   }
 }
