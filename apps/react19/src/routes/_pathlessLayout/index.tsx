@@ -1,9 +1,13 @@
 import { useState } from 'react';
-import reactLogo from './assets/react.svg';
+import reactLogo from '../../assets/react.svg';
 import viteLogo from '/vite.svg';
-import './App.css';
+import { createFileRoute } from '@tanstack/react-router';
 
-function App() {
+export const Route = createFileRoute('/_pathlessLayout/')({
+  component: Index,
+});
+
+function Index() {
   const [count, setCount] = useState(0);
 
   return (
@@ -32,4 +36,4 @@ function App() {
   );
 }
 
-export default App;
+export default Index;

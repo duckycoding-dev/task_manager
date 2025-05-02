@@ -1,0 +1,12 @@
+@import './style-reset.css';
+@import './holy-grail-layout.css';
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter/Inter-VariableFont_slnt,wght.ttf');
+  font-display: swap;
+}
+
+:root {
+  font-family: 'Inter', sans-serif;
+}

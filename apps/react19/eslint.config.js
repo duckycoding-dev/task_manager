@@ -10,8 +10,8 @@ export default tseslint.config(
   {
     extends: [
       js.configs.recommended,
-      ...tseslint.configs.recommendedTypeChecked,
       eslintReact.configs['recommended-typescript'],
+      ...tseslint.configs.recommendedTypeChecked,
     ],
     files: ['**/*.{ts,tsx}'],
     languageOptions: {

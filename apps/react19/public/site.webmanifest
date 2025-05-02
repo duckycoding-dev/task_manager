@@ -1,0 +1,24 @@
+{
+  "name": "DuckyCodingTaskManagerReact19",
+  "short_name": "DuckyCodingTaskManager",
+  "icons": [
+    {
+      "src": "images/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "images/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#ffffff",
+  "background_color": "#f4f0fa",
+  "display": "standalone",
+  "start_url": ".",
+  "description": "DuckyCoding's task manager built with React 19",
+  "id": "DuckyCodingTaskManager-React19",
+  "orientation": "portrait-primary"
+}

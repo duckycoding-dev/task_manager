@@ -1,1 +1,1 @@
-import { updateTaskLabelsSchema } from '@task-manager/backend/features/labels';
+export { hcWithType as HonoClient } from '@task-manager/backend/hc';
