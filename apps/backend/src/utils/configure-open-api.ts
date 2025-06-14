@@ -15,7 +15,7 @@ export function configureOpenAPI(app: AppOpenAPI) {
   app.get(
     '/reference',
     apiReference({
-      pageTitle: 'reusable_task_manager_backend API Reference',
+      pageTitle: 'Task Manager API Reference',
       theme: 'kepler',
       layout: 'classic',
       url: '/docs',

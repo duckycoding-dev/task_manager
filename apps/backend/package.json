@@ -5,15 +5,15 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/duckycoding-dev/reusable_task_manager_backend.git"
+    "url": "git+https://github.com/duckycoding-dev/task_manager.git"
   },
   "keywords": [],
   "license": "MIT",
   "type": "module",
   "bugs": {
-    "url": "https://github.com/duckycoding-dev/reusable_task_manager_backend/issues"
+    "url": "https://github.com/duckycoding-dev/task_manager/issues"
   },
-  "homepage": "https://github.com/duckycoding-dev/reusable_task_manager_backend#readme",
+  "homepage": "https://github.com/duckycoding-dev/task_manager#readme",
   "description": "This repo contains the code for the backend of a task manager app: this will be reused around many other repos to test different frontend libraries while mantaining a standard backend logic: this will allow me to develop mini projects faster",
   "devDependencies": {
     "@types/bun": "latest",
@@ -34,7 +34,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run ./src/scripts/dev",
-    "db:dev": "docker compose -p reusable_task_manager_backend -f ./docker-compose.yml up",
+    "db:dev": "docker compose -p task_manager -f ./docker-compose.yml up",
     "bun:dev": "bun run --hot src/index.ts",
     "db:generateMigration": "drizzle-kit generate",
     "db:migrate": "DB_MIGRATING=true bun run ./src/db/migration.ts",

@@ -6,7 +6,7 @@ export default defineConfig({
   schema: './src/features/**/*.db.ts',
   dialect: 'postgresql',
   dbCredentials: {
-    url: 'jdbc:postgresql://localhost:5432/reusable_task_manager_backend',
+    url: 'jdbc:postgresql://localhost:5432/task_manager',
     database: env.POSTGRES_DB,
     host: env.POSTGRES_HOST,
     password: env.POSTGRES_PASSWORD,

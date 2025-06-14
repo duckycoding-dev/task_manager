@@ -5,15 +5,15 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/duckycoding-dev/reusable_task_manager_backend.git"
+    "url": "git+https://github.com/duckycoding-dev/task_manager.git"
   },
   "keywords": [],
   "license": "MIT",
   "type": "module",
   "bugs": {
-    "url": "https://github.com/duckycoding-dev/reusable_task_manager_backend/issues"
+    "url": "https://github.com/duckycoding-dev/task_manager/issues"
   },
-  "homepage": "https://github.com/duckycoding-dev/reusable_task_manager_backend#readme",
+  "homepage": "https://github.com/duckycoding-dev/task_manager#readme",
   "description": "This repo contains the code for the backend of a task manager app which will be reused to create the same app using different frontend libraries with the same standard backend logic: this will allow me to develop mini projects and tryout new frontend technologies faster",
   "devDependencies": {
     "@types/eslint-config-prettier": "^6.11.3",
