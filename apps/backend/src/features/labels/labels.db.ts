@@ -6,7 +6,7 @@ import {
   createSelectSchema,
   createUpdateSchema,
 } from 'drizzle-zod';
-import type { z } from 'zod';
+import type { z } from 'zod/v4';
 
 // 🚀 Labels Table (Tags for Tasks)
 export const labels = pgTable('labels', {

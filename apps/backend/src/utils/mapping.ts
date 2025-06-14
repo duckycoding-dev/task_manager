@@ -1,4 +1,4 @@
-import type { ZodError } from 'zod';
+import { z, type ZodError } from 'zod/v4';
 
 type RecursivelyReplaceNullWithUndefined<T> = T extends null
   ? undefined
@@ -26,9 +26,5 @@ export function nullsToUndefined<T>(
 }
 
 export function formatZodError(error: ZodError): string {
-  return error.errors
-    .map((e, index) => {
-      return `${index + 1}- ${e.message}`;
-    })
-    .join('\n');
+  return z.prettifyError(error);
 }

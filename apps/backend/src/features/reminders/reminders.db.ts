@@ -6,7 +6,7 @@ import {
   createSelectSchema,
   createUpdateSchema,
 } from 'drizzle-zod';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 // 🚀 Reminders Table (Task Notifications)
 export const reminders = pgTable('reminders', {

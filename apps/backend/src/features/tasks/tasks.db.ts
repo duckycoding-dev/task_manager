@@ -6,7 +6,7 @@ import {
   createUpdateSchema,
 } from 'drizzle-zod';
 import { users } from '../auth/auth.db';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 // 🔹 Define Enums as `const` arrays
 export const statusOptions = ['todo', 'in_progress', 'done'] as const;
