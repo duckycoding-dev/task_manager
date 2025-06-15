@@ -6,6 +6,7 @@ import type {
   TaskRecurringOption,
   TaskStatusOption,
 } from './tasks.types';
+import type { Reminder } from '../reminders';
 
 export type TasksService = {
   getTasks: (
@@ -40,6 +41,7 @@ export type TasksService = {
     id: string,
     status: TaskStatusOption,
   ) => Promise<Task | undefined>;
+  getTaskReminders: (userId: string, taskId: string) => Promise<Reminder[]>;
 };
 
 export const createTasksService = (
@@ -87,6 +89,10 @@ export const createTasksService = (
 
     updateTaskStatus: async (userId, taskId, status) => {
       return await tasksRepository.updateTaskStatus(userId, taskId, status);
+    },
+
+    getTaskReminders: async (userId, taskId) => {
+      return await tasksRepository.getTaskReminders(userId, taskId);
     },
   };
 };

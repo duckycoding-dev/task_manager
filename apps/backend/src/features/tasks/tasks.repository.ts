@@ -15,6 +15,11 @@ import type {
   TaskStatusOption,
 } from './tasks.types';
 import { RepositoryValidationError } from 'utils/errors/domain-errors/';
+import type { Reminder } from '../reminders';
+import {
+  remindersModel,
+  selectReminderSchema,
+} from '../reminders/reminders.db';
 
 export type TasksRepository = {
   getTasks: (
@@ -49,6 +54,7 @@ export type TasksRepository = {
     id: string,
     status: TaskStatusOption,
   ) => Promise<Task | undefined>;
+  getTaskReminders: (userId: string, taskId: string) => Promise<Reminder[]>;
 };
 
 export const createTasksRepository = (
@@ -221,6 +227,24 @@ export const createTasksRepository = (
         return undefined;
       }
       const parsed = selectTaskSchema.safeParse(updatedTask[0]);
+      if (parsed.success) {
+        return parsed.data;
+      }
+      throw new RepositoryValidationError(
+        formatZodError(parsed.error),
+        parsed.data,
+      );
+    },
+    getTaskReminders: async (userId, taskId) => {
+      const taskReminders = await db
+        .select()
+        .from(remindersModel)
+        .leftJoin(tasksModel, eq(tasksModel.id, remindersModel.taskId))
+        .where(and(eq(tasksModel.userId, userId), eq(tasksModel.id, taskId)));
+
+      const reminders = taskReminders.map(({ reminders }) => reminders);
+
+      const parsed = selectReminderSchema.array().safeParse(reminders);
       if (parsed.success) {
         return parsed.data;
       }

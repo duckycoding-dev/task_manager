@@ -6,9 +6,6 @@ import { EndpointError } from 'utils/errors/http-errors/';
 export type RemindersController = {
   getReminders: AppRouteHandler<typeof remindersRoutes.getReminders>;
   getReminderById: AppRouteHandler<typeof remindersRoutes.getReminderById>;
-  getRemindersByTaskId: AppRouteHandler<
-    typeof remindersRoutes.getRemindersByTaskId
-  >;
   createReminder: AppRouteHandler<typeof remindersRoutes.createReminder>;
   updateReminder: AppRouteHandler<typeof remindersRoutes.updateReminder>;
   deleteReminder: AppRouteHandler<typeof remindersRoutes.deleteReminder>;
@@ -40,28 +37,6 @@ export const createRemindersController = (
     getReminders: async (c) => {
       const { id: userId } = c.get('user');
       const reminders = await remindersService.getReminders(userId);
-      return c.json(
-        {
-          success: true,
-          data: reminders,
-          message: 'Reminders found',
-        },
-        200,
-      );
-    },
-    getRemindersByTaskId: async (c) => {
-      const { taskId } = c.req.valid('param');
-      const { id: userId } = c.get('user');
-      const reminders = await remindersService.getRemindersByTaskId(
-        userId,
-        taskId,
-      );
-      if (reminders.length === 0) {
-        throw new EndpointError<typeof remindersRoutes.getRemindersByTaskId>(
-          'NOT_FOUND',
-          { message: 'No reminders found for this task' },
-        );
-      }
       return c.json(
         {
           success: true,

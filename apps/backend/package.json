@@ -17,7 +17,7 @@
   "description": "This repo contains the code for the backend of a task manager app: this will be reused around many other repos to test different frontend libraries while mantaining a standard backend logic: this will allow me to develop mini projects faster",
   "devDependencies": {
     "@types/bun": "latest",
-    "drizzle-kit": "^0.30.6",
+    "drizzle-kit": "^0.31.1",
     "typescript": "^5.8.3"
   },
   "dependencies": {
@@ -25,7 +25,7 @@
     "@hono/zod-validator": "^0.7.0",
     "@scalar/hono-api-reference": "^0.9.4",
     "better-auth": "^1.2.9",
-    "drizzle-orm": "^0.41.0",
+    "drizzle-orm": "^0.44.2",
     "drizzle-zod": "^0.8.2",
     "hono": "^4.7.11",
     "postgres": "^3.4.7",

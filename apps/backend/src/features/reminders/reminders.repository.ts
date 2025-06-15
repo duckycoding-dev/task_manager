@@ -2,7 +2,7 @@ import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { and, eq } from 'drizzle-orm';
 import {
   selectReminderSchema,
-  reminders,
+  remindersModel,
   type Reminder,
   type InsertReminder,
   type UpdateReminder,
@@ -36,8 +36,10 @@ export const createRemindersRepository = (
     getReminderById: async (userId, id) => {
       const res = await db
         .select()
-        .from(reminders)
-        .where(and(eq(reminders.userId, userId), eq(reminders.id, id)));
+        .from(remindersModel)
+        .where(
+          and(eq(remindersModel.userId, userId), eq(remindersModel.id, id)),
+        );
       if (res.length === 0) {
         return undefined;
       }
@@ -54,8 +56,8 @@ export const createRemindersRepository = (
     getReminders: async (userId) => {
       const res = await db
         .select()
-        .from(reminders)
-        .where(eq(reminders.userId, userId));
+        .from(remindersModel)
+        .where(eq(remindersModel.userId, userId));
       const parsed = selectReminderSchema.array().safeParse(res);
       if (parsed.success) {
         return parsed.data;
@@ -68,8 +70,13 @@ export const createRemindersRepository = (
     getRemindersByTaskId: async (userId, taskId) => {
       const res = await db
         .select()
-        .from(reminders)
-        .where(and(eq(reminders.userId, userId), eq(reminders.taskId, taskId)));
+        .from(remindersModel)
+        .where(
+          and(
+            eq(remindersModel.userId, userId),
+            eq(remindersModel.taskId, taskId),
+          ),
+        );
       const parsed = selectReminderSchema.array().safeParse(res);
       if (parsed.success) {
         return parsed.data;
@@ -81,7 +88,7 @@ export const createRemindersRepository = (
     },
     createReminder: async (userId, newReminder) => {
       const createdReminder = await db
-        .insert(reminders)
+        .insert(remindersModel)
         .values({ ...newReminder, userId })
         .returning();
 
@@ -96,9 +103,11 @@ export const createRemindersRepository = (
     },
     updateReminder: async (userId, id, reminder) => {
       const updatedReminder = await db
-        .update(reminders)
+        .update(remindersModel)
         .set(reminder)
-        .where(and(eq(reminders.userId, userId), eq(reminders.id, id)))
+        .where(
+          and(eq(remindersModel.userId, userId), eq(remindersModel.id, id)),
+        )
         .returning();
       const parsed = selectReminderSchema.safeParse(updatedReminder[0]);
       if (parsed.success) {
@@ -111,8 +120,10 @@ export const createRemindersRepository = (
     },
     deleteReminder: async (userId, id) => {
       const deletedReminder = await db
-        .delete(reminders)
-        .where(and(eq(reminders.userId, userId), eq(reminders.id, id)))
+        .delete(remindersModel)
+        .where(
+          and(eq(remindersModel.userId, userId), eq(remindersModel.id, id)),
+        )
         .returning();
       if (deletedReminder.length === 0) {
         return false;

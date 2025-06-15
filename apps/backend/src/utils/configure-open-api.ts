@@ -3,8 +3,8 @@ import packageJSON from '../../package.json';
 import { Scalar } from '@scalar/hono-api-reference';
 
 export function configureOpenAPI(app: AppOpenAPI) {
-  app.doc('/docs', {
-    openapi: '3.0.0',
+  app.doc31('/docs', {
+    openapi: '3.1.0',
     info: {
       title: 'Hono API',
       description: 'Hono API Documentation',
