@@ -5,7 +5,7 @@ import {
   createSelectSchema,
   createUpdateSchema,
 } from 'drizzle-zod';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 // 🚀 Projects Table (Groups tasks)
 export const projects = pgTable('projects', {

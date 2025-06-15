@@ -115,10 +115,13 @@ const deleteLabel = createRoute({
 });
 
 const assignLabelToTask = createRoute({
-  path: '/tasks/:taskId/labels/:labelId',
+  path: '/assign',
   method: 'post',
   request: {
-    params: insertTaskLabelsSchema,
+    body: createRequiredJsonBody(
+      insertTaskLabelsSchema,
+      'Label and task IDs are required',
+    ),
   },
   responses: {
     [statusCodeMap['OK'].status]: createSuccessJsonResponse(
@@ -136,10 +139,13 @@ const assignLabelToTask = createRoute({
 });
 
 const removeLabelFromTask = createRoute({
-  path: '/tasks/:taskId/labels/:labelId',
+  path: '/unassign',
   method: 'delete',
   request: {
-    params: insertTaskLabelsSchema,
+    body: createRequiredJsonBody(
+      insertTaskLabelsSchema,
+      'Label and task IDs are required',
+    ),
   },
   responses: {
     [statusCodeMap['OK'].status]: createSuccessJsonResponse(

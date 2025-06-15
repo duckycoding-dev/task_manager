@@ -12,8 +12,8 @@ const spawnOptions: SpawnOptions.OptionsObject<
 };
 
 const run = async () => {
-  Bun.spawn(['bun', 'run', 'dev:bun'], spawnOptions);
-  Bun.spawn(['bun', 'run', 'dev:tsc'], spawnOptions);
+  Bun.spawn(['bun', 'run', 'bun:dev'], spawnOptions);
+  Bun.spawn(['bun', 'run', 'tsc:dev'], spawnOptions);
 
   process.on('SIGINT', async () => {
     console.log('Cleaning up...');

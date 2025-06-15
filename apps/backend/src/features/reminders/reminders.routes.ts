@@ -54,28 +54,8 @@ const getReminderById = createRoute({
   middleware: checkAuthMiddleware,
 });
 
-const getRemindersByTaskId = createRoute({
-  path: '/tasks/:taskId/reminders',
-  method: 'get',
-  request: {
-    params: taskIdParamSchema,
-  },
-  responses: {
-    [statusCodeMap['OK'].status]: createSuccessJsonResponse(
-      selectReminderSchema.array(),
-      'Reminders fetched',
-    ),
-    [statusCodeMap['NOT_FOUND'].status]:
-      createErrorResponse('No reminders found'),
-    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]: createErrorResponse(
-      statusCodeMap['INTERNAL_SERVER_ERROR'].message,
-    ),
-  },
-  middleware: checkAuthMiddleware,
-});
-
 const createReminder = createRoute({
-  path: '/tasks/:taskId/reminders',
+  path: '/',
   method: 'post',
   request: {
     params: taskIdParamSchema,
@@ -99,13 +79,10 @@ const createReminder = createRoute({
 });
 
 const deleteReminder = createRoute({
-  path: '/tasks/:taskId/reminders/:reminderId',
+  path: '/',
   method: 'delete',
   request: {
-    params: selectReminderSchema.pick({
-      taskId: true,
-      id: true,
-    }),
+    params: selectReminderSchema.pick({ id: true }),
   },
   responses: {
     [statusCodeMap['OK'].status]: createSuccessJsonResponse(
@@ -123,15 +100,14 @@ const deleteReminder = createRoute({
 });
 
 const updateReminder = createRoute({
-  path: '/tasks/:taskId/reminders/:reminderId',
+  path: '/:id',
   method: 'patch',
   request: {
-    params: selectReminderSchema.pick({
-      taskId: true,
-      id: true,
-    }),
+    params: selectReminderSchema.pick({ id: true }),
     body: createRequiredJsonBody(
-      updateReminderSchema,
+      updateReminderSchema.extend({
+        taskId: z.uuid(),
+      }),
       'The reminder to update for a given task',
     ),
   },
@@ -155,7 +131,6 @@ const updateReminder = createRoute({
 export const remindersRoutes = {
   getReminders,
   getReminderById,
-  getRemindersByTaskId,
   createReminder,
   deleteReminder,
   updateReminder,

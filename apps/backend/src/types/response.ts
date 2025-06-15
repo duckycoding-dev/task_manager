@@ -2,7 +2,7 @@ import {
   verboseStatusCodes,
   type VerboseStatusCode,
 } from 'utils/status-codes/';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 // Metadata schema
 export const ResponseMetaSchema = z.object({
@@ -16,9 +16,9 @@ export const ResponseMetaSchema = z.object({
   cursor: z.string().optional(),
   requestId: z.string().optional(),
   processingTimeMs: z.number().nonnegative().optional(),
-  filters: z.record(z.unknown()).optional(),
+  filters: z.record(z.string(), z.unknown()).optional(),
   sort: z
-    .union([z.array(z.string()), z.record(z.enum(['asc', 'desc']))])
+    .union([z.array(z.string()), z.record(z.string(), z.enum(['asc', 'desc']))])
     .optional(),
 });
 

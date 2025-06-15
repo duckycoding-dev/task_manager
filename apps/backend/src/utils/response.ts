@@ -1,5 +1,5 @@
 import { ErrorResponseSchema, SuccessResponseSchema } from 'types/response/';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 import { statusCodeMap, type VerboseStatusCode } from './status-codes';
 
 // =========================================

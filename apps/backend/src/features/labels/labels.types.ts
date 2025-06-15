@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 // 📌 Query Params Schemas
 export const getLabelsQuerySchema = z.object({

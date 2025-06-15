@@ -19,6 +19,7 @@ import {
 import { statusCodeMap } from 'utils/status-codes/';
 import { createRequiredJsonBody } from 'utils/request/body/';
 import { checkAuthMiddleware } from 'utils/auth/';
+import { selectReminderSchema } from '../reminders';
 
 const getTasks = createRoute({
   path: '/',
@@ -229,6 +230,26 @@ const updateTaskIsRecurring = createRoute({
   middleware: checkAuthMiddleware,
 });
 
+const getTaskReminders = createRoute({
+  path: '/:taskId/reminders',
+  method: 'get',
+  request: {
+    params: taskIdParamSchema,
+  },
+  responses: {
+    [statusCodeMap['OK'].status]: createSuccessJsonResponse(
+      selectReminderSchema.array(),
+      'Reminders fetched',
+    ),
+    [statusCodeMap['NOT_FOUND'].status]:
+      createErrorResponse('No reminders found'),
+    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]: createErrorResponse(
+      statusCodeMap['INTERNAL_SERVER_ERROR'].message,
+    ),
+  },
+  middleware: checkAuthMiddleware,
+});
+
 export const tasksRoutes = {
   getTasks,
   createTask,
@@ -239,4 +260,5 @@ export const tasksRoutes = {
   updateTaskPriority,
   updateTaskRecurringInterval,
   updateTaskIsRecurring,
+  getTaskReminders,
 } as const satisfies AppRoutes;

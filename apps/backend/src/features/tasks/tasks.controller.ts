@@ -17,6 +17,7 @@ export type TasksController = {
     typeof tasksRoutes.updateTaskIsRecurring
   >;
   updateTaskStatus: AppRouteHandler<typeof tasksRoutes.updateTaskStatus>;
+  getTaskReminders: AppRouteHandler<typeof tasksRoutes.getTaskReminders>;
 };
 
 export const createTasksController = (
@@ -187,6 +188,26 @@ export const createTasksController = (
       }
       return c.json(
         { success: true, data: updatedTask, message: 'Task updated' },
+        200,
+      );
+    },
+
+    getTaskReminders: async (c) => {
+      const { taskId } = c.req.valid('param');
+      const { id: userId } = c.get('user');
+      const reminders = await tasksService.getTaskReminders(userId, taskId);
+      if (reminders.length === 0) {
+        throw new EndpointError<typeof tasksRoutes.getTaskReminders>(
+          'NOT_FOUND',
+          { message: 'No reminders found for this task' },
+        );
+      }
+      return c.json(
+        {
+          success: true,
+          data: reminders,
+          message: 'Reminders found',
+        },
         200,
       );
     },

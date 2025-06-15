@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from 'zod/v4';
 import { selectReminderSchema } from './reminders.db';
 // 📌 Query Params Schemas
 export const getRemindersQuerySchema = selectReminderSchema

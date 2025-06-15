@@ -5,28 +5,28 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/duckycoding-dev/reusable_task_manager_backend.git"
+    "url": "git+https://github.com/duckycoding-dev/task_manager.git"
   },
   "keywords": [],
   "license": "MIT",
   "type": "module",
   "bugs": {
-    "url": "https://github.com/duckycoding-dev/reusable_task_manager_backend/issues"
+    "url": "https://github.com/duckycoding-dev/task_manager/issues"
   },
-  "homepage": "https://github.com/duckycoding-dev/reusable_task_manager_backend#readme",
+  "homepage": "https://github.com/duckycoding-dev/task_manager#readme",
   "description": "This repo contains the code for the backend of a task manager app which will be reused to create the same app using different frontend libraries with the same standard backend logic: this will allow me to develop mini projects and tryout new frontend technologies faster",
   "devDependencies": {
     "@types/eslint-config-prettier": "^6.11.3",
     "@types/bun": "latest",
-    "globals": "^16.0.0",
-    "@eslint/js": "^9.25.0",
-    "eslint": "^9.25.0",
-    "eslint-config-prettier": "^10.0.1",
+    "globals": "^16.2.0",
+    "@eslint/js": "^9.29.0",
+    "eslint": "^9.29.0",
+    "eslint-config-prettier": "^10.1.5",
     "husky": "^9.1.7",
-    "lint-staged": "^15.4.3",
+    "lint-staged": "^15.5.2",
     "typescript": "^5.8.3",
     "prettier": "3.5.3",
-    "typescript-eslint": "^8.31.1"
+    "typescript-eslint": "^8.34.0"
   },
   "dependencies": {},
   "workspaces": [

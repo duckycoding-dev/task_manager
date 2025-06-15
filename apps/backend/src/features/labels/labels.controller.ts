@@ -107,7 +107,7 @@ export const createLabelsController = (
       );
     },
     assignLabelToTask: async (c) => {
-      const { taskId, labelId } = c.req.valid('param');
+      const { taskId, labelId } = c.req.valid('json');
       const { id: userId } = c.get('user');
       const labelWasAssigned = await labelsService.assignLabelToTask(
         userId,
@@ -131,7 +131,7 @@ export const createLabelsController = (
       );
     },
     removeLabelFromTask: async (c) => {
-      const { taskId, labelId } = c.req.valid('param');
+      const { taskId, labelId } = c.req.valid('json');
       const { id: userId } = c.get('user');
       const labelWasRemoved = await labelsService.removeLabelFromTask(
         userId,
