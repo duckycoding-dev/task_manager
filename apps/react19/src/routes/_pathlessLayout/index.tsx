@@ -1,38 +1,30 @@
-import { useState } from 'react';
-import reactLogo from '../../assets/react.svg';
-import viteLogo from '/vite.svg';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { useAuth } from '../../features/users/auth/hooks/useAuth';
 
 export const Route = createFileRoute('/_pathlessLayout/')({
   component: Index,
 });
 
 function Index() {
-  const [count, setCount] = useState(0);
+  const { isLoggedIn } = useAuth();
 
   return (
-    <>
-      <div>
-        <a href='https://vite.dev' target='_blank'>
-          <img src={viteLogo} className='logo' alt='Vite logo' />
-        </a>
-        <a href='https://react.dev' target='_blank'>
-          <img src={reactLogo} className='logo react' alt='React logo' />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className='card'>
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className='read-the-docs'>
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div>
+      <h1>Welcome to Task Manager</h1>
+      {isLoggedIn ? (
+        <div>
+          content Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+          Dolorem accusamus officia ullam. Veritatis ex maxime, exercitationem
+          vitae nulla corporis libero!
+        </div>
+      ) : (
+        <div>
+          <h2>
+            Please <Link to='/auth/login'>sign in</Link>
+          </h2>
+        </div>
+      )}
+    </div>
   );
 }
 

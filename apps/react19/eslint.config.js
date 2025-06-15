@@ -6,7 +6,7 @@ import eslintReact from '@eslint-react/eslint-plugin';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['dist'] },
+  { ignores: ['dist', '.src/routeTree.gen.ts'] },
   {
     extends: [
       js.configs.recommended,

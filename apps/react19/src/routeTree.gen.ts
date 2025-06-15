@@ -11,7 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PathlessLayoutRouteRouteImport } from './routes/_pathlessLayout/route'
 import { Route as PathlessLayoutIndexRouteImport } from './routes/_pathlessLayout/index'
+import { Route as PathlessLayoutProfileRouteImport } from './routes/_pathlessLayout/profile'
 import { Route as PathlessLayoutIdRouteImport } from './routes/_pathlessLayout/$id'
+import { Route as PathlessLayoutAuthSignupRouteImport } from './routes/_pathlessLayout/auth/signup'
+import { Route as PathlessLayoutAuthLoginRouteImport } from './routes/_pathlessLayout/auth/login'
 
 const PathlessLayoutRouteRoute = PathlessLayoutRouteRouteImport.update({
   id: '/_pathlessLayout',
@@ -22,36 +25,64 @@ const PathlessLayoutIndexRoute = PathlessLayoutIndexRouteImport.update({
   path: '/',
   getParentRoute: () => PathlessLayoutRouteRoute,
 } as any)
+const PathlessLayoutProfileRoute = PathlessLayoutProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => PathlessLayoutRouteRoute,
+} as any)
 const PathlessLayoutIdRoute = PathlessLayoutIdRouteImport.update({
   id: '/$id',
   path: '/$id',
   getParentRoute: () => PathlessLayoutRouteRoute,
 } as any)
+const PathlessLayoutAuthSignupRoute =
+  PathlessLayoutAuthSignupRouteImport.update({
+    id: '/auth/signup',
+    path: '/auth/signup',
+    getParentRoute: () => PathlessLayoutRouteRoute,
+  } as any)
+const PathlessLayoutAuthLoginRoute = PathlessLayoutAuthLoginRouteImport.update({
+  id: '/auth/login',
+  path: '/auth/login',
+  getParentRoute: () => PathlessLayoutRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/$id': typeof PathlessLayoutIdRoute
+  '/profile': typeof PathlessLayoutProfileRoute
   '/': typeof PathlessLayoutIndexRoute
+  '/auth/login': typeof PathlessLayoutAuthLoginRoute
+  '/auth/signup': typeof PathlessLayoutAuthSignupRoute
 }
 export interface FileRoutesByTo {
   '/$id': typeof PathlessLayoutIdRoute
+  '/profile': typeof PathlessLayoutProfileRoute
   '/': typeof PathlessLayoutIndexRoute
+  '/auth/login': typeof PathlessLayoutAuthLoginRoute
+  '/auth/signup': typeof PathlessLayoutAuthSignupRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_pathlessLayout': typeof PathlessLayoutRouteRouteWithChildren
   '/_pathlessLayout/$id': typeof PathlessLayoutIdRoute
+  '/_pathlessLayout/profile': typeof PathlessLayoutProfileRoute
   '/_pathlessLayout/': typeof PathlessLayoutIndexRoute
+  '/_pathlessLayout/auth/login': typeof PathlessLayoutAuthLoginRoute
+  '/_pathlessLayout/auth/signup': typeof PathlessLayoutAuthSignupRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/$id' | '/'
+  fullPaths: '/$id' | '/profile' | '/' | '/auth/login' | '/auth/signup'
   fileRoutesByTo: FileRoutesByTo
-  to: '/$id' | '/'
+  to: '/$id' | '/profile' | '/' | '/auth/login' | '/auth/signup'
   id:
     | '__root__'
     | '/_pathlessLayout'
     | '/_pathlessLayout/$id'
+    | '/_pathlessLayout/profile'
     | '/_pathlessLayout/'
+    | '/_pathlessLayout/auth/login'
+    | '/_pathlessLayout/auth/signup'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -74,6 +105,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PathlessLayoutIndexRouteImport
       parentRoute: typeof PathlessLayoutRouteRoute
     }
+    '/_pathlessLayout/profile': {
+      id: '/_pathlessLayout/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof PathlessLayoutProfileRouteImport
+      parentRoute: typeof PathlessLayoutRouteRoute
+    }
     '/_pathlessLayout/$id': {
       id: '/_pathlessLayout/$id'
       path: '/$id'
@@ -81,17 +119,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PathlessLayoutIdRouteImport
       parentRoute: typeof PathlessLayoutRouteRoute
     }
+    '/_pathlessLayout/auth/signup': {
+      id: '/_pathlessLayout/auth/signup'
+      path: '/auth/signup'
+      fullPath: '/auth/signup'
+      preLoaderRoute: typeof PathlessLayoutAuthSignupRouteImport
+      parentRoute: typeof PathlessLayoutRouteRoute
+    }
+    '/_pathlessLayout/auth/login': {
+      id: '/_pathlessLayout/auth/login'
+      path: '/auth/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof PathlessLayoutAuthLoginRouteImport
+      parentRoute: typeof PathlessLayoutRouteRoute
+    }
   }
 }
 
 interface PathlessLayoutRouteRouteChildren {
   PathlessLayoutIdRoute: typeof PathlessLayoutIdRoute
+  PathlessLayoutProfileRoute: typeof PathlessLayoutProfileRoute
   PathlessLayoutIndexRoute: typeof PathlessLayoutIndexRoute
+  PathlessLayoutAuthLoginRoute: typeof PathlessLayoutAuthLoginRoute
+  PathlessLayoutAuthSignupRoute: typeof PathlessLayoutAuthSignupRoute
 }
 
 const PathlessLayoutRouteRouteChildren: PathlessLayoutRouteRouteChildren = {
   PathlessLayoutIdRoute: PathlessLayoutIdRoute,
+  PathlessLayoutProfileRoute: PathlessLayoutProfileRoute,
   PathlessLayoutIndexRoute: PathlessLayoutIndexRoute,
+  PathlessLayoutAuthLoginRoute: PathlessLayoutAuthLoginRoute,
+  PathlessLayoutAuthSignupRoute: PathlessLayoutAuthSignupRoute,
 }
 
 const PathlessLayoutRouteRouteWithChildren =
