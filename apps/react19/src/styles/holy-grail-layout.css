@@ -1,12 +1,12 @@
 /* https://www.digitalocean.com/community/tutorials/css-css-grid-holy-grail-layout */
 
-body {
+div#root {
   display: flex;
   flex-direction: column;
 }
 
 @media (width >= 768px) {
-  body {
+  div#root {
     display: grid;
 
     grid-template-areas:
@@ -32,9 +32,10 @@ body {
   }
 }
 
-@media (max-width: 1280px) {
-  body {
+@media (max-width: 1300px) {
+  div#root {
     grid-template-columns: 0 1fr 0;
+    column-gap: 0;
   }
 
   .aside--left,

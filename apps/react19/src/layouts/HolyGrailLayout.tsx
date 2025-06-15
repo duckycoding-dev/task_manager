@@ -1,17 +1,13 @@
 import { Link } from '@tanstack/react-router';
+import classes from './HolyGrailLayout.module.css';
 
 type HolyGrailLayoutProps = React.HTMLAttributes<'div'>;
 
 export function HolyGrailLayout(props: HolyGrailLayoutProps) {
   return (
-    <main>
-      <div className='p-2 flex gap-2'>
-        <Link to='/' className='[&.active]:font-bold'>
-          Home
-        </Link>{' '}
-      </div>
-      <hr />
-      <h1>Pathless layout</h1>
+    <main className={classes['main-content']}>
+      <Link to='/'>Home</Link>
+      <hr className={classes.hr} />
       {props.children}
     </main>
   );

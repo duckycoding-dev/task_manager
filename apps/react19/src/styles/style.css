@@ -4,7 +4,7 @@
 @font-face {
   font-family: 'Inter';
   src: url('/fonts/Inter/Inter-VariableFont_slnt,wght.ttf');
-  font-display: swap;
+  font-display: auto;
 }
 
 :root {

@@ -10,11 +10,7 @@
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "moduleDetection": "force",
-    "jsx": "react-jsx",
-
-    /* Linting */
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "jsx": "react-jsx"
   },
   "include": ["src"]
 }

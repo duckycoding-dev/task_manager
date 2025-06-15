@@ -8,76 +8,98 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root';
-import { Route as PathlessLayoutRouteRouteImport } from './routes/_pathlessLayout/route';
-import { Route as PathlessLayoutIndexRouteImport } from './routes/_pathlessLayout/index';
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as PathlessLayoutRouteRouteImport } from './routes/_pathlessLayout/route'
+import { Route as PathlessLayoutIndexRouteImport } from './routes/_pathlessLayout/index'
+import { Route as PathlessLayoutIdRouteImport } from './routes/_pathlessLayout/$id'
 
 const PathlessLayoutRouteRoute = PathlessLayoutRouteRouteImport.update({
   id: '/_pathlessLayout',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const PathlessLayoutIndexRoute = PathlessLayoutIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => PathlessLayoutRouteRoute,
-} as any);
+} as any)
+const PathlessLayoutIdRoute = PathlessLayoutIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => PathlessLayoutRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof PathlessLayoutIndexRoute;
+  '/$id': typeof PathlessLayoutIdRoute
+  '/': typeof PathlessLayoutIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof PathlessLayoutIndexRoute;
+  '/$id': typeof PathlessLayoutIdRoute
+  '/': typeof PathlessLayoutIndexRoute
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport;
-  '/_pathlessLayout': typeof PathlessLayoutRouteRouteWithChildren;
-  '/_pathlessLayout/': typeof PathlessLayoutIndexRoute;
+  __root__: typeof rootRouteImport
+  '/_pathlessLayout': typeof PathlessLayoutRouteRouteWithChildren
+  '/_pathlessLayout/$id': typeof PathlessLayoutIdRoute
+  '/_pathlessLayout/': typeof PathlessLayoutIndexRoute
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: '/';
-  fileRoutesByTo: FileRoutesByTo;
-  to: '/';
-  id: '__root__' | '/_pathlessLayout' | '/_pathlessLayout/';
-  fileRoutesById: FileRoutesById;
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths: '/$id' | '/'
+  fileRoutesByTo: FileRoutesByTo
+  to: '/$id' | '/'
+  id:
+    | '__root__'
+    | '/_pathlessLayout'
+    | '/_pathlessLayout/$id'
+    | '/_pathlessLayout/'
+  fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  PathlessLayoutRouteRoute: typeof PathlessLayoutRouteRouteWithChildren;
+  PathlessLayoutRouteRoute: typeof PathlessLayoutRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
     '/_pathlessLayout': {
-      id: '/_pathlessLayout';
-      path: '';
-      fullPath: '';
-      preLoaderRoute: typeof PathlessLayoutRouteRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/_pathlessLayout'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof PathlessLayoutRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_pathlessLayout/': {
-      id: '/_pathlessLayout/';
-      path: '/';
-      fullPath: '/';
-      preLoaderRoute: typeof PathlessLayoutIndexRouteImport;
-      parentRoute: typeof PathlessLayoutRouteRoute;
-    };
+      id: '/_pathlessLayout/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof PathlessLayoutIndexRouteImport
+      parentRoute: typeof PathlessLayoutRouteRoute
+    }
+    '/_pathlessLayout/$id': {
+      id: '/_pathlessLayout/$id'
+      path: '/$id'
+      fullPath: '/$id'
+      preLoaderRoute: typeof PathlessLayoutIdRouteImport
+      parentRoute: typeof PathlessLayoutRouteRoute
+    }
   }
 }
 
 interface PathlessLayoutRouteRouteChildren {
-  PathlessLayoutIndexRoute: typeof PathlessLayoutIndexRoute;
+  PathlessLayoutIdRoute: typeof PathlessLayoutIdRoute
+  PathlessLayoutIndexRoute: typeof PathlessLayoutIndexRoute
 }
 
 const PathlessLayoutRouteRouteChildren: PathlessLayoutRouteRouteChildren = {
+  PathlessLayoutIdRoute: PathlessLayoutIdRoute,
   PathlessLayoutIndexRoute: PathlessLayoutIndexRoute,
-};
+}
 
 const PathlessLayoutRouteRouteWithChildren =
-  PathlessLayoutRouteRoute._addFileChildren(PathlessLayoutRouteRouteChildren);
+  PathlessLayoutRouteRoute._addFileChildren(PathlessLayoutRouteRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   PathlessLayoutRouteRoute: PathlessLayoutRouteRouteWithChildren,
-};
+}
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>();
+  ._addFileTypes<FileRouteTypes>()
