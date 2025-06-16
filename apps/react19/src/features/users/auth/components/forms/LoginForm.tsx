@@ -1,6 +1,7 @@
 import { useAuthDispatch } from '../../hooks/useAuth';
 import { Link, useNavigate } from '@tanstack/react-router';
 import classes from './form.module.css';
+import { authClient } from '../../auth-client';
 
 export const LoginForm = () => {
   const dispatchAuthAction = useAuthDispatch();
@@ -18,8 +19,20 @@ export const LoginForm = () => {
       payload: { userEmail: email },
     });
 
+    authClient.signIn.email({
+      email: 'test@user.com',
+      password: 'password1234',
+    });
     return navigate({ to: '/' });
   };
+
+  // const response = await auth.api.signInEmail({
+  //   body: {
+  //     email,
+  //     password,
+  //   },
+  //   asResponse: true, // returns a response object instead of data
+  // });
 
   return (
     <>
