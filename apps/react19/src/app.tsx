@@ -8,7 +8,7 @@ import {
   AuthProvider,
   initialAuthState,
   type AuthState,
-} from './features/users/auth/AuthProvider';
+} from './features/users/auth/context/AuthProvider';
 import { useAuth } from './features/users/auth/hooks/useAuth';
 
 // Create a new router instance

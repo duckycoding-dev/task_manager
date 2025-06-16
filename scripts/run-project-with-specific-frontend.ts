@@ -81,6 +81,8 @@ const run = async (
     'dev',
     '--port',
     `${frontendPort}`,
+    '--be_port',
+    `${backendPort}`,
   ].concat(formattedRemainingArgs);
   Bun.spawn(frontendCommand, {
     cwd: frontendPath,

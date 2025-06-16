@@ -1,8 +1,9 @@
 import { Link } from '@tanstack/react-router';
 import { useAuth, useAuthDispatch } from '../../users/auth/hooks/useAuth';
-import classes from './Navbar.module.css';
+import classes from './navbar.module.css';
+import type { HTMLAttributes } from 'react';
 
-export const Navbar = () => {
+export const Navbar = (props: HTMLAttributes<HTMLElement>) => {
   const { isLoggedIn } = useAuth();
   const dispatch = useAuthDispatch();
 
@@ -11,7 +12,7 @@ export const Navbar = () => {
   };
 
   return (
-    <nav>
+    <nav {...props}>
       <ul className={classes['nav-list']}>
         <li>
           <Link to='/'>Home</Link>

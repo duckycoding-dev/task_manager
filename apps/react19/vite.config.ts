@@ -15,21 +15,40 @@ export default defineConfig(({ mode }) => {
         type: 'string',
         short: 'P',
       },
+      be_port: {
+        type: 'string',
+      },
     },
     strict: false, // allow unknown options
     allowPositionals: true,
   });
 
   const env = { ...process.env, ...loadEnv(mode, process.cwd()) };
-  const untypedPort = args.port || env.VITE_PORT || '5173'; // cli args must have precedence over env vars, and if neither is set, default to 5173 (which is the default Vite port)
+  const untypedFrontendPort = args.port || env.VITE_PORT || '5173'; // cli args must have precedence over env vars, and if neither is set, default to 5173 (which is the default Vite port)
+  const untypedBackendPort = args.be_port || env.VITE_BACKEND_PORT || '3001'; // cli args must have precedence over env vars, and if neither is set, default to 3001 (which is the default backend port)
 
-  if (untypedPort !== 'boolean' && isNaN(Number(untypedPort))) {
-    throw new Error(`VITE_PORT must be a number, but got: ${untypedPort}`);
+  if (untypedFrontendPort !== 'boolean' && isNaN(Number(untypedFrontendPort))) {
+    throw new Error(
+      `VITE_PORT must be a number, but got: ${untypedFrontendPort}`,
+    );
   }
-  if (typeof untypedPort === 'boolean') {
-    throw new Error(`VITE_PORT cannot be a boolean, but got: ${untypedPort}`);
+  if (typeof untypedFrontendPort === 'boolean') {
+    throw new Error(
+      `VITE_PORT cannot be a boolean, but got: ${untypedFrontendPort}`,
+    );
   }
-  process.env.VITE_PORT = untypedPort; // Ensure process.env.VITE_PORT is updated as well in case it is used elsewhere
+  if (untypedBackendPort !== 'boolean' && isNaN(Number(untypedBackendPort))) {
+    throw new Error(
+      `VITE_BACKEND_PORT must be a number, but got: ${untypedBackendPort}`,
+    );
+  }
+  if (typeof untypedBackendPort === 'boolean') {
+    throw new Error(
+      `VITE_BACKEND_PORT cannot be a boolean, but got: ${untypedBackendPort}`,
+    );
+  }
+  process.env.VITE_PORT = untypedFrontendPort; // Ensure process.env.VITE_PORT is updated as well in case it is used elsewhere
+  process.env.VITE_BACKEND_PORT = untypedBackendPort; // Ensure process.env.VITE_BACKEND_PORT is updated as well in case it is used elsewhere
 
   return {
     plugins: [
