@@ -5,7 +5,7 @@ import {
   createInsertSchema,
   createSelectSchema,
   createUpdateSchema,
-} from 'drizzle-zod';
+} from '../../utils/drizzle-zod';
 import type { z } from 'zod/v4';
 
 // 🚀 Labels Table (Tags for Tasks)

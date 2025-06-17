@@ -4,7 +4,7 @@ import {
   createInsertSchema,
   createSelectSchema,
   createUpdateSchema,
-} from 'drizzle-zod';
+} from '../../utils/drizzle-zod';
 import { users } from '../auth/auth.db';
 import { z } from 'zod/v4';
 
