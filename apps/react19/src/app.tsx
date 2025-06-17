@@ -1,4 +1,4 @@
-import { StrictMode } from 'react';
+import { StrictMode, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
 import './styles/style.css';
@@ -13,7 +13,7 @@ const router = createRouter({
     auth: {
       data: null,
       error: null,
-      isPending: false,
+      isPending: true,
       refetch: () => Promise.resolve(),
     },
   },
@@ -32,6 +32,11 @@ export interface MyRouterContext {
 
 function App() {
   const auth = useAuthSession();
+  useEffect(() => {
+    if (!auth.isPending) {
+      router.invalidate();
+    }
+  }, [auth.isPending]);
   return <RouterProvider router={router} context={{ auth }} />;
 }
 
@@ -42,7 +47,7 @@ if (!rootElement.innerHTML) {
 
   root.render(
     <StrictMode>
-      <App />
+      <App />,
     </StrictMode>,
   );
 }

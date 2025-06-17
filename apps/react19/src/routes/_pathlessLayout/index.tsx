@@ -7,11 +7,15 @@ export const Route = createFileRoute('/_pathlessLayout/')({
 });
 
 function Index() {
-  const { data: authData } = useAuthSession();
+  const { data: authData, isPending } = useAuthSession();
   const isLoggedIn = !!authData?.user;
+
+  if (isPending) {
+    return <div>Loading authentication...</div>;
+  }
+
   return (
     <>
-      {isLoggedIn ? JSON.stringify(authData.user) : 'No user session found'}
       <h1 className={classes['title']}>Welcome to Task Manager</h1>
       {isLoggedIn ? (
         <ul title={'task list'}>

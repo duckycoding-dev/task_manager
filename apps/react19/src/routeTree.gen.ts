@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as PathlessLayoutRouteRouteImport } from './routes/_pathlessLayout/route'
 import { Route as PathlessLayoutIndexRouteImport } from './routes/_pathlessLayout/index'
 import { Route as PathlessLayoutProfileRouteImport } from './routes/_pathlessLayout/profile'
-import { Route as PathlessLayoutIdRouteImport } from './routes/_pathlessLayout/$id'
 import { Route as PathlessLayoutAuthSignupRouteImport } from './routes/_pathlessLayout/auth/signup'
 import { Route as PathlessLayoutAuthLoginRouteImport } from './routes/_pathlessLayout/auth/login'
 
@@ -30,11 +29,6 @@ const PathlessLayoutProfileRoute = PathlessLayoutProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => PathlessLayoutRouteRoute,
 } as any)
-const PathlessLayoutIdRoute = PathlessLayoutIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => PathlessLayoutRouteRoute,
-} as any)
 const PathlessLayoutAuthSignupRoute =
   PathlessLayoutAuthSignupRouteImport.update({
     id: '/auth/signup',
@@ -48,14 +42,12 @@ const PathlessLayoutAuthLoginRoute = PathlessLayoutAuthLoginRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/$id': typeof PathlessLayoutIdRoute
   '/profile': typeof PathlessLayoutProfileRoute
   '/': typeof PathlessLayoutIndexRoute
   '/auth/login': typeof PathlessLayoutAuthLoginRoute
   '/auth/signup': typeof PathlessLayoutAuthSignupRoute
 }
 export interface FileRoutesByTo {
-  '/$id': typeof PathlessLayoutIdRoute
   '/profile': typeof PathlessLayoutProfileRoute
   '/': typeof PathlessLayoutIndexRoute
   '/auth/login': typeof PathlessLayoutAuthLoginRoute
@@ -64,7 +56,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_pathlessLayout': typeof PathlessLayoutRouteRouteWithChildren
-  '/_pathlessLayout/$id': typeof PathlessLayoutIdRoute
   '/_pathlessLayout/profile': typeof PathlessLayoutProfileRoute
   '/_pathlessLayout/': typeof PathlessLayoutIndexRoute
   '/_pathlessLayout/auth/login': typeof PathlessLayoutAuthLoginRoute
@@ -72,13 +63,12 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/$id' | '/profile' | '/' | '/auth/login' | '/auth/signup'
+  fullPaths: '/profile' | '/' | '/auth/login' | '/auth/signup'
   fileRoutesByTo: FileRoutesByTo
-  to: '/$id' | '/profile' | '/' | '/auth/login' | '/auth/signup'
+  to: '/profile' | '/' | '/auth/login' | '/auth/signup'
   id:
     | '__root__'
     | '/_pathlessLayout'
-    | '/_pathlessLayout/$id'
     | '/_pathlessLayout/profile'
     | '/_pathlessLayout/'
     | '/_pathlessLayout/auth/login'
@@ -112,13 +102,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PathlessLayoutProfileRouteImport
       parentRoute: typeof PathlessLayoutRouteRoute
     }
-    '/_pathlessLayout/$id': {
-      id: '/_pathlessLayout/$id'
-      path: '/$id'
-      fullPath: '/$id'
-      preLoaderRoute: typeof PathlessLayoutIdRouteImport
-      parentRoute: typeof PathlessLayoutRouteRoute
-    }
     '/_pathlessLayout/auth/signup': {
       id: '/_pathlessLayout/auth/signup'
       path: '/auth/signup'
@@ -137,7 +120,6 @@ declare module '@tanstack/react-router' {
 }
 
 interface PathlessLayoutRouteRouteChildren {
-  PathlessLayoutIdRoute: typeof PathlessLayoutIdRoute
   PathlessLayoutProfileRoute: typeof PathlessLayoutProfileRoute
   PathlessLayoutIndexRoute: typeof PathlessLayoutIndexRoute
   PathlessLayoutAuthLoginRoute: typeof PathlessLayoutAuthLoginRoute
@@ -145,7 +127,6 @@ interface PathlessLayoutRouteRouteChildren {
 }
 
 const PathlessLayoutRouteRouteChildren: PathlessLayoutRouteRouteChildren = {
-  PathlessLayoutIdRoute: PathlessLayoutIdRoute,
   PathlessLayoutProfileRoute: PathlessLayoutProfileRoute,
   PathlessLayoutIndexRoute: PathlessLayoutIndexRoute,
   PathlessLayoutAuthLoginRoute: PathlessLayoutAuthLoginRoute,

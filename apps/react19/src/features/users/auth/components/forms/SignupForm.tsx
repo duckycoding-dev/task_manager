@@ -8,6 +8,7 @@ const handleSignup = async (event: React.FormEvent<HTMLFormElement>) => {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
   const repeatPassword = formData.get('repeatPassword') as string;
+  const name = formData.get('name') as string;
 
   if (password !== repeatPassword) {
     alert("Passwords don't match");
@@ -15,9 +16,9 @@ const handleSignup = async (event: React.FormEvent<HTMLFormElement>) => {
   }
 
   const { data, error } = await authClient.signUp.email({
+    name,
     email,
     password,
-    name: email, // You can change this to a more appropriate name field if needed
   });
   console.log('Signup response:', { data, error });
 
@@ -28,6 +29,10 @@ export const SignupForm = () => {
   return (
     <form className={classes['auth-form']} onSubmit={handleSignup}>
       <h1 className={classes['title']}>Signup</h1>
+      <div className={classes['field']}>
+        <label htmlFor='name'>Name:</label>
+        <input type='text' id='name' name='name' required />
+      </div>
       <div className={classes['field']}>
         <label htmlFor='email'>Email:</label>
         <input type='email' id='email' name='email' required />

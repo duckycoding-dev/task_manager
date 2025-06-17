@@ -2,7 +2,11 @@ import { Link, useNavigate } from '@tanstack/react-router';
 import classes from './form.module.css';
 import { authClient } from '../../auth-client';
 
-export const LoginForm = () => {
+interface LoginFormProps {
+  redirectTo?: string;
+}
+
+export const LoginForm = ({ redirectTo }: LoginFormProps) => {
   const navigate = useNavigate();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -16,7 +20,10 @@ export const LoginForm = () => {
       password,
       fetchOptions: {
         onSuccess: () => {
-          return navigate({ to: '/' });
+          if (redirectTo) {
+            return navigate({ to: redirectTo });
+          }
+          return;
         },
       },
     });

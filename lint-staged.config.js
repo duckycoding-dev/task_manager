@@ -1,12 +1,22 @@
+const pathsToIgnore = ['.vscode', 'routeTree.gen.ts'];
+
 /**
  * @filename: lint-staged.config.js
  * @type {import('lint-staged').Configuration}
  */
 const configs = {
-  '*.{js,jsx,ts,tsx}': (stagedFiles) => [
-    'eslint . --ignore-pattern .vscode',
-    `prettier --ignore-unknown --write ${stagedFiles.filter((file) => !file.includes('.vscode')).join(' ')}`,
-  ],
+  '*.{js,jsx,ts,tsx}': (stagedFiles) => {
+    return [
+      ...pathsToIgnore.map((path) => `eslint . --ignore-pattern ${path}`),
+      `prettier --ignore-unknown --write ${stagedFiles
+        .filter((file) => {
+          return pathsToIgnore.every(
+            (pathToIgnore) => !file.includes(pathToIgnore),
+          );
+        })
+        .join(' ')}`,
+    ];
+  },
 };
 
 // this configuration runs eslint and prettier (in order) on all staged files

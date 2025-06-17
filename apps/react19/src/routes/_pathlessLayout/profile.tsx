@@ -3,8 +3,8 @@ import { createFileRoute, redirect } from '@tanstack/react-router';
 export const Route = createFileRoute('/_pathlessLayout/profile')({
   component: RouteComponent,
   beforeLoad: async ({ location, context }) => {
-    if (!context.auth.isLoggedIn) {
-      throw redirect({
+    if (!context.auth.data?.user && !context.auth.isPending) {
+      return redirect({
         to: '/auth/login',
         search: {
           // Use the current location to power a redirect after login
@@ -14,9 +14,12 @@ export const Route = createFileRoute('/_pathlessLayout/profile')({
         },
       });
     }
+    return;
   },
 });
 
 function RouteComponent() {
-  return <div>Hello "/_pathlessLayout/profile"!</div>;
+  const { auth } = Route.useRouteContext();
+
+  return <h1>Hello {auth.data?.user?.name}!</h1>;
 }
