@@ -26,7 +26,6 @@ const getLabels = createRoute({
       z.array(selectLabelSchema),
       'Labels fetched',
     ),
-    [statusCodeMap['NOT_FOUND'].status]: createErrorResponse('Label not found'),
     [statusCodeMap['INTERNAL_SERVER_ERROR'].status]: createErrorResponse(
       statusCodeMap['INTERNAL_SERVER_ERROR'].message,
     ),

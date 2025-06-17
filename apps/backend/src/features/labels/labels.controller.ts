@@ -39,11 +39,6 @@ export const createLabelsController = (
       const filters = c.req.valid('query');
       const { id: userId } = c.get('user');
       const labelsFound = await labelsService.getLabels(userId, filters);
-      if (labelsFound.length === 0) {
-        throw new EndpointError<typeof labelsRoutes.getLabels>('NOT_FOUND', {
-          message: 'No labels found',
-        });
-      }
       return c.json(
         {
           success: true,

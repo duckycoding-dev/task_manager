@@ -32,7 +32,6 @@ const getTasks = createRoute({
       selectTaskSchema.array(),
       'Tasks fetched',
     ),
-    [statusCodeMap['NOT_FOUND'].status]: createErrorResponse('Task not found'),
     [statusCodeMap['INTERNAL_SERVER_ERROR'].status]: createErrorResponse(
       statusCodeMap['INTERNAL_SERVER_ERROR'].message,
     ),
@@ -241,8 +240,6 @@ const getTaskReminders = createRoute({
       selectReminderSchema.array(),
       'Reminders fetched',
     ),
-    [statusCodeMap['NOT_FOUND'].status]:
-      createErrorResponse('No reminders found'),
     [statusCodeMap['INTERNAL_SERVER_ERROR'].status]: createErrorResponse(
       statusCodeMap['INTERNAL_SERVER_ERROR'].message,
     ),

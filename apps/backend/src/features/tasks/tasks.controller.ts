@@ -32,11 +32,7 @@ export const createTasksController = (
         ...filters,
         dueDate,
       });
-      if (tasksFound.length === 0) {
-        throw new EndpointError<typeof tasksRoutes.getTasks>('NOT_FOUND', {
-          message: 'No tasks found',
-        });
-      }
+
       return c.json(
         {
           success: true,
@@ -196,12 +192,7 @@ export const createTasksController = (
       const { taskId } = c.req.valid('param');
       const { id: userId } = c.get('user');
       const reminders = await tasksService.getTaskReminders(userId, taskId);
-      if (reminders.length === 0) {
-        throw new EndpointError<typeof tasksRoutes.getTaskReminders>(
-          'NOT_FOUND',
-          { message: 'No reminders found for this task' },
-        );
-      }
+
       return c.json(
         {
           success: true,

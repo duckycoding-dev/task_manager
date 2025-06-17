@@ -24,14 +24,6 @@ export const createProjectsController = (
     getProjects: async (c) => {
       const { id: userId } = c.get('user');
       const projectsFound = await projectsService.getProjects(userId);
-      if (projectsFound.length === 0) {
-        throw new EndpointError<typeof projectsRoutes.getProjects>(
-          'NOT_FOUND',
-          {
-            message: 'No projects found',
-          },
-        );
-      }
       return c.json(
         {
           success: true,
@@ -122,14 +114,6 @@ export const createProjectsController = (
         userId,
         projectId,
       );
-      if (tasksFound.length === 0) {
-        throw new EndpointError<typeof projectsRoutes.getProjectTasks>(
-          'NOT_FOUND',
-          {
-            message: 'No tasks found for this project',
-          },
-        );
-      }
       return c.json(
         { success: true, data: tasksFound, message: 'Tasks fetched' },
         200,

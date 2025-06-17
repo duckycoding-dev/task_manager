@@ -23,8 +23,6 @@ const getProjects = createRoute({
       selectProjectSchema.array(),
       'Projects fetched',
     ),
-    [statusCodeMap['NOT_FOUND'].status]:
-      createErrorResponse('Projects not found'),
     [statusCodeMap['INTERNAL_SERVER_ERROR'].status]: createErrorResponse(
       statusCodeMap['INTERNAL_SERVER_ERROR'].message,
     ),
@@ -128,9 +126,6 @@ const getProjectTasks = createRoute({
     [statusCodeMap['OK'].status]: createSuccessJsonResponse(
       selectTaskSchema.array(),
       'Tasks fetched',
-    ),
-    [statusCodeMap['NOT_FOUND'].status]: createErrorResponse(
-      'The project to be patched was not found',
     ),
     [statusCodeMap['INTERNAL_SERVER_ERROR'].status]: createErrorResponse(
       statusCodeMap['INTERNAL_SERVER_ERROR'].message,

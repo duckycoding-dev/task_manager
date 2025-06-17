@@ -43,8 +43,8 @@
   },
   "exports": {
     "./hc": {
-      "import": "./dist/hc.js",
-      "types": "./dist/hc.d.ts"
+      "import": "./dist/hcForClient.js",
+      "types": "./dist/hcForClient.d.ts"
     },
     "./auth": {
       "import": "./dist/utils/auth.js",

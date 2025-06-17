@@ -51,21 +51,15 @@ const run = async (
 
   // run the backend server
   const backendPath = `${import.meta.dir}/../apps/backend`;
-  Bun.spawn(
-    [
-      'bun',
-      'run',
-      'bun:dev',
-      '--port',
-      `${backendPort}`,
-      '--fe_port',
-      `${frontendPort}`,
-    ],
-    {
-      cwd: backendPath,
-      ...spawnOptions,
+  Bun.spawn(['bun', 'run', 'bun:dev'], {
+    cwd: backendPath,
+    env: {
+      ...(process.env as Record<string, string | undefined>), // need to cast as vite extends ImportMetaEnv by adding boolean values, and the process.env should only include strings or undefined values
+      FRONTEND_PORT: frontendPort, // Set the frontend port for the backend to use: we need to use envs instead of cli args because to avoid having issues with some tools when extra cli args are provided; for example, vite does not accept extra arguments beside those it expects: https://github.com/vitejs/vite/issues/7065
+      PORT: backendPort,
     },
-  );
+    ...spawnOptions,
+  });
 
   // run the frontend server
   const frontendPath = `${frontendAppsPath}/${frontendPackage}`;

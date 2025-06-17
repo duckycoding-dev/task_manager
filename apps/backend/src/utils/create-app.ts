@@ -59,7 +59,7 @@ export function createApp(): AppOpenAPI {
 
   // middleware MUST be defined before the routes that use it
   app.use(
-    '/auth/*',
+    '*',
     cors({
       origin: `http://localhost:${env.FRONTEND_PORT}`, // replace with your origin
       allowHeaders: ['Content-Type', 'Authorization'],

@@ -25,8 +25,6 @@ const getReminders = createRoute({
       selectReminderSchema.array(),
       'Reminders fetched',
     ),
-    [statusCodeMap['NOT_FOUND'].status]:
-      createErrorResponse('No reminders found'),
     [statusCodeMap['INTERNAL_SERVER_ERROR'].status]: createErrorResponse(
       statusCodeMap['INTERNAL_SERVER_ERROR'].message,
     ),
