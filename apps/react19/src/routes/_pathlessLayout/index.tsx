@@ -2,13 +2,10 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import classes from './index.module.css';
 import { useAuthSession } from '../../features/users/auth/auth-client';
 import { HonoClient } from '../../services/backend';
-import { useCallback, useEffect, useState } from 'react';
-import {
-  selectTaskSchema,
-  type InsertTask,
-  type Task,
-} from '@task-manager/backend/tasks';
+import { useCallback } from 'react';
+import { selectTaskSchema, type InsertTask } from '@task-manager/backend/tasks';
 import { TaskList } from '../../features/tasks/components/task-list/TaskList';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_pathlessLayout/')({
   component: Index,
@@ -28,19 +25,14 @@ function Index() {
       throw new Error('Invalid task data format');
     }
   }, []);
-  const { data: authData, isPending } = useAuthSession();
+  const { data: authData, isPending: authIsPending } = useAuthSession();
+  // const [tasks, setTasks] = useState<Task[]>([]);
 
-  const [tasks, setTasks] = useState<Task[]>([]);
-  useEffect(() => {
-    fetchTasks()
-      .then(setTasks)
-      .catch((error) => {
-        console.error('Error fetching tasks:', error);
-      });
-  }, [fetchTasks]);
-  // const tasks = use(fetchTasks());
-
-  const isLoggedIn = !!authData?.user;
+  const queryClient = useQueryClient();
+  const { data: tasks, isLoading } = useQuery({
+    queryKey: ['tasks'],
+    queryFn: fetchTasks,
+  });
 
   const handleAddTask = useCallback(async () => {
     // This function would typically open a modal or redirect to a form for adding a new task
@@ -71,14 +63,29 @@ function Index() {
 
       const parsedTask = selectTaskSchema.parse(result.data);
       // Optionally, you can refetch tasks or update the state with the new task
-      setTasks((prevTasks) => [...prevTasks, parsedTask]);
+      return [...(tasks ?? []), parsedTask];
     } catch (error) {
       console.error('Error adding task:', error);
+      return tasks ?? [];
     }
-  }, []);
+  }, [tasks]);
 
-  if (isPending) {
-    return <div>Loading...</div>;
+  const addTaskMutation = useMutation({
+    mutationFn: handleAddTask,
+    onSuccess: (newData) => {
+      queryClient.setQueryData(['tasks'], newData);
+    },
+  });
+
+  const isLoggedIn = !!authData?.user;
+
+  if (authIsPending) {
+    return (
+      <>
+        <h1 className={classes['title']}> Welcome to Task Manager</h1>
+        <p>Fetching user data...</p>
+      </>
+    );
   }
 
   if (!isLoggedIn) {
@@ -95,11 +102,20 @@ function Index() {
     );
   }
 
+  if (isLoading && !tasks) {
+    return (
+      <>
+        <h1 className={classes['title']}> Welcome to Task Manager</h1>
+        <p>Fetching data...</p>
+      </>
+    );
+  }
+
   return (
     <>
       <h1 className={classes['title']}>Welcome to Task Manager</h1>
       {tasks?.[0] ? <TaskList tasks={tasks} /> : <span>No tasks found</span>}
-      <button type='button' onClick={handleAddTask}>
+      <button type='button' onClick={() => addTaskMutation.mutate()}>
         Add new task
       </button>
     </>
