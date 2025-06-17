@@ -1,15 +1,14 @@
 import { Link } from '@tanstack/react-router';
-import { useAuth, useAuthDispatch } from '../../users/auth/hooks/useAuth';
 import classes from './navbar.module.css';
 import type { HTMLAttributes } from 'react';
+import { useAuthSession } from '../../users/auth/auth-client';
 
 export const Navbar = (props: HTMLAttributes<HTMLElement>) => {
-  const { isLoggedIn } = useAuth();
-  const dispatch = useAuthDispatch();
+  const { data: authData } = useAuthSession();
 
-  const handleSignout = () => {
-    dispatch({ type: 'SIGN_OUT' });
-  };
+  const isLoggedIn = !!authData?.user;
+
+  const handleSignout = () => {};
 
   return (
     <nav {...props}>

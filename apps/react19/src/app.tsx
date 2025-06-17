@@ -4,15 +4,20 @@ import { RouterProvider, createRouter } from '@tanstack/react-router';
 import './styles/style.css';
 // Import the generated route tree
 import { routeTree } from './routeTree.gen';
-import {
-  AuthProvider,
-  initialAuthState,
-  type AuthState,
-} from './features/users/auth/context/AuthProvider';
-import { useAuth } from './features/users/auth/hooks/useAuth';
+import { useAuthSession } from './features/users/auth/auth-client';
 
 // Create a new router instance
-const router = createRouter({ routeTree, context: { auth: initialAuthState } });
+const router = createRouter({
+  routeTree,
+  context: {
+    auth: {
+      data: null,
+      error: null,
+      isPending: false,
+      refetch: () => Promise.resolve(),
+    },
+  },
+});
 
 // Register the router instance for type safety
 declare module '@tanstack/react-router' {
@@ -22,12 +27,11 @@ declare module '@tanstack/react-router' {
 }
 
 export interface MyRouterContext {
-  // The ReturnType of your useAuth hook or the value of your AuthContext
-  auth: AuthState;
+  auth: ReturnType<typeof useAuthSession>;
 }
 
 function App() {
-  const auth = useAuth();
+  const auth = useAuthSession();
   return <RouterProvider router={router} context={{ auth }} />;
 }
 
@@ -38,9 +42,7 @@ if (!rootElement.innerHTML) {
 
   root.render(
     <StrictMode>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
+      <App />
     </StrictMode>,
   );
 }

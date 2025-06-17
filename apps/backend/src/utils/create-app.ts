@@ -10,6 +10,7 @@ import { configureOpenAPI } from './configure-open-api';
 import { formatZodError } from './mapping';
 import { addAuthMiddleware, auth } from './auth';
 import { cors } from 'hono/cors';
+import env from './env';
 
 export function createRouter() {
   const router = new OpenAPIHono<AppContext>({
@@ -55,15 +56,12 @@ export function createApp(): AppOpenAPI {
   const app = createRouter();
   app.use('*', addAuthMiddleware);
   configureOpenAPI(app);
-  app.on(['POST', 'GET'], '/auth/*', (c) => {
-    console.log('QUA');
-    return auth.handler(c.req.raw);
-  });
 
+  // middleware MUST be defined before the routes that use it
   app.use(
     '/auth/*',
     cors({
-      origin: 'http://localhost:9876', // replace with your origin
+      origin: `http://localhost:${env.FRONTEND_PORT}`, // replace with your origin
       allowHeaders: ['Content-Type', 'Authorization'],
       allowMethods: ['POST', 'GET', 'OPTIONS'],
       exposeHeaders: ['Content-Length'],
@@ -71,7 +69,9 @@ export function createApp(): AppOpenAPI {
       credentials: true,
     }),
   ); // https://www.better-auth.com/docs/integrations/hono#cors
-
+  app.on(['POST', 'GET'], '/auth/*', (c) => {
+    return auth.handler(c.req.raw);
+  });
   app.onError(errorHandler);
 
   return app;

@@ -1,16 +1,17 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { useAuth } from '../../features/users/auth/hooks/useAuth';
 import classes from './index.module.css';
+import { useAuthSession } from '../../features/users/auth/auth-client';
 
 export const Route = createFileRoute('/_pathlessLayout/')({
   component: Index,
 });
 
 function Index() {
-  const { isLoggedIn } = useAuth();
-
+  const { data: authData } = useAuthSession();
+  const isLoggedIn = !!authData?.user;
   return (
     <>
+      {isLoggedIn ? JSON.stringify(authData.user) : 'No user session found'}
       <h1 className={classes['title']}>Welcome to Task Manager</h1>
       {isLoggedIn ? (
         <ul title={'task list'}>
