@@ -3,40 +3,26 @@ import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import postcssNesting from 'postcss-nesting';
-import { parseArgs } from 'util';
 
 // https://vite.dev/config/
 
 export default defineConfig(({ mode }) => {
-  const { values: args } = parseArgs({
-    args: process.argv,
-    options: {
-      port: {
-        type: 'string',
-        short: 'P',
-      },
-    },
-    strict: false, // allow unknown options
-    allowPositionals: true,
-  });
-
   const env = { ...process.env, ...loadEnv(mode, process.cwd()) };
-  const untypedFrontendPort = args.port || env.VITE_PORT || '5173'; // cli args must have precedence over env vars, and if neither is set, default to 5173 (which is the default Vite port)
-  env.VITE_BACKEND_PORT = env.VITE_BACKEND_PORT || '3001'; // cli args must have precedence over env vars, and if
-  process.env.VITE_BACKEND_PORT = env.VITE_BACKEND_PORT; // Ensure process.env.VITE_BACKEND_PORT is updated as well in case it is used elsewhere
+  process.env.VITE_PORT = env.PORT || env.VITE_PORT || '5173'; // cli args must have precedence over env vars, and if neither is set, default to 5173 (which is the default Vite port)
+  process.env.VITE_BACKEND_PORT =
+    env.BACKEND_PORT || env.VITE_BACKEND_PORT || '3001'; // Ensure process.env.VITE_BACKEND_PORT is updated as well in case it is used elsewhere
   // neither is set, default to 3001 (which is the default backend port)
-  if (untypedFrontendPort !== 'boolean' && isNaN(Number(untypedFrontendPort))) {
-    throw new Error(
-      `VITE_PORT must be a number, but got: ${untypedFrontendPort}`,
-    );
-  }
-  if (typeof untypedFrontendPort === 'boolean') {
-    throw new Error(
-      `VITE_PORT cannot be a boolean, but got: ${untypedFrontendPort}`,
-    );
-  }
 
-  process.env.VITE_PORT = untypedFrontendPort; // Ensure process.env.VITE_PORT is updated as well in case it is used elsewhere
+  if (isNaN(Number(process.env.VITE_PORT))) {
+    throw new Error(
+      `VITE_PORT must be a number, but got: ${process.env.VITE_PORT}`,
+    );
+  }
+  if (isNaN(Number(process.env.VITE_BACKEND_PORT))) {
+    throw new Error(
+      `VITE_BACKEND_PORT must be a number, but got: ${process.env.VITE_BACKEND_PORT}`,
+    );
+  }
 
   return {
     plugins: [
@@ -54,6 +40,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
+      strictPort: true, // if the port is already in use, Vite will throw an error instead of trying to find another port
       port: Number(process.env.VITE_PORT),
     },
   } as const;

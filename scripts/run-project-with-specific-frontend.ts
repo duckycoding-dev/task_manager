@@ -18,34 +18,19 @@ const run = async (
   args: { [key: string]: string | boolean | undefined },
 ) => {
   console.log(`Running project with frontend package: ${frontendPackage}`);
-  const {
-    be_port: backendPort,
-    fe_port: frontendPort,
-    ...remainingArgs
-  } = args;
-
-  const formattedRemainingArgs = Object.entries(remainingArgs).flatMap(
-    ([key, value]) => {
-      if (value === undefined || value === false) {
-        return []; // Skip undefined or false values
-      } else if (value === true) {
-        return [`--${key}`]; // For boolean true, just return the flag
-      } else {
-        return [`--${key}`, value];
-      }
-    },
-  );
-  console.log(`Remaining args: ${formattedRemainingArgs}`);
+  const { be_port: backendPort, fe_port: frontendPort } = args;
 
   if (typeof backendPort === 'boolean' || isNaN(Number(backendPort))) {
     console.error(`❌ Backend port must be a number, but got: ${backendPort}`);
-    process.exit(1);
+    process.exitCode = 1;
+    throw new Error(`Backend port must be a number, but got: ${backendPort}`);
   }
   if (typeof frontendPort === 'boolean' || isNaN(Number(frontendPort))) {
     console.error(
       `❌ Frontend port must be a number, but got: ${frontendPort}`,
     );
-    process.exit(1);
+    process.exitCode = 1;
+    throw new Error(`Frontend port must be a number, but got: ${frontendPort}`);
   }
 
   const frontendAppsPath = `${import.meta.dir}/../apps`;
@@ -58,34 +43,28 @@ const run = async (
     console.log('Available frontend packages:');
     console.log('----------------------------------');
     console.table(listOfFrontendPackages);
-    process.exit(1);
+    process.exitCode = 1;
+    throw new Error(
+      `Frontend package "${frontendPackage}" not found in ${frontendAppsPath}`,
+    );
   }
 
   // run the backend server
   const backendPath = `${import.meta.dir}/../apps/backend`;
-  Bun.spawn(
-    ['bun', 'run', 'bun:dev', '--port', `${backendPort}`].concat(
-      formattedRemainingArgs,
-    ),
-    {
-      cwd: backendPath,
-      ...spawnOptions,
-    },
-  );
+  Bun.spawn(['bun', 'run', 'bun:dev', '--port', `${backendPort}`], {
+    cwd: backendPath,
+    ...spawnOptions,
+  });
 
   // run the frontend server
   const frontendPath = `${frontendAppsPath}/${frontendPackage}`;
-  const frontendCommand = [
-    'bun',
-    'run',
-    'dev',
-    '--port',
-    `${frontendPort}`,
-  ].concat(formattedRemainingArgs);
+  const frontendCommand = ['bun', 'run', 'dev'];
   Bun.spawn(frontendCommand, {
     cwd: frontendPath,
     env: {
-      VITE_BACKEND_PORT: backendPort, // Set the backend port for the frontend to use
+      ...(process.env as Record<string, string | undefined>), // need to cast as vite extends ImportMetaEnv by adding boolean values, and the process.env should only include strings or undefined values
+      BACKEND_PORT: backendPort, // Set the backend port for the frontend to use: we need to use envs instead of cli args because to avoid having issues with some tools when extra cli args are provided; for example, vite does not accept extra arguments beside those it expects: https://github.com/vitejs/vite/issues/7065
+      PORT: frontendPort,
     },
     ...spawnOptions,
   });
@@ -104,7 +83,10 @@ if (frontendPackage?.includes(':')) {
 
 if (!frontendPackage) {
   console.error('❌ No frontend package specified');
-  process.exit(1);
+  process.exitCode = 1;
+  throw new Error(
+    'No frontend package specified. Please provide a package name.',
+  );
 }
 
 const { values: args } = parseArgs({
