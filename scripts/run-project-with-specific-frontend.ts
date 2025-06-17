@@ -51,10 +51,21 @@ const run = async (
 
   // run the backend server
   const backendPath = `${import.meta.dir}/../apps/backend`;
-  Bun.spawn(['bun', 'run', 'bun:dev', '--port', `${backendPort}`], {
-    cwd: backendPath,
-    ...spawnOptions,
-  });
+  Bun.spawn(
+    [
+      'bun',
+      'run',
+      'bun:dev',
+      '--port',
+      `${backendPort}`,
+      '--fe_port',
+      `${frontendPort}`,
+    ],
+    {
+      cwd: backendPath,
+      ...spawnOptions,
+    },
+  );
 
   // run the frontend server
   const frontendPath = `${frontendAppsPath}/${frontendPackage}`;

@@ -12,7 +12,7 @@ The script automatically detects which frontend package to run based on the npm 
 2. **Validates the package exists** in the `apps/` directory (excluding the backend)
 3. **Starts the backend server** on the specified port if provided via the `be_port` arg (default: 3001)
 4. **Starts the frontend server** on the specified port if provided via the `fe_port` arg (default: 3002)
-5. **Sets up environment variables** for the frontend to communicate with the backend: in particular, the frontend receives the backend port; we could later be passing the frontend port to the backend as well if needed.
+5. **Sets up environment variables** for the frontend to communicate with the backend: in particular, the frontend receives its port number and the backend port, and viceversa.
 
 ## Usage
 

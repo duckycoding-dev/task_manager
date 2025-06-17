@@ -24,6 +24,15 @@ export default defineConfig(({ mode }) => {
     );
   }
 
+  if (env.NODE_ENV === 'development') {
+    console.log('----------------------------');
+    console.log('Frontend envs:');
+    console.table({
+      VITE_PORT: process.env.VITE_PORT,
+      VITE_BACKEND_PORT: process.env.VITE_BACKEND_PORT,
+    });
+  }
+
   return {
     plugins: [
       tanstackRouter({ target: 'react', autoCodeSplitting: true }),

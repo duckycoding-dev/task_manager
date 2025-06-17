@@ -118,7 +118,11 @@ const serializeError = (err: Error) => {
   };
 };
 
-export const errorHandler = (err: Error | AppError, c: Context): Response => {
+export const errorHandler = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  err: Error | AppError | EndpointError<any> | RepositoryValidationError,
+  c: Context,
+): Response => {
   console.error(
     `[${new Date().toISOString()}] Error:`,
     JSON.stringify(serializeError(err), null, 2),
@@ -133,6 +137,7 @@ export const errorHandler = (err: Error | AppError, c: Context): Response => {
         ? err.message
         : (statusCodeMap[err.verboseCode]?.message ?? 'Internal Server Error');
 
+    console.log('DAVIDELOG ERROR MESSAGE', message);
     const errorResponse: ErrorResponse = {
       success: false,
       error: message,

@@ -9,6 +9,7 @@ import type {
 import { configureOpenAPI } from './configure-open-api';
 import { formatZodError } from './mapping';
 import { addAuthMiddleware, auth } from './auth';
+import { cors } from 'hono/cors';
 
 export function createRouter() {
   const router = new OpenAPIHono<AppContext>({
@@ -55,8 +56,22 @@ export function createApp(): AppOpenAPI {
   app.use('*', addAuthMiddleware);
   configureOpenAPI(app);
   app.on(['POST', 'GET'], '/auth/*', (c) => {
+    console.log('QUA');
     return auth.handler(c.req.raw);
   });
+
+  app.use(
+    '/auth/*',
+    cors({
+      origin: 'http://localhost:9876', // replace with your origin
+      allowHeaders: ['Content-Type', 'Authorization'],
+      allowMethods: ['POST', 'GET', 'OPTIONS'],
+      exposeHeaders: ['Content-Length'],
+      maxAge: 600,
+      credentials: true,
+    }),
+  ); // https://www.better-auth.com/docs/integrations/hono#cors
+
   app.onError(errorHandler);
 
   return app;

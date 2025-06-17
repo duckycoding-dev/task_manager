@@ -11,6 +11,11 @@ const { values: args } = parseArgs({
       short: 'P',
       default: process.env.PORT || '3001', // Default port, should match backend's env.PORT
     },
+    fe_port: {
+      type: 'string',
+      short: 'P',
+      default: process.env.FRONTEND_PORT || '3002', // Default port of frontend, should match backend's env.FRONTEND_PORT
+    },
   },
   strict: false,
   allowPositionals: true,
@@ -35,6 +40,13 @@ const envSchema = z.object({
     .default(
       args.port && typeof args.port !== 'boolean' ? Number(args.port) : 3001,
     ), // default to 3001 if not provided
+  FRONTEND_PORT: z.coerce
+    .number()
+    .default(
+      args.fe_port && typeof args.fe_port !== 'boolean'
+        ? Number(args.fe_port)
+        : 3002,
+    ), // default to 3002 if not provided
 });
 
 export type Env = z.infer<typeof envSchema>;
@@ -49,7 +61,12 @@ if (error) {
 
 data.PORT =
   typeof args.port !== 'boolean' ? Number(args.port) || data.PORT : data.PORT; // ensure PORT is a number and set it from cli args if provided
+data.FRONTEND_PORT =
+  typeof args.fe_port !== 'boolean'
+    ? Number(args.fe_port) || data.FRONTEND_PORT
+    : data.FRONTEND_PORT; // ensure FRONTEND_PORT is a number and set it from cli args if provided
 process.env.PORT = data.PORT.toString(); // ensure process.env.PORT is updated as well in case it is used elsewhere
+process.env.FRONTEND_PORT = data.FRONTEND_PORT.toString(); // ensure process.env.FRONTEND_PORT is updated as well in case it is used elsewhere
 
 export const env = data;
 
@@ -57,7 +74,7 @@ console.log('✅ Backend envs loaded successfully');
 
 if (env.NODE_ENV === 'development') {
   console.log('----------------------------');
-  console.log('Envs:');
+  console.log('Backend envs:');
   console.table(env);
 }
 
