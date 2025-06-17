@@ -144,7 +144,6 @@ export const errorHandler = (
       cause,
       stack,
     };
-    console.log('DAVIDELOG ERROR RESPONSE', errorResponse);
 
     return c.json(errorResponse, err.status);
   } else if (err instanceof RepositoryValidationError) {

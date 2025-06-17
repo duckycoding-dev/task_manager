@@ -32,6 +32,7 @@ export const Navbar = (props: HTMLAttributes<HTMLElement>) => {
             </li>
             <li>
               <button
+                type='button'
                 className={classes['logout-button']}
                 onClick={handleSignout}
               >

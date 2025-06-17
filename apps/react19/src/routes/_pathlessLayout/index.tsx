@@ -9,7 +9,7 @@ import { selectTaskSchema } from '@task-manager/backend/tasks';
 export const Route = createFileRoute('/_pathlessLayout/')({
   component: Index,
 });
-
+console.log('Route', Route);
 function Index() {
   const fetchTasks = useCallback(async () => {
     const response = await (await HonoClient.tasks.$get({ query: {} })).json();

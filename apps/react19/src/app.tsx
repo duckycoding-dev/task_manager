@@ -30,7 +30,7 @@ export interface MyRouterContext {
   auth: ReturnType<typeof useAuthSession>;
 }
 
-function App() {
+export function App() {
   const auth = useAuthSession();
   useEffect(() => {
     if (!auth.isPending) {
