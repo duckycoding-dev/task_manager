@@ -10,7 +10,6 @@ import {
   QueryClientProvider,
   useQueryClient,
 } from '@tanstack/react-query';
-import classes from './app.module.css';
 
 // Create a new router instance
 const router = createRouter({
@@ -24,12 +23,6 @@ const router = createRouter({
     },
     queryClient: undefined,
   },
-  // defaultNotFoundComponent: () => (
-  //   <div className={classes['not-found-page']}>
-  //     <h1>404 - Not Found</h1>
-  //     <p>The page you are looking for does not exist.</p>
-  //   </div>
-  // ),
 });
 
 // Register the router instance for type safety
@@ -46,9 +39,11 @@ export function App() {
   const queryClient = useQueryClient();
   useEffect(() => {
     if (!auth.isPending) {
+      console.log('INVALIDATING AUTH');
       router.invalidate();
     }
   }, [auth.isPending]);
+  console.log(auth);
   return <RouterProvider router={router} context={{ auth, queryClient }} />;
 }
 

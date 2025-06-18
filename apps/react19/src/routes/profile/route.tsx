@@ -21,5 +21,8 @@ export const Route = createFileRoute('/profile')({
 function RouteComponent() {
   const { auth } = Route.useRouteContext();
 
+  if (auth.isPending) {
+    return <h1>Loading...</h1>;
+  }
   return <h1>Hello {auth.data?.user?.name}!</h1>;
 }

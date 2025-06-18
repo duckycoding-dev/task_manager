@@ -1,6 +1,8 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { LoginForm } from '../../features/users/auth/components/forms/LoginForm';
+import { LoginForm } from '../../../features/users/auth/components/forms/login-form/LoginForm';
 import { z } from 'zod/v4';
+import classes from './login.module.css';
+import { PageTitle } from '../../../features/ui/titles/PageTitle';
 
 const searchParamsSchema = z.object({
   redirect: z.string().optional(),
@@ -22,7 +24,18 @@ function RouteComponent() {
   const search = Route.useSearch();
 
   if (context.auth.isPending) {
-    return <div>Loading authentication...</div>;
+    return (
+      <>
+        <PageTitle className={classes['title']}>Login</PageTitle>
+        <div>Loading authentication...</div>
+      </>
+    );
   }
-  return <LoginForm redirectTo={search.redirect ?? '/'} />;
+
+  return (
+    <>
+      <PageTitle className={classes['title']}>Login</PageTitle>
+      <LoginForm redirectTo={search.redirect ?? '/'} />
+    </>
+  );
 }
