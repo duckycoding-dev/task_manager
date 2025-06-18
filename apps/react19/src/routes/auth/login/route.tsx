@@ -20,17 +20,7 @@ export const Route = createFileRoute('/auth/login')({
 });
 
 function RouteComponent() {
-  const context = Route.useRouteContext();
   const search = Route.useSearch();
-
-  if (context.auth.isPending) {
-    return (
-      <>
-        <PageTitle className={classes['title']}>Login</PageTitle>
-        <div>Loading authentication...</div>
-      </>
-    );
-  }
 
   return (
     <>

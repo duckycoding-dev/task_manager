@@ -14,17 +14,7 @@ export const Route = createFileRoute('/auth/signup')({
 });
 
 function RouteComponent() {
-  const context = Route.useRouteContext();
   const navigate = Route.useNavigate();
-
-  if (context.auth.isPending) {
-    return (
-      <>
-        <PageTitle className={classes['title']}>Signup</PageTitle>
-        <div>Loading authentication...</div>
-      </>
-    );
-  }
 
   return (
     <>
