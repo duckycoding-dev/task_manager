@@ -9,3 +9,8 @@
   font-size: 1rem;
   text-align: center;
 }
+
+.add-task-button {
+  width: 100%;
+  margin-top: 1rem;
+}

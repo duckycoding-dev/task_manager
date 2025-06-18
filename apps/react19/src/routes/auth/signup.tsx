@@ -1,7 +1,7 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { SignupForm } from '../../../features/users/auth/components/forms/SignupForm';
+import { SignupForm } from '../../features/users/auth/components/forms/SignupForm';
 
-export const Route = createFileRoute('/_pathlessLayout/auth/signup')({
+export const Route = createFileRoute('/auth/signup')({
   component: RouteComponent,
   beforeLoad: async ({ context }) => {
     if (context.auth.data?.user) {

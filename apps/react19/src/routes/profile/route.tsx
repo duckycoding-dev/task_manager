@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
 
-export const Route = createFileRoute('/_pathlessLayout/profile')({
+export const Route = createFileRoute('/profile')({
   component: RouteComponent,
   beforeLoad: async ({ location, context }) => {
     if (!context.auth.data?.user && !context.auth.isPending) {

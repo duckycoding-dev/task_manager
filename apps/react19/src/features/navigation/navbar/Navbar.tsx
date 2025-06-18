@@ -2,6 +2,7 @@ import { Link, useNavigate } from '@tanstack/react-router';
 import classes from './navbar.module.css';
 import type { HTMLAttributes } from 'react';
 import { authClient, useAuthSession } from '../../users/auth/auth-client';
+import { Button } from '../../ui/button/Button';
 
 export const Navbar = (props: HTMLAttributes<HTMLElement>) => {
   const navigate = useNavigate();
@@ -31,13 +32,7 @@ export const Navbar = (props: HTMLAttributes<HTMLElement>) => {
               <Link to='/profile'>Profile</Link>
             </li>
             <li>
-              <button
-                type='button'
-                className={classes['logout-button']}
-                onClick={handleSignout}
-              >
-                Logout
-              </button>
+              <Button onClick={handleSignout}>Logout</Button>
             </li>
           </div>
         ) : (

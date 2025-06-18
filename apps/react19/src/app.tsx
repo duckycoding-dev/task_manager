@@ -5,7 +5,12 @@ import './styles/style.css';
 // Import the generated route tree
 import { routeTree } from './routeTree.gen';
 import { useAuthSession } from './features/users/auth/auth-client';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQueryClient,
+} from '@tanstack/react-query';
+import classes from './app.module.css';
 
 // Create a new router instance
 const router = createRouter({
@@ -17,13 +22,14 @@ const router = createRouter({
       isPending: true,
       refetch: () => Promise.resolve(),
     },
+    queryClient: undefined,
   },
-  defaultNotFoundComponent: () => (
-    <div>
-      <h1>404 - Not Found</h1>
-      <p>The page you are looking for does not exist.</p>
-    </div>
-  ),
+  // defaultNotFoundComponent: () => (
+  //   <div className={classes['not-found-page']}>
+  //     <h1>404 - Not Found</h1>
+  //     <p>The page you are looking for does not exist.</p>
+  //   </div>
+  // ),
 });
 
 // Register the router instance for type safety
@@ -33,21 +39,18 @@ declare module '@tanstack/react-router' {
   }
 }
 
-export interface MyRouterContext {
-  auth: ReturnType<typeof useAuthSession>;
-}
+const queryClient = new QueryClient();
 
 export function App() {
   const auth = useAuthSession();
+  const queryClient = useQueryClient();
   useEffect(() => {
     if (!auth.isPending) {
       router.invalidate();
     }
   }, [auth.isPending]);
-  return <RouterProvider router={router} context={{ auth }} />;
+  return <RouterProvider router={router} context={{ auth, queryClient }} />;
 }
-
-const queryClient = new QueryClient();
 
 // Render the app
 const rootElement = document.getElementById('root')!;
