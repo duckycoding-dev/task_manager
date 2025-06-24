@@ -1,5 +1,7 @@
+@import 'tailwindcss';
 @import './style-reset.css';
 @import './holy-grail-layout.css';
+@plugin "daisyui";
 
 @font-face {
   font-family: 'Inter';

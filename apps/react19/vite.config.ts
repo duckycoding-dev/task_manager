@@ -4,6 +4,7 @@ import react from '@vitejs/plugin-react';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import postcssNesting from 'postcss-nesting';
 import { parseArgs } from 'util';
+import tailwindcss from '@tailwindcss/vite';
 
 // https://vite.dev/config/
 
@@ -49,6 +50,7 @@ export default defineConfig(({ mode }) => {
     plugins: [
       tanstackRouter({ target: 'react', autoCodeSplitting: true }),
       react(),
+      tailwindcss(),
     ],
     css: {
       postcss: {

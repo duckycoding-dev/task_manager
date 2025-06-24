@@ -7,7 +7,10 @@ export function Header({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <header className={`${classes['header']} ${className ?? ''}`} {...props}>
+    <header
+      className={`navigation ${classes['header']} ${className ?? ''}`}
+      {...props}
+    >
       {children}
     </header>
   );
