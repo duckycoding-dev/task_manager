@@ -20,7 +20,10 @@ export const Navbar = (props: React.HTMLAttributes<HTMLElement>) => {
   };
 
   return (
-    <nav {...props} className={cn('', props.className)}>
+    <nav
+      {...props}
+      className={cn('max-w-[1280px] mx-auto px-4 md:px-8', props.className)}
+    >
       <ul className={'flex justify-between items-center list-none'}>
         <li>
           <Link to='/'>Home</Link>

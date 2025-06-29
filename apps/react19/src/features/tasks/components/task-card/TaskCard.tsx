@@ -7,7 +7,7 @@ interface TaskCardProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function TaskCard({ task, className, ...props }: TaskCardProps) {
   return (
-    <div className={cn('', className)} {...props}>
+    <div className={cn('card card-border p-4', className)} {...props}>
       <a href={`/tasks/${task.id}`}>{task.title}</a>
     </div>
   );

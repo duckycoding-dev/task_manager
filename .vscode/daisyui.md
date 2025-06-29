@@ -35,6 +35,28 @@ daisyUI 5 provides class names for common UI components
 9. suggested - when designing , don't add a custom font unless it's necessary
 10. don't add `bg-base-100 text-base-content` to body unless it's necessary
 11. For design decisions, use Refactoring UI book best practices
+12. When working with classes always wrap them with the `cn` utility function imported like so `import { cn } from '@task-manager/utils';`: inside this utility provide classes in the following order:
+    - daisy ui classes (for example `btn`, `input`, `card` and so on)
+    - tailwind classes for generic styles (for example `flex`, `flex-col`, `grid`, `text-lg`, etc)
+    - the `className` prop when working on a custom component (this should not be necessary on layouts nor pages)
+    This is an example:
+    ```tsx
+    import { cn } from '@task-manager/utils';
+    export function CustomButton({ className, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>){
+      return (
+        <button
+          className={cn(
+            'btn', // daisy ui classes
+            'flex items-center gap-4', // tailwind styling classes
+            className // props className
+          )}
+          {...props} // some other props
+        >
+          // some other components
+        </button>
+      )
+    }
+    ```
 
 daisyUI 5 class names are one of the following categories. these type names are only for reference and are not used in the actual code
 - `component`: the required component class

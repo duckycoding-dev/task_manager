@@ -21,34 +21,16 @@ function MyCustomErrorComponent({ error }: ErrorComponentProps) {
 
   return (
     <div
-      style={{
-        gridArea: 'main-content',
-        padding: '20px',
-        backgroundColor: '#fdd',
-        border: '1px solid #c00',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '1rem',
-      }}
+      className={
+        '[grid-area:main-content] p-5 bg-accent border border-error flex flex-col gap-4'
+      }
     >
-      <h1 style={{ fontSize: '1.5rem' }}>Oops! Something went wrong.</h1>
+      <h1 className='p-6'>Oops! Something went wrong.</h1>
       {/* Optionally display error details in development */}
       {import.meta.env.DEV ? (
         <>
           <h2>Error:</h2>
-          <pre
-            style={{
-              whiteSpace: 'pre-wrap',
-              wordBreak: 'break-all',
-              backgroundColor: '#fdd',
-              border: `2px solid #c40f0f`,
-              padding: '1rem 0.5rem',
-              borderRadius: '5px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.5rem',
-            }}
-          >
+          <pre className='whitespace-pre-wrap break-all bg-accent border-2 py-4 px-2 rounded-md flex flex-col gap-2'>
             {error.message || 'No error message provided.'}
             <br />
             {showTrace ? <span>{error.stack}</span> : ''}

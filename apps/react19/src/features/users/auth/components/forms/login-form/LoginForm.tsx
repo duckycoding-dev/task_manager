@@ -45,6 +45,7 @@ export const LoginForm = ({
         inputId='email'
         inputName='email'
         label='Email:'
+        type='email'
         required
       />
       <InputWithLabel

@@ -10,7 +10,11 @@ export function Input({ type = 'text', className, ...props }: InputProps) {
   return (
     <input
       type={type}
-      className={cn('p-2 border border-secondary border-r-4 w-full', className)}
+      className={cn(
+        'input',
+        'p-2 w-full invalid:border-error valid:border-success',
+        className,
+      )}
       {...props}
     />
   );
