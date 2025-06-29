@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 import { useAuthSession } from '../../features/users/auth/auth-client';
 import { HonoClient } from '../../services/backend';
 import { useCallback } from 'react';
@@ -6,6 +6,7 @@ import { selectTaskSchema, type InsertTask } from '@task-manager/backend/tasks';
 import { TaskList } from '../../features/tasks/components/task-list/TaskList';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '../../features/ui/button/Button';
+import { StyledLink } from '../../features/ui/link/Link';
 
 async function fetchTasks() {
   const response = await (await HonoClient.tasks.$get({ query: {} })).json();
@@ -99,7 +100,7 @@ function Index() {
         <div className={'text-center'}>
           <p>An account is required to manage tasks.</p>
           <p>
-            Please <Link to='/auth/login'>sign in</Link>
+            Please <StyledLink to='/auth/login'>sign in</StyledLink>
           </p>
         </div>
       </>

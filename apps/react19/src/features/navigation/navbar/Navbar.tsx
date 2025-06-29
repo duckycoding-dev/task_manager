@@ -1,23 +1,12 @@
-import { Link, useNavigate } from '@tanstack/react-router';
-import { authClient, useAuthSession } from '../../users/auth/auth-client';
-import { Button } from '../../ui/button/Button';
+import { useAuthSession } from '../../users/auth/auth-client';
 import { cn } from '@task-manager/utils';
+import { NavigationProfileDropdownMenu } from '../navigation-profile-dropdown-menu/NavigationProfileDropdownMenu';
+import { StyledLink } from '../../ui/link/Link';
 
 export const Navbar = (props: React.HTMLAttributes<HTMLElement>) => {
-  const navigate = useNavigate();
   const { data: authData } = useAuthSession();
 
   const isLoggedIn = !!authData?.user;
-
-  const handleSignout = async () => {
-    await authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          navigate({ to: '/auth/login' });
-        },
-      },
-    });
-  };
 
   return (
     <nav
@@ -26,20 +15,19 @@ export const Navbar = (props: React.HTMLAttributes<HTMLElement>) => {
     >
       <ul className={'flex justify-between items-center list-none'}>
         <li>
-          <Link to='/'>Home</Link>
+          <StyledLink className='link' to='/'>
+            Home
+          </StyledLink>
         </li>
         {isLoggedIn ? (
-          <div className={'flex items-center gap-2.5'}>
-            <li>
-              <Link to='/profile'>Profile</Link>
-            </li>
-            <li>
-              <Button onClick={handleSignout}>Logout</Button>
-            </li>
-          </div>
+          <li>
+            <NavigationProfileDropdownMenu />
+          </li>
         ) : (
           <li className={'flex items-center gap-2.5'}>
-            <Link to='/auth/login'>Login</Link>
+            <StyledLink className='link-secondary' to='/auth/login'>
+              Login
+            </StyledLink>
           </li>
         )}
       </ul>

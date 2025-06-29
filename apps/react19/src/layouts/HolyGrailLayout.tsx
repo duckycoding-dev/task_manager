@@ -8,7 +8,7 @@ export function HolyGrailLayout(props: HolyGrailLayoutProps) {
   return (
     <Fragment>
       <Header className={'[grid-area:header]'}>
-        <Navbar title={'main navigation'} />
+        <Navbar />
       </Header>
       <main
         className={'[grid-area:main-content] overflow-auto px-4 py-8 md:px-8'}

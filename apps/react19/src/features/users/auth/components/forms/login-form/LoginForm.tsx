@@ -1,8 +1,9 @@
-import { Link, useNavigate } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
 import { cn } from '@task-manager/utils';
 import { authClient } from '../../../auth-client';
 import { Button } from '../../../../../ui/button/Button';
 import { InputWithLabel } from '../../../../../ui/form/input-with-label/InputWithLabel';
+import { StyledLink } from '../../../../../ui/link/Link';
 
 interface LoginFormProps extends React.HTMLAttributes<HTMLFormElement> {
   redirectTo?: string;
@@ -38,7 +39,10 @@ export const LoginForm = ({
   return (
     <form
       onSubmit={handleSubmit}
-      className={cn('flex flex-col gap-4 w-full', className)}
+      className={cn(
+        'max-w-[400px] mx-auto flex flex-col gap-4 w-full',
+        className,
+      )}
       {...props}
     >
       <InputWithLabel
@@ -57,7 +61,10 @@ export const LoginForm = ({
       />
       <Button type='submit'>Login</Button>
       <p>
-        Don't have an account? <Link to='/auth/signup'>Sign up</Link>
+        Don't have an account?{' '}
+        <StyledLink to='/auth/signup' className='text-secondary'>
+          Sign up
+        </StyledLink>
       </p>
     </form>
   );

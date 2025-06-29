@@ -1,6 +1,5 @@
 import {
   createRootRouteWithContext,
-  Link,
   Outlet,
   type ErrorComponentProps,
 } from '@tanstack/react-router';
@@ -9,6 +8,7 @@ import type { useAuthSession } from '../features/users/auth/auth-client';
 import { HolyGrailLayout } from '../layouts/HolyGrailLayout';
 import { Button } from '../features/ui/button/Button';
 import { useState } from 'react';
+import { StyledLink } from '../features/ui/link/Link';
 export interface MyRouterContext {
   auth: ReturnType<typeof useAuthSession>;
   queryClient?: import('@tanstack/react-query').QueryClient;
@@ -45,7 +45,7 @@ function MyCustomErrorComponent({ error }: ErrorComponentProps) {
             An unexpected error occurred. Please try again later or contact
             support.
           </p>
-          <Link to='/'>Go back to the homepage</Link>
+          <StyledLink to='/'>Go back to the homepage</StyledLink>
         </div>
       )}
     </div>

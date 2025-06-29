@@ -1,4 +1,5 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
+import { PageTitle } from '../../features/ui/titles/PageTitle';
 
 export const Route = createFileRoute('/profile')({
   component: RouteComponent,
@@ -24,5 +25,9 @@ function RouteComponent() {
   if (auth.isPending) {
     return <h1>Loading...</h1>;
   }
-  return <h1>Hello {auth.data?.user?.name}!</h1>;
+  return (
+    <PageTitle className={'text-center'}>
+      Hello {auth.data?.user?.name}!
+    </PageTitle>
+  );
 }

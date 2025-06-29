@@ -8,7 +8,7 @@ export function Header({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <header
-      className={cn('py-4 md:py-6 border-b border-b-secondary', className)}
+      className={cn('py-4 border-b border-b-secondary', className)}
       {...props}
     >
       {children}
