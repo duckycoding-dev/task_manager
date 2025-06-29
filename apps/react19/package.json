@@ -1,5 +1,5 @@
 {
-  "name": "react19",
+  "name": "@task-manager/react19",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,11 +10,12 @@
     "preview": "vite preview --port 3002"
   },
   "dependencies": {
+    "@task-manager/backend": "workspace:*",
+    "@task-manager/utils": "workspace:*",
     "@tailwindcss/vite": "^4.1.10",
     "@tanstack/react-query": "^5.80.7",
     "@tanstack/react-router": "^1.121.12",
     "@tanstack/react-router-devtools": "^1.121.12",
-    "@task-manager/backend": "workspace:*",
     "daisyui": "^5.0.43",
     "postcss-nesting": "^13.0.2",
     "react": "^19.1.0",

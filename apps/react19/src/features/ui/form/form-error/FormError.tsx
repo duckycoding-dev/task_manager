@@ -1,4 +1,4 @@
-import classes from './form-error.module.css';
+import { cn } from '@task-manager/utils';
 
 export function FormError({
   children,
@@ -7,7 +7,7 @@ export function FormError({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`${classes['error-container']} ${className ?? ''}`}
+      className={cn('bg-error border-4 text-primary text-sm p-4', className)}
       {...props}
     >
       {children}

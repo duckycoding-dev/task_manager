@@ -1,5 +1,5 @@
 import type React from 'react';
-import classes from './header.module.css';
+import { cn } from '@task-manager/utils';
 
 export function Header({
   children,
@@ -7,7 +7,10 @@ export function Header({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <header className={`${classes['header']} ${className ?? ''}`} {...props}>
+    <header
+      className={cn('px-4 py-8 border-b border-b-secondary md:px-8', className)}
+      {...props}
+    >
       {children}
     </header>
   );

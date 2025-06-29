@@ -1,4 +1,4 @@
-import classes from './page-title.module.css';
+import { cn } from '@task-manager/utils';
 
 export function PageTitle({
   children,
@@ -6,7 +6,7 @@ export function PageTitle({
   ...props
 }: React.HTMLAttributes<HTMLHeadingElement>) {
   return (
-    <h1 className={`${classes['page-title']} ${className ?? ''}`} {...props}>
+    <h1 className={cn('text-2xl font-bold mb-4', className)} {...props}>
       {children}
     </h1>
   );

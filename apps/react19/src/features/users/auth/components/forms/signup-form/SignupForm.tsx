@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router';
-import classes from './signup-form.module.css';
+import { cn } from '@task-manager/utils';
 import { authClient } from '../../../auth-client';
 import { Button } from '../../../../../ui/button/Button';
 import { InputWithLabel } from '../../../../../ui/form/input-with-label/InputWithLabel';
@@ -30,7 +30,15 @@ const handleSignup = async (event: React.FormEvent<HTMLFormElement>) => {
   return data;
 };
 
-export const SignupForm = ({ onSuccess }: { onSuccess: () => void }) => {
+interface SignupFormProps extends React.HTMLAttributes<HTMLFormElement> {
+  onSuccess: () => void;
+}
+
+export const SignupForm = ({
+  onSuccess,
+  className,
+  ...props
+}: SignupFormProps) => {
   const {
     mutate: signup,
     error,
@@ -48,7 +56,11 @@ export const SignupForm = ({ onSuccess }: { onSuccess: () => void }) => {
   console.log('signupIsPending', submitIsPending);
 
   return (
-    <form className={classes['auth-form']} onSubmit={signup}>
+    <form
+      onSubmit={signup}
+      className={cn('flex flex-col gap-4 w-full', className)}
+      {...props}
+    >
       <InputWithLabel
         inputId='name'
         inputName='name'
@@ -80,9 +92,7 @@ export const SignupForm = ({ onSuccess }: { onSuccess: () => void }) => {
       <Button type='submit' disabled={submitIsPending}>
         {submitIsPending ? 'Signing up...' : 'Signup'}
       </Button>
-      {error && (
-        <FormError className={classes['error']}>{error.message}</FormError>
-      )}
+      {error && <FormError>{error.message}</FormError>}
       <p>
         Already have an account? <Link to='/auth/login'>Login</Link>
       </p>

@@ -1,14 +1,18 @@
 import { Link, useNavigate } from '@tanstack/react-router';
-import classes from './login-form.module.css';
+import { cn } from '@task-manager/utils';
 import { authClient } from '../../../auth-client';
 import { Button } from '../../../../../ui/button/Button';
 import { InputWithLabel } from '../../../../../ui/form/input-with-label/InputWithLabel';
 
-interface LoginFormProps {
+interface LoginFormProps extends React.HTMLAttributes<HTMLFormElement> {
   redirectTo?: string;
 }
 
-export const LoginForm = ({ redirectTo }: LoginFormProps) => {
+export const LoginForm = ({
+  redirectTo,
+  className,
+  ...props
+}: LoginFormProps) => {
   const navigate = useNavigate();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -32,7 +36,11 @@ export const LoginForm = ({ redirectTo }: LoginFormProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className={classes['auth-form']}>
+    <form
+      onSubmit={handleSubmit}
+      className={cn('flex flex-col gap-4 w-full', className)}
+      {...props}
+    >
       <InputWithLabel
         inputId='email'
         inputName='email'

@@ -1,5 +1,5 @@
 import type React from 'react';
-import classes from './input.module.css';
+import { cn } from '@task-manager/utils';
 
 interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'children'> {
@@ -10,7 +10,7 @@ export function Input({ type = 'text', className, ...props }: InputProps) {
   return (
     <input
       type={type}
-      className={`${classes['text-input']} ${className ?? ''}`}
+      className={cn('p-2 border border-secondary border-r-4 w-full', className)}
       {...props}
     />
   );

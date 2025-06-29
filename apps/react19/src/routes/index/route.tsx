@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import classes from './index.module.css';
 import { useAuthSession } from '../../features/users/auth/auth-client';
 import { HonoClient } from '../../services/backend';
 import { useCallback } from 'react';
@@ -21,6 +20,8 @@ async function fetchTasks() {
     throw new Error('Invalid task data format');
   }
 }
+
+const titleClass = 'text-2xl mb-4 font-bold text-center';
 
 export const Route = createFileRoute('/')({
   component: Index,
@@ -85,7 +86,7 @@ function Index() {
   if (authIsPending) {
     return (
       <>
-        <h1 className={classes['title']}> Welcome to Task Manager</h1>
+        <h1 className={titleClass}> Welcome to Task Manager</h1>
         <p>Fetching user data...</p>
       </>
     );
@@ -94,8 +95,8 @@ function Index() {
   if (!isLoggedIn) {
     return (
       <>
-        <h1 className={classes['title']}> Welcome to Task Manager</h1>
-        <div className={classes['login-prompt']}>
+        <h1 className={titleClass}> Welcome to Task Manager</h1>
+        <div className={'text-center'}>
           <p>An account is required to manage tasks.</p>
           <p>
             Please <Link to='/auth/login'>sign in</Link>
@@ -108,7 +109,7 @@ function Index() {
   if (tasksAreLoading) {
     return (
       <>
-        <h1 className={classes['title']}> Welcome to Task Manager</h1>
+        <h1 className={titleClass}> Welcome to Task Manager</h1>
         <p>Fetching data...</p>
       </>
     );
@@ -116,10 +117,10 @@ function Index() {
 
   return (
     <>
-      <h1 className={classes['title']}>Welcome to Task Manager</h1>
+      <h1 className={titleClass}>Welcome to Task Manager</h1>
       {tasks?.[0] ? <TaskList tasks={tasks} /> : <span>No tasks found</span>}
       <Button
-        className={classes['add-task-button']}
+        className={'w-full mt-4'}
         onClick={() => addTaskMutation.mutate()}
       >
         Add new task

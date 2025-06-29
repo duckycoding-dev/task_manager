@@ -1,7 +1,6 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { LoginForm } from '../../../features/users/auth/components/forms/login-form/LoginForm';
 import { z } from 'zod/v4';
-import classes from './login.module.css';
 import { PageTitle } from '../../../features/ui/titles/PageTitle';
 
 const searchParamsSchema = z.object({
@@ -24,7 +23,7 @@ function RouteComponent() {
 
   return (
     <>
-      <PageTitle className={classes['title']}>Login</PageTitle>
+      <PageTitle className={'text-center'}>Login</PageTitle>
       <LoginForm redirectTo={search.redirect ?? '/'} />
     </>
   );

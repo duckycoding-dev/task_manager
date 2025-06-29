@@ -1,10 +1,9 @@
 import { Link, useNavigate } from '@tanstack/react-router';
-import classes from './navbar.module.css';
-import type { HTMLAttributes } from 'react';
 import { authClient, useAuthSession } from '../../users/auth/auth-client';
 import { Button } from '../../ui/button/Button';
+import { cn } from '@task-manager/utils';
 
-export const Navbar = (props: HTMLAttributes<HTMLElement>) => {
+export const Navbar = (props: React.HTMLAttributes<HTMLElement>) => {
   const navigate = useNavigate();
   const { data: authData } = useAuthSession();
 
@@ -21,13 +20,13 @@ export const Navbar = (props: HTMLAttributes<HTMLElement>) => {
   };
 
   return (
-    <nav {...props}>
-      <ul className={classes['nav-list']}>
+    <nav {...props} className={cn('', props.className)}>
+      <ul className={'flex justify-between items-center list-none'}>
         <li>
           <Link to='/'>Home</Link>
         </li>
         {isLoggedIn ? (
-          <div className={classes['profile-section']}>
+          <div className={'flex items-center gap-2.5'}>
             <li>
               <Link to='/profile'>Profile</Link>
             </li>
@@ -36,7 +35,7 @@ export const Navbar = (props: HTMLAttributes<HTMLElement>) => {
             </li>
           </div>
         ) : (
-          <li className={classes['profile-section']}>
+          <li className={'flex items-center gap-2.5'}>
             <Link to='/auth/login'>Login</Link>
           </li>
         )}

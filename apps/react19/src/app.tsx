@@ -56,7 +56,7 @@ if (!rootElement.innerHTML) {
   root.render(
     <StrictMode>
       <QueryClientProvider client={queryClient}>
-        <App />,
+        <App />
       </QueryClientProvider>
     </StrictMode>,
   );

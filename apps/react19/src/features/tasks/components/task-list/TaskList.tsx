@@ -1,6 +1,6 @@
 import type { Task } from '@task-manager/backend/tasks';
-import classes from './task-list.module.css';
 import { TaskCard } from '../task-card/TaskCard';
+import { cn } from '@task-manager/utils';
 
 interface TaskListProps extends React.HTMLAttributes<HTMLUListElement> {
   tasks: Task[];
@@ -11,10 +11,13 @@ export function TaskList({ tasks, title, className, ...props }: TaskListProps) {
     <ul
       {...props}
       title={title ?? 'task list'}
-      className={`${classes['task-list']} ${className ?? ''}`}
+      className={cn('flex flex-col gap-4', className)}
     >
       {tasks.map((task) => (
-        <li key={task.id} className={classes['task-item']}>
+        <li
+          key={task.id}
+          className={'list-none p-2 border border-secondary border-r-4'}
+        >
           <TaskCard task={task} />
         </li>
       ))}

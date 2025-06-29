@@ -1,6 +1,6 @@
 import type React from 'react';
 import { Input } from '../../input/text/Input';
-import classes from './input-with-label.module.css';
+import { cn } from '@task-manager/utils';
 
 interface InputWithLabelProps extends React.ComponentProps<typeof Input> {
   label: React.ReactNode;
@@ -21,7 +21,7 @@ export function InputWithLabel({
   ...props
 }: InputWithLabelProps) {
   return (
-    <div className={`${classes['input-with-label']} ${className ?? ''}`}>
+    <div className={cn('flex flex-col gap-1', className)}>
       <label className={labelClassName} htmlFor={inputId}>
         {label}
       </label>
