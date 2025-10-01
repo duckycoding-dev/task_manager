@@ -1,4 +1,6 @@
 import { z } from 'zod/v4';
+import { extendZodWithOpenApi } from '@hono/zod-openapi';
+extendZodWithOpenApi(z);
 
 // 📌 Query Params Schemas
 export const getLabelsQuerySchema = z.object({

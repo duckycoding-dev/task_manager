@@ -1,13 +1,13 @@
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 import eslintConfigPrettier from 'eslint-config-prettier';
-
+import { defineConfig } from 'eslint/config';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import eslintReact from '@eslint-react/eslint-plugin';
 import pluginQuery from '@tanstack/eslint-plugin-query';
 
-export default tseslint.config(
+export default defineConfig(
   {
     // eslint config for the backend
     files: ['apps/backend/src/**/*.{js,mjs,cjs,ts}'],
@@ -15,7 +15,7 @@ export default tseslint.config(
       globals: globals.node,
       parserOptions: {
         projectService: true,
-        tsconfigRootDir: './apps/backend/',
+        tsconfigRootDir: import.meta.dirname,
       },
     },
     extends: [tseslint.configs.recommended, eslintConfigPrettier],
@@ -34,7 +34,7 @@ export default tseslint.config(
       parserOptions: {
         // Enable project service for better TypeScript integration
         projectService: true,
-        tsconfigRootDir: './apps/react19/',
+        tsconfigRootDir: import.meta.dirname,
       },
     },
     extends: [
@@ -45,6 +45,7 @@ export default tseslint.config(
     plugins: {
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
+      // @ts-ignore
       '@tanstack/query': pluginQuery,
     },
     rules: {
