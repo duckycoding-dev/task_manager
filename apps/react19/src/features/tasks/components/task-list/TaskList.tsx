@@ -11,7 +11,7 @@ export function TaskList({ tasks, title, className, ...props }: TaskListProps) {
     <ul
       {...props}
       title={title ?? 'task list'}
-      className={cn('flex flex-col gap-4', className)}
+      className={cn('flex flex-col gap-4 list', className)}
     >
       {tasks.map((task) => (
         <li key={task.id} className={'list-none'}>

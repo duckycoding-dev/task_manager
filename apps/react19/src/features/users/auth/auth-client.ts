@@ -9,3 +9,5 @@ export const authClient = createAuthClient({
 });
 
 export const { useSession: useAuthSession } = authClient;
+
+export type AuthData = ReturnType<typeof useAuthSession>['data'];

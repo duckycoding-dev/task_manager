@@ -1,39 +1,19 @@
-import { useQuery } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router';
-import { selectTaskSchema } from '@task-manager/backend/tasks';
+import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { TaskList } from '../../features/tasks/components/task-list/TaskList';
 import { PageTitle } from '../../features/ui/titles/PageTitle';
 import { useAuthSession } from '../../features/users/auth/auth-client';
-import { HonoClient } from '../../services/backend';
 import { StyledLink } from '../../features/ui/link/Link';
+import { PageSubtitle } from '../../features/ui/titles/PageSubtitle';
+import { useTasksQuery } from '../../features/tasks/tasks.query';
 
-export const Route = createFileRoute('/tasks')({
+export const Route = createFileRoute('/tasks/')({
   component: TasksRoute,
 });
-
-async function fetchTasks() {
-  const response = await (await HonoClient.tasks.$get({ query: {} })).json();
-  if (!response.success) {
-    throw new Error('Failed to fetch tasks');
-  }
-
-  const { data } = selectTaskSchema.array().safeParse(response.data);
-  if (data) {
-    return data;
-  } else {
-    throw new Error('Invalid task data format');
-  }
-}
 
 function TasksRoute() {
   const { data: authData, isPending: authIsPending } = useAuthSession();
   const isLoggedIn = !!authData?.user;
-  const { data: tasks, isLoading: tasksAreLoading } = useQuery({
-    queryKey: ['tasks'],
-    queryFn: fetchTasks,
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    enabled: !!authData?.user, // Only fetch tasks if the user is logged in
-  });
+  const { data: tasks, isLoading: tasksAreLoading } = useTasksQuery(authData);
 
   if (authIsPending) {
     return (
@@ -49,7 +29,7 @@ function TasksRoute() {
       <>
         <PageTitle className={'text-center'}>Welcome to Task Manager</PageTitle>
         <div className={'text-center'}>
-          <p>An account is required to manage tasks.</p>
+          <PageSubtitle>An account is required to manage tasks.</PageSubtitle>
           <p>
             Please <StyledLink to='/auth/login'>sign in</StyledLink>
           </p>
@@ -68,12 +48,16 @@ function TasksRoute() {
   }
 
   return (
-    <>
+    <div className='flex flex-col gap-4'>
       <PageTitle className={'text-center'}>Welcome to Task Manager</PageTitle>
-      {tasks?.[0] ? <TaskList tasks={tasks} /> : <span>No tasks found</span>}
-      <StyledLink className={'w-full mt-4'} to='/tasks/create'>
-        Add new task
-      </StyledLink>
-    </>
+      <section className='flex flex-col gap-4'>
+        {tasks?.[0] ? (
+          <TaskList tasks={tasks} />
+        ) : (
+          <PageSubtitle>No tasks found</PageSubtitle>
+        )}
+        <StyledLink to='/tasks/create'>Add new task</StyledLink>
+      </section>
+    </div>
   );
 }

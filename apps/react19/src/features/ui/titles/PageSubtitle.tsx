@@ -1,13 +1,13 @@
 import { cn } from '@task-manager/utils';
 
-export function PageTitle({
+export function PageSubtitle({
   children,
   className,
   ...props
 }: React.HTMLAttributes<HTMLHeadingElement>) {
   return (
-    <h1 className={cn('text-2xl font-bold', className)} {...props}>
+    <h2 className={cn('text-xl font-semibold', className)} {...props}>
       {children}
-    </h1>
+    </h2>
   );
 }
