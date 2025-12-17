@@ -65,10 +65,3 @@ export const checkAuthMiddleware = createMiddleware<{
   c.set('session', session.session);
   await next();
 });
-
-export const logRequestsMiddleware: MiddlewareHandler = async (c, next) => {
-  if (env.LOG_LEVEL === 'debug') {
-    console.log(`[${c.req.method}] ${c.req.url}`);
-  }
-  return await next();
-};

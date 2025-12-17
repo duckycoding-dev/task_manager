@@ -8,9 +8,10 @@ import type {
 } from '../types/app_context';
 import { configureOpenAPI } from './configure-open-api';
 import { formatZodError } from './mapping';
-import { addAuthMiddleware, auth, logRequestsMiddleware } from './auth';
+import { addAuthMiddleware, auth } from './auth';
 import { cors } from 'hono/cors';
 import env from './env';
+import { logRequestsMiddleware } from './logger';
 
 export function createRouter() {
   const router = new OpenAPIHono<AppContext>({

@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 import { TaskList } from '../../features/tasks/components/task-list/TaskList';
 import { PageTitle } from '../../features/ui/titles/PageTitle';
 import { useAuthSession } from '../../features/users/auth/auth-client';
