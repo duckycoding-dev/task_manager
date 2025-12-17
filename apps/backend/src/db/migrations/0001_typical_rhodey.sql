@@ -1,0 +1,1 @@
+ALTER TABLE "reminders" ALTER COLUMN "task_id" SET NOT NULL;

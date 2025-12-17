@@ -12,6 +12,7 @@ const envSchema = z.object({
   BETTER_AUTH_URL: z.string(),
   PORT: z.coerce.number().default(3001), // default to 3001 if not provided
   FRONTEND_PORT: z.coerce.number().default(3002), // default to 3002 if not provided
+  LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
 });
 
 export type Env = z.infer<typeof envSchema>;

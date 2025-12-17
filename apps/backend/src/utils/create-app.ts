@@ -8,7 +8,7 @@ import type {
 } from '../types/app_context';
 import { configureOpenAPI } from './configure-open-api';
 import { formatZodError } from './mapping';
-import { addAuthMiddleware, auth } from './auth';
+import { addAuthMiddleware, auth, logRequestsMiddleware } from './auth';
 import { cors } from 'hono/cors';
 import env from './env';
 
@@ -54,6 +54,7 @@ export function popoulateRouter<C extends object>(
 
 export function createApp(): AppOpenAPI {
   const app = createRouter();
+  app.use('*', logRequestsMiddleware);
   app.use('*', addAuthMiddleware);
   configureOpenAPI(app);
 
