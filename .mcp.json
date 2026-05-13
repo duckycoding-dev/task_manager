@@ -11,6 +11,10 @@
     "chrome-devtools": {
       "command": "npx",
       "args": ["chrome-devtools-mcp@latest"]
+    },
+    "daisyui": {
+      "type": "http",
+      "url": "https://gitmcp.io/saadeghi/daisyui"
     }
   }
 }

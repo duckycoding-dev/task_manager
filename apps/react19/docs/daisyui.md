@@ -1,7 +1,7 @@
 ---
-description: daisyUI 5
-alwaysApply: true
-applyTo: "**"
+created: 2026-05-13
+updated: 2026-05-13
+summary: daisyUI 5 reference — install notes, usage rules, full component class-name catalog. Mirror of the official llms.txt at https://daisyui.com/llms.txt (refresh from source when daisyUI ships a new version).
 ---
 
 # daisyUI 5

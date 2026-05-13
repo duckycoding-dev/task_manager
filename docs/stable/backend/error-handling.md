@@ -1,3 +1,9 @@
+---
+created: 2026-05-13
+updated: 2026-05-13
+summary: Backend error model — AppError/EndpointError for HTTP, domain errors thrown from service/repository, controller translates at the boundary.
+---
+
 # Backend
 
 ## HTTP errors

@@ -1,3 +1,9 @@
+---
+created: 2026-05-13
+updated: 2026-05-13
+summary: 3-layer backend architecture (controller/service/repository) with Hono + Zod OpenAPI; explains the per-feature file layout under apps/backend/src/features/.
+---
+
 # Backend Architecture
 
 Our backend app is a HonoJS app which exports all the routes from the `src/app.ts` file, which looks like this

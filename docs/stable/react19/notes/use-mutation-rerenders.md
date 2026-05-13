@@ -1,3 +1,9 @@
+---
+created: 2026-05-13
+updated: 2026-05-13
+summary: TanStack Query gotcha — useMutation always triggers two rerenders due to internal isPending state transitions.
+---
+
 Whenever using useMutation it will always re render the component in which it is defined twice, even if you are not updating some state manually on success for example.
 
 This is because internally react query hooks like useMutation have some state that gets updated: in this case for example the "isPending" state is updated, thus triggering

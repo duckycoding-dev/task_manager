@@ -1,3 +1,9 @@
+---
+created: 2026-05-13
+updated: 2026-05-13
+summary: Response-shape edge case — use `z.never().openapi({ type: 'null' })` for empty data fields so OpenAPI emits null cleanly.
+---
+
 ## Special cases
 
 If our response object data is empty, we can define it as `z.never()` instead of `z.null()` so that we don't have to manually type `... data: null ...` in the responses.

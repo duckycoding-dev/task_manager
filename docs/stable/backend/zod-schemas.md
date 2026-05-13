@@ -1,3 +1,9 @@
+---
+created: 2026-05-13
+updated: 2026-05-13
+summary: ⚠ FLAGGED OUTDATED — historical notes on @hono/zod-openapi + extendZodWithOpenApi. Newer workflows from later projects supersede parts of this; verify against current code before relying on.
+---
+
 # Working with @hono/zod-openapi
 After some trial and error, I've noticed that passing zod schemas generated from a "normal import" of `import { z } from 'zod/v4` to fields such as the `request.params` when defining routes using zod-openapi `createRoute` utility function (eg:
 ```ts
