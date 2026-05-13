@@ -140,24 +140,24 @@ class ServerImpl implements ServerLogger {
     console[level](logParts.join(' '), coloredMessage, ...args);
   }
 
-  public log(...args: Parameters<typeof console.log>): void {
-    this.logLogic('log', ...args);
+  public log(message: string, ...args: unknown[]): void {
+    this.logLogic('log', message, ...args);
   }
 
-  public info(...args: Parameters<typeof console.info>): void {
-    this.logLogic('info', ...args);
+  public info(message: string, ...args: unknown[]): void {
+    this.logLogic('info', message, ...args);
   }
 
-  public warn(...args: Parameters<typeof console.warn>): void {
-    this.logLogic('warn', ...args);
+  public warn(message: string, ...args: unknown[]): void {
+    this.logLogic('warn', message, ...args);
   }
 
-  public error(...args: Parameters<typeof console.error>): void {
-    this.logLogic('error', ...args);
+  public error(message: string, ...args: unknown[]): void {
+    this.logLogic('error', message, ...args);
   }
 
-  public debug(...args: Parameters<typeof console.debug>): void {
-    this.logLogic('debug', ...args);
+  public debug(message: string, ...args: unknown[]): void {
+    this.logLogic('debug', message, ...args);
   }
 }
 

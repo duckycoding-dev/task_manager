@@ -11,6 +11,7 @@
     /* Modules */
     "module": "ESNext" /* Specify what module code is generated. */,
     "baseUrl": "./" /* Specify the base directory to resolve non-relative module names. */,
+    "ignoreDeprecations": "6.0" /* TS6: baseUrl deprecated; remove baseUrl + adapt `paths` in phase 2 before TS7. */,
     "rewriteRelativeImportExtensions": true /* Rewrite '.ts', '.tsx', '.mts', and '.cts' file extensions in relative import paths to their JavaScript equivalent in output files. */,
     "moduleResolution": "bundler",
     "resolvePackageJsonExports": true /* Use the package.json 'exports' field when resolving package imports. */,

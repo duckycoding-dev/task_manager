@@ -17,22 +17,21 @@
   "description": "This repo contains the code for the backend of a task manager app which will be reused to create the same app using different frontend libraries with the same standard backend logic: this will allow me to develop mini projects and tryout new frontend technologies faster",
   "devDependencies": {
     "@types/eslint-config-prettier": "6.11.3",
-    "@types/bun": "latest",
-    "globals": "^16.4.0",
-    "@eslint/js": "9.36.0",
-    "eslint": "9.36.0",
+    "@types/bun": "1.3.14",
+    "globals": "^17.6.0",
+    "@eslint/js": "10.0.1",
+    "eslint": "10.3.0",
     "eslint-config-prettier": "10.1.8",
     "husky": "9.1.7",
-    "lint-staged": "16.2.3",
-    "typescript": "5.9.3",
-    "prettier": "3.6.2",
-    "typescript-eslint": "8.45.0"
+    "lint-staged": "17.0.4",
+    "typescript": "6.0.3",
+    "prettier": "3.8.3",
+    "typescript-eslint": "8.59.3"
   },
   "dependencies": {
-    "better-auth": "1.3.24",
+    "better-auth": "1.6.11",
     "clsx": "2.1.1",
-    "cva": "1.0.0-beta.4",
-    "tailwind-merge": "3.3.1"
+    "tailwind-merge": "3.6.0"
   },
   "workspaces": [
     "apps/*",
