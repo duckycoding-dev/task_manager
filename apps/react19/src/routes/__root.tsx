@@ -4,7 +4,7 @@ import {
   type ErrorComponentProps,
 } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
-import type { useAuthSession } from '../features/users/auth/auth-client';
+import type { useAuthSession } from '../lib/auth-client';
 import { HolyGrailLayout } from '../layouts/HolyGrailLayout';
 import { Button } from '../features/ui/button/Button';
 import { useState } from 'react';

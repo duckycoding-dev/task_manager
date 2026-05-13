@@ -1,5 +1,5 @@
 import { cn } from '@task-manager/utils';
-import { authClient } from '../../../auth-client';
+import { authClient } from '../../../../../../lib/auth-client';
 import { Button } from '../../../../../ui/button/Button';
 import { InputWithLabel } from '../../../../../ui/form/input-with-label/InputWithLabel';
 import { useMutation } from '@tanstack/react-query';

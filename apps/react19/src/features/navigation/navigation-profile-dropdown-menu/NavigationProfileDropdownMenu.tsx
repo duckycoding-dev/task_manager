@@ -1,5 +1,5 @@
 import { useNavigate } from '@tanstack/react-router';
-import { authClient } from '../../users/auth/auth-client';
+import { authClient } from '../../../lib/auth-client';
 import { StyledLink } from '../../ui/link/Link';
 
 export function NavigationProfileDropdownMenu() {

@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { Button } from '../../../features/ui/button/Button';
 import { PageTitle } from '../../../features/ui/titles/PageTitle';
-import { useAuthSession } from '../../../features/users/auth/auth-client';
+import { useAuthSession } from '../../../lib/auth-client';
 import { StyledLink } from '../../../features/ui/link/Link';
 import { PageSubtitle } from '../../../features/ui/titles/PageSubtitle';
 import { useAddTaskMutation } from '../../../features/tasks/tasks.query';

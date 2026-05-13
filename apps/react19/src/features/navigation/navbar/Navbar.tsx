@@ -1,4 +1,4 @@
-import { useAuthSession } from '../../users/auth/auth-client';
+import { useAuthSession } from '../../../lib/auth-client';
 import { cn } from '@task-manager/utils';
 import { NavigationProfileDropdownMenu } from '../navigation-profile-dropdown-menu/NavigationProfileDropdownMenu';
 import { StyledLink } from '../../ui/link/Link';

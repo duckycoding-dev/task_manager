@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { useAuthSession } from '../../features/users/auth/auth-client';
+import { useAuthSession } from '../../lib/auth-client';
 import { StyledLink } from '../../features/ui/link/Link';
 import { PageTitle } from '../../features/ui/titles/PageTitle';
 

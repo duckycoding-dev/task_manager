@@ -9,7 +9,7 @@
   "editor.formatOnSave": true,
   "editor.formatOnSaveMode": "file",
   "editor.hover.above": true,
-  "editor.hover.enabled": true,
+  "editor.hover.enabled": "on",
   "editor.hover.delay": 500,
   "editor.inlineSuggest.enabled": true,
   "editor.inlayHints.enabled": "on",

@@ -1,9 +1,10 @@
 import { useNavigate } from '@tanstack/react-router';
 import { cn } from '@task-manager/utils';
-import { authClient } from '../../../auth-client';
+import { authClient } from '../../../../../../lib/auth-client';
 import { Button } from '../../../../../ui/button/Button';
 import { InputWithLabel } from '../../../../../ui/form/input-with-label/InputWithLabel';
 import { StyledLink } from '../../../../../ui/link/Link';
+import { useState } from 'react';
 
 interface LoginFormProps extends React.HTMLAttributes<HTMLFormElement> {
   redirectTo?: string;
@@ -15,6 +16,7 @@ export const LoginForm = ({
   ...props
 }: LoginFormProps) => {
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -56,9 +58,25 @@ export const LoginForm = ({
         inputId='password'
         inputName='password'
         label='Password:'
-        type='password'
+        type={showPassword ? 'text' : 'password'}
         required
       />
+      <div className='flex items-center gap-2'>
+        <input
+          type='checkbox'
+          id='show-password'
+          className=''
+          checked={showPassword}
+          aria-checked={showPassword}
+          onChange={(e) => setShowPassword(e.target.checked)}
+        />
+        <label
+          htmlFor='show-password'
+          className='text-sm text-muted-foreground'
+        >
+          Show Password
+        </label>
+      </div>
       <Button type='submit'>Login</Button>
       <p>
         Don't have an account?{' '}
