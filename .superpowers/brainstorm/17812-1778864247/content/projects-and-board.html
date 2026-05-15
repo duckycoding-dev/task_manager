@@ -1,0 +1,291 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+  .demo { font-family: 'Inter', system-ui, sans-serif; }
+  .device { border-radius: 12px; overflow: hidden; background: #0F0F13; border: 1px solid #2A2A35; }
+  .device-chrome { height: 22px; background: #1A1A22; border-bottom: 1px solid #2A2A35; display: flex; align-items: center; gap: 6px; padding: 0 10px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; } .dot.r { background: #F87171; } .dot.y { background: #FBBF24; } .dot.g { background: #34D399; }
+  .shell { display: grid; grid-template-columns: 56px 1fr; grid-template-rows: 44px 1fr; height: 600px; font-size: 12px; }
+  .topbar { grid-column: 1 / -1; display: flex; align-items: center; padding: 0 14px; background: #1A1A22; border-bottom: 1px solid #2A2A35; gap: 14px; }
+  .logo { font-weight: 700; color: #E8E6EF; } .logo b { color: #C084FC; }
+  .search { flex: 1; max-width: 380px; height: 28px; background: #15151B; border: 1px solid #2A2A35; border-radius: 8px; padding: 0 10px; display: flex; align-items: center; gap: 8px; color: #7A7787; font-size: 11px; }
+  .kbd { padding: 1px 6px; border-radius: 4px; background: #1A1A22; border: 1px solid #2A2A35; color: #A8A5B5; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+  .topbar-spacer { flex: 1; } .icon-btn { width: 30px; height: 30px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; color: #A8A5B5; font-size: 14px; }
+  .avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #C084FC, #67E8F9); }
+  .rail { background: #15151B; border-right: 1px solid #2A2A35; padding: 12px 6px; display: flex; flex-direction: column; gap: 2px; }
+  .rail-item { width: 100%; padding: 8px 0; border-radius: 8px; color: #A8A5B5; text-align: center; font-size: 14px; }
+  .rail-item.active { background: rgba(192,132,252,0.12); color: #C084FC; }
+  .content { background: #0F0F13; padding: 18px 22px; overflow: hidden; display: flex; flex-direction: column; }
+
+  .page-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .page-title { font-size: 22px; margin: 0; color: #E8E6EF; font-weight: 700; letter-spacing: -0.015em; display:flex; align-items:center; gap:10px; }
+  .page-sub { font-size: 11px; color: #A8A5B5; }
+  .new-btn { padding: 6px 12px; border-radius: 8px; background: #C084FC; color: #0F0F13; font-weight: 600; font-size: 12px; margin-left: auto; }
+  .ghost-btn { padding: 5px 10px; border-radius: 6px; background: #1A1A22; border: 1px solid #2A2A35; color: #CFCAD9; font-size: 11px; }
+
+  /* ===== PROJECTS LIST ===== */
+  .proj-search { display: flex; align-items: center; gap: 8px; background: #1A1A22; border: 1px solid #2A2A35; border-radius: 8px; padding: 6px 10px; font-size: 11px; color: #7A7787; margin-bottom: 14px; max-width: 360px; }
+  .proj-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .proj-card { background: #1A1A22; border: 1px solid #2A2A35; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 8px; cursor: pointer; position: relative; }
+  .proj-card:hover { border-color: #36364A; }
+  .proj-card .color-band { position: absolute; top: 0; left: 12px; right: 12px; height: 3px; border-radius: 0 0 3px 3px; }
+  .proj-card .pname { font-size: 14px; font-weight: 600; color: #E8E6EF; display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+  .proj-card .color-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .proj-card .pdesc { font-size: 11px; color: #A8A5B5; line-height: 1.4; max-height: 28px; overflow: hidden; }
+  .proj-card .pstats { display: flex; gap: 14px; padding-top: 8px; border-top: 1px solid #2A2A35; margin-top: 4px; }
+  .proj-card .stat-val { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #E8E6EF; font-weight: 700; }
+  .proj-card .stat-val.warn { color: #F87171; }
+  .proj-card .stat-lbl { font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: #7A7787; font-weight: 600; margin-top: 1px; }
+  .proj-card .stat { display: flex; flex-direction: column; }
+  .proj-card .meta-row { display: flex; gap: 10px; font-size: 10px; color: #7A7787; font-family: 'JetBrains Mono', monospace; }
+
+  .proj-card.add-new { border-style: dashed; border-color: #36364A; align-items: center; justify-content: center; min-height: 130px; cursor: pointer; }
+  .proj-card.add-new:hover { border-color: rgba(192,132,252,0.4); background: rgba(192,132,252,0.04); }
+  .proj-card.add-new .icon { font-size: 24px; color: #C084FC; }
+  .proj-card.add-new .lbl { color: #C084FC; font-size: 12px; font-weight: 600; }
+
+  /* ===== PROJECT PAGE / BOARD ===== */
+  .breadcrumbs { font-size: 11px; color: #7A7787; margin-bottom: 4px; }
+  .breadcrumbs a { color: #A8A5B5; }
+  .tabs { display: flex; gap: 4px; padding: 0; border-bottom: 1px solid #2A2A35; margin-bottom: 14px; }
+  .tab { padding: 8px 14px; font-size: 12px; color: #A8A5B5; font-weight: 500; border-bottom: 2px solid transparent; margin-bottom: -1px; cursor: pointer; }
+  .tab.active { color: #C084FC; border-color: #C084FC; font-weight: 600; }
+  .tab .count { background: #1A1A22; color: #A8A5B5; padding: 1px 6px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: 10px; margin-left: 6px; }
+
+  .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; flex: 1; overflow: hidden; }
+  .col { background: #15151B; border: 1px solid #2A2A35; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; }
+  .col-head { padding: 10px 12px; border-bottom: 1px solid #2A2A35; display: flex; align-items: center; gap: 8px; }
+  .col-name { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }
+  .col.todo .col-name { color: #A8A5B5; }
+  .col.inp .col-name { color: #C084FC; }
+  .col.done .col-name { color: #34D399; }
+  .col-count { background: #1A1A22; color: #A8A5B5; padding: 1px 7px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+  .col-add { margin-left: auto; color: #7A7787; font-size: 14px; cursor: pointer; }
+  .col-body { padding: 8px; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; flex: 1; }
+  .kcard { background: #1A1A22; border: 1px solid #2A2A35; border-radius: 8px; padding: 10px; cursor: grab; }
+  .kcard:hover { border-color: #36364A; }
+  .kcard.dragging { opacity: 0.7; border-color: rgba(192,132,252,0.5); background: rgba(192,132,252,0.06); transform: rotate(1deg); }
+  .kcard .ktitle { font-size: 12px; color: #E8E6EF; font-weight: 500; line-height: 1.35; }
+  .kcard .kmeta { display: flex; align-items: center; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+  .badge { padding: 1px 6px; border-radius: 8px; font-size: 9px; font-weight: 600; }
+  .badge.priority-h { background: rgba(248,113,113,0.12); color: #F87171; }
+  .badge.priority-m { background: rgba(192,132,252,0.12); color: #C084FC; }
+  .badge.priority-l { background: rgba(168,168,170,0.12); color: #A8A5B5; }
+  .badge.label-be { background: rgba(103,232,249,0.12); color: #67E8F9; }
+  .mono-meta { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: #A8A5B5; }
+  .mono-meta.danger { color: #F87171; }
+  .col-add-bottom { padding: 6px 8px; background: transparent; color: #7A7787; font-size: 11px; cursor: pointer; border-radius: 6px; }
+  .col-add-bottom:hover { background: #1A1A22; color: #C084FC; }
+
+  .drop-zone { background: rgba(192,132,252,0.06); border: 1.5px dashed rgba(192,132,252,0.4); border-radius: 8px; padding: 16px; color: #C084FC; font-size: 11px; text-align: center; margin: 2px 0; }
+</style>
+
+<div class="demo">
+
+<h2>Projects list · <code>/projects</code></h2>
+<p class="subtitle">Grid of project cards. Each shows: color band (top accent), name + dot, optional description, key stats (open / overdue / completed-this-week), light meta footer. Click → project page. The last cell is "+ New project".</p>
+
+<div class="device">
+  <div class="device-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+  <div class="shell">
+    <div class="topbar">
+      <div class="logo">task<b>·</b>mgr</div>
+      <div class="search">⌕ Search…<span class="kbd">⌘K</span></div>
+      <div class="topbar-spacer"></div>
+      <div class="icon-btn">🔔</div><div class="icon-btn">☾</div><div class="avatar"></div>
+    </div>
+    <div class="rail">
+      <div class="rail-item">▢</div><div class="rail-item">⌖</div><div class="rail-item">▥</div>
+      <div class="rail-item">≡</div><div class="rail-item active">▦</div><div class="rail-item">🏷</div><div class="rail-item">⚙</div>
+    </div>
+    <div class="content">
+      <div class="page-head">
+        <h2 class="page-title">Projects</h2>
+        <span class="page-sub">4 projects · 27 open tasks total</span>
+        <span class="new-btn">+ New project</span>
+      </div>
+
+      <div class="proj-search">⌕ Filter projects by name…</div>
+
+      <div class="proj-grid">
+
+        <div class="proj-card">
+          <div class="color-band" style="background: #67E8F9;"></div>
+          <div class="pname"><span class="color-dot" style="background: #67E8F9;"></span>Backend</div>
+          <div class="pdesc">Task-manager backend — API endpoints, schema work, deployment.</div>
+          <div class="pstats">
+            <div class="stat"><div class="stat-val warn">3</div><div class="stat-lbl">Overdue</div></div>
+            <div class="stat"><div class="stat-val">11</div><div class="stat-lbl">Open</div></div>
+            <div class="stat"><div class="stat-val">8</div><div class="stat-lbl">Done · 7d</div></div>
+          </div>
+          <div class="meta-row">
+            <span>Updated 2h ago</span>
+          </div>
+        </div>
+
+        <div class="proj-card">
+          <div class="color-band" style="background: #C084FC;"></div>
+          <div class="pname"><span class="color-dot" style="background: #C084FC;"></span>Personal</div>
+          <div class="pdesc">Errands, appointments, payments.</div>
+          <div class="pstats">
+            <div class="stat"><div class="stat-val warn">1</div><div class="stat-lbl">Overdue</div></div>
+            <div class="stat"><div class="stat-val">7</div><div class="stat-lbl">Open</div></div>
+            <div class="stat"><div class="stat-val">4</div><div class="stat-lbl">Done · 7d</div></div>
+          </div>
+          <div class="meta-row"><span>Updated yesterday</span></div>
+        </div>
+
+        <div class="proj-card">
+          <div class="color-band" style="background: #FBBF24;"></div>
+          <div class="pname"><span class="color-dot" style="background: #FBBF24;"></span>Side gig</div>
+          <div class="pdesc">Client work for the consulting engagement.</div>
+          <div class="pstats">
+            <div class="stat"><div class="stat-val">0</div><div class="stat-lbl">Overdue</div></div>
+            <div class="stat"><div class="stat-val">5</div><div class="stat-lbl">Open</div></div>
+            <div class="stat"><div class="stat-val">2</div><div class="stat-lbl">Done · 7d</div></div>
+          </div>
+          <div class="meta-row"><span>Updated 3d ago</span></div>
+        </div>
+
+        <div class="proj-card">
+          <div class="color-band" style="background: #34D399;"></div>
+          <div class="pname"><span class="color-dot" style="background: #34D399;"></span>Learning</div>
+          <div class="pdesc">Courses, books, deliberate practice.</div>
+          <div class="pstats">
+            <div class="stat"><div class="stat-val">0</div><div class="stat-lbl">Overdue</div></div>
+            <div class="stat"><div class="stat-val">4</div><div class="stat-lbl">Open</div></div>
+            <div class="stat"><div class="stat-val">1</div><div class="stat-lbl">Done · 7d</div></div>
+          </div>
+          <div class="meta-row"><span>Updated last week</span></div>
+        </div>
+
+        <div class="proj-card add-new">
+          <div class="icon">+</div>
+          <div class="lbl">New project</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2 style="margin-top: 26px;">Project page · <code>/projects/:id</code> — Board (default tab)</h2>
+<p class="subtitle">Tabs: <b>Board</b> · Tasks · Reminders. Board uses the 3 fixed columns from the backend's <code>status</code> enum (todo / in_progress / done). Cards drag between columns to update status. "+ Add" inside each column adds a task pre-set to that status + this project.</p>
+
+<div class="device">
+  <div class="device-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+  <div class="shell">
+    <div class="topbar">
+      <div class="logo">task<b>·</b>mgr</div>
+      <div class="search">⌕ Search…<span class="kbd">⌘K</span></div>
+      <div class="topbar-spacer"></div>
+      <div class="icon-btn">🔔</div><div class="icon-btn">☾</div><div class="avatar"></div>
+    </div>
+    <div class="rail">
+      <div class="rail-item">▢</div><div class="rail-item">⌖</div><div class="rail-item">▥</div>
+      <div class="rail-item">≡</div><div class="rail-item active">▦</div><div class="rail-item">🏷</div><div class="rail-item">⚙</div>
+    </div>
+    <div class="content">
+      <div class="breadcrumbs"><a>Projects</a> › <a>Backend</a></div>
+      <div class="page-head">
+        <h2 class="page-title"><span class="color-dot" style="background: #67E8F9; width:12px; height:12px;"></span>Backend</h2>
+        <span class="page-sub">11 open · 3 overdue · 8 completed this week</span>
+        <span class="ghost-btn">⋯</span>
+        <span class="new-btn">+ New task</span>
+      </div>
+
+      <div class="tabs">
+        <span class="tab active">Board <span class="count">11</span></span>
+        <span class="tab">Tasks <span class="count">11</span></span>
+        <span class="tab">Reminders <span class="count">5</span></span>
+      </div>
+
+      <div class="board">
+        <!-- TODO -->
+        <div class="col todo">
+          <div class="col-head"><span class="col-name">To do</span><span class="col-count">5</span><span class="col-add">+</span></div>
+          <div class="col-body">
+            <div class="kcard">
+              <div class="ktitle">Write zod-schemas migration doc</div>
+              <div class="kmeta"><span class="badge priority-m">!med</span><span class="badge label-be">backend</span><span class="mono-meta">today</span></div>
+            </div>
+            <div class="kcard">
+              <div class="ktitle">Audit unused endpoints for deletion</div>
+              <div class="kmeta"><span class="badge priority-l">!low</span><span class="mono-meta">Sat</span></div>
+            </div>
+            <div class="kcard">
+              <div class="ktitle">Add multi-value filter to GET /tasks</div>
+              <div class="kmeta"><span class="badge priority-h">!high</span><span class="mono-meta warning">Mon</span></div>
+            </div>
+            <div class="kcard">
+              <div class="ktitle">Sketch labels-color picker UX</div>
+              <div class="kmeta"><span class="badge priority-l">!low</span><span class="mono-meta">—</span></div>
+            </div>
+            <div class="kcard">
+              <div class="ktitle">Soft-delete on reminders</div>
+              <div class="kmeta"><span class="badge priority-m">!med</span><span class="mono-meta">—</span></div>
+            </div>
+            <div class="col-add-bottom">+ Add task</div>
+          </div>
+        </div>
+
+        <!-- IN PROGRESS -->
+        <div class="col inp">
+          <div class="col-head"><span class="col-name">In progress</span><span class="col-count">3</span><span class="col-add">+</span></div>
+          <div class="col-body">
+            <div class="kcard">
+              <div class="ktitle">Refactor auth middleware</div>
+              <div class="kmeta"><span class="badge priority-h">!high</span><span class="badge label-be">backend</span><span class="mono-meta danger">2d late</span></div>
+            </div>
+            <div class="kcard dragging">
+              <div class="ktitle">Onboard new team lead</div>
+              <div class="kmeta"><span class="badge priority-h">!high</span><span class="mono-meta warning">Wed</span></div>
+            </div>
+            <div class="drop-zone">Drop to set status: in_progress</div>
+            <div class="kcard">
+              <div class="ktitle">Migrate reminders to soft-delete</div>
+              <div class="kmeta"><span class="badge priority-m">!med</span><span class="mono-meta">Thu</span></div>
+            </div>
+            <div class="col-add-bottom">+ Add task</div>
+          </div>
+        </div>
+
+        <!-- DONE -->
+        <div class="col done">
+          <div class="col-head"><span class="col-name">Done</span><span class="col-count">3</span><span class="col-add">+</span></div>
+          <div class="col-body">
+            <div class="kcard" style="opacity: 0.6;">
+              <div class="ktitle" style="text-decoration: line-through;">Bump hono stack to 4.12</div>
+              <div class="kmeta"><span class="badge label-be">backend</span><span class="mono-meta">Mon</span></div>
+            </div>
+            <div class="kcard" style="opacity: 0.6;">
+              <div class="ktitle" style="text-decoration: line-through;">Run dep upgrade sweep</div>
+              <div class="kmeta"><span class="mono-meta">Tue</span></div>
+            </div>
+            <div class="kcard" style="opacity: 0.6;">
+              <div class="ktitle" style="text-decoration: line-through;">Doc the zod fix</div>
+              <div class="kmeta"><span class="mono-meta">Wed</span></div>
+            </div>
+            <div class="col-add-bottom">+ Add task</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2 style="margin-top: 26px;">Tabs detail</h2>
+<ul style="color:#CFCAD9; font-size:12px; line-height:1.7;">
+  <li><b>Board</b> · drag-to-status kanban, 3 fixed columns from backend enum. Click card → detail panel.</li>
+  <li><b>Tasks</b> · reuses the All-tasks list component with <code>projectId</code> hardcoded. All-tasks filters/columns/density/grouping behavior. Header "+ New task" prefills <code>projectId</code>.</li>
+  <li><b>Reminders</b> · list of all reminders linked to tasks in this project, sorted by <code>remindAt</code>. Same row pattern as the Inbox page (drafted later). Each shows the parent task name + the link.</li>
+</ul>
+
+<h2 style="margin-top: 18px;">Notes on backend reality</h2>
+<ul style="color:#CFCAD9; font-size:12px; line-height:1.7;">
+  <li><b>Status enum is fixed</b> at <code>todo / in_progress / done</code> — board columns are hardcoded to match. v1 does not support custom columns per project.</li>
+  <li><b>Project color</b> field becomes load-bearing here (cards, board header dot). Already locked as a planned backend addition.</li>
+  <li><b>"+ Add task" inside a board column</b> sends <code>POST /tasks</code> with <code>{ status: 'todo' | 'in_progress' | 'done', projectId: thisProject, title }</code> — same payload shape as quick-add, just with status + projectId prefilled.</li>
+  <li><b>Drag-to-status</b> sends <code>PATCH /tasks/:taskId/status</code>. Optimistic UI; rollback + toast on failure.</li>
+</ul>
+
+</div>

@@ -1,0 +1,275 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  .mode {
+    border-radius: 12px;
+    padding: 24px;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  .mode.dark { background: #0F0F13; color: #E8E6EF; }
+  .mode.light { background: #F8F7F9; color: #1A1A22; }
+
+  .grid-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  .stack { display: flex; flex-direction: column; gap: 14px; }
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+  .label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 600;
+    opacity: 0.6;
+  }
+
+  /* ---- DARK tokens ---- */
+  .dark .surface { background: #1A1A22; border: 1px solid #2A2A35; }
+  .dark .text-muted { color: #A8A5B5; }
+  .dark .text-strong { color: #E8E6EF; }
+  .dark .btn-primary { background: #C084FC; color: #0F0F13; box-shadow: 0 4px 14px rgba(192,132,252,0.25), 0 1px 2px rgba(0,0,0,0.5); }
+  .dark .btn-secondary { background: #1A1A22; color: #E8E6EF; border: 1px solid #2A2A35; }
+  .dark .btn-ghost { background: transparent; color: #C084FC; }
+  .dark .input { background: #1A1A22; border: 1px solid #2A2A35; color: #E8E6EF; }
+  .dark .input::placeholder { color: #6B6770; }
+  .dark .badge.priority { background: rgba(192,132,252,0.12); color: #C084FC; }
+  .dark .badge.info { background: rgba(103,232,249,0.12); color: #67E8F9; }
+  .dark .badge.danger { background: rgba(248,113,113,0.12); color: #F87171; }
+  .dark .badge.warning { background: rgba(251,191,36,0.12); color: #FBBF24; }
+  .dark .badge.success { background: rgba(52,211,153,0.12); color: #34D399; }
+  .dark .divider { background: #2A2A35; }
+  .dark .card-shadow { box-shadow: 0 1px 0 rgba(255,255,255,0.04), 0 8px 24px rgba(0,0,0,0.4); }
+
+  /* ---- LIGHT tokens ---- */
+  .light .surface { background: #FFFFFF; border: 1px solid #E5E2EA; }
+  .light .text-muted { color: #6B6770; }
+  .light .text-strong { color: #1A1A22; }
+  .light .btn-primary { background: #7C3AED; color: #FFFFFF; box-shadow: 0 4px 14px rgba(124,58,237,0.25), 0 1px 2px rgba(0,0,0,0.05); }
+  .light .btn-secondary { background: #FFFFFF; color: #1A1A22; border: 1px solid #DCD8E2; }
+  .light .btn-ghost { background: transparent; color: #7C3AED; }
+  .light .input { background: #FFFFFF; border: 1px solid #DCD8E2; color: #1A1A22; }
+  .light .input::placeholder { color: #9B97A2; }
+  .light .badge.priority { background: rgba(124,58,237,0.10); color: #7C3AED; }
+  .light .badge.info { background: rgba(14,116,144,0.10); color: #0E7490; }
+  .light .badge.danger { background: rgba(190,58,71,0.10); color: #BE3A47; }
+  .light .badge.warning { background: rgba(168,101,40,0.10); color: #A86528; }
+  .light .badge.success { background: rgba(62,124,80,0.10); color: #3E7C50; }
+  .light .divider { background: #ECE9EE; }
+  .light .card-shadow { box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06); }
+
+  /* shared */
+  .btn { padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; font-family: inherit; }
+  .btn.sm { padding: 6px 10px; font-size: 12px; }
+  .btn.lg { padding: 12px 18px; font-size: 14px; }
+  .input { width: 100%; padding: 10px 12px; border-radius: 8px; font-size: 13px; font-family: inherit; box-sizing: border-box; }
+  .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+  .surface { border-radius: 12px; padding: 14px; }
+  .divider { height: 1px; }
+  .task {
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .task-checkbox {
+    width: 18px;
+    height: 18px;
+    border-radius: 6px;
+    border: 1.5px solid currentColor;
+    opacity: 0.4;
+    flex-shrink: 0;
+  }
+  .task-title { font-size: 13px; font-weight: 500; flex: 1; }
+  .task-meta { font-size: 11px; opacity: 0.7; font-family: 'JetBrains Mono', ui-monospace, monospace; }
+  .radius-pill {
+    width: 64px; height: 28px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  }
+  .dark .radius-pill { background: #1A1A22; border: 1px solid #2A2A35; }
+  .light .radius-pill { background: #FFFFFF; border: 1px solid #DCD8E2; }
+
+  .density-row {
+    display: flex; gap: 12px; align-items: center;
+    padding: 10px 12px; border-radius: 8px;
+    font-size: 13px;
+  }
+  .dark .density-row { background: #1A1A22; border: 1px solid #2A2A35; }
+  .light .density-row { background: #FFFFFF; border: 1px solid #E5E2EA; }
+</style>
+
+<h2>Composite preview — palette + type + density + radius + shadow</h2>
+<p class="subtitle">Everything locked-so-far rendered together. Verify the combined feel before I write the spec. Items annotated by token name.</p>
+
+<div class="grid-pair">
+
+  <!-- DARK -->
+  <div class="mode dark">
+    <div class="label" style="color:#A8A5B5;">Dark</div>
+
+    <!-- Buttons -->
+    <div style="margin-top:14px;">
+      <div class="label" style="margin-bottom:6px;">Buttons · radius.md 8 · shadow.elevated (primary)</div>
+      <div class="row">
+        <button class="btn btn-primary">Create task</button>
+        <button class="btn btn-secondary">Cancel</button>
+        <button class="btn btn-ghost">Skip</button>
+      </div>
+      <div class="row" style="margin-top:8px;">
+        <button class="btn sm btn-primary">sm</button>
+        <button class="btn btn-primary">md</button>
+        <button class="btn lg btn-primary">lg</button>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div style="margin-top:18px;">
+      <div class="label" style="margin-bottom:6px;">Input</div>
+      <input class="input" placeholder="Search tasks…">
+    </div>
+
+    <!-- Badges -->
+    <div style="margin-top:18px;">
+      <div class="label" style="margin-bottom:6px;">Badges</div>
+      <div class="row">
+        <span class="badge priority">priority</span>
+        <span class="badge info">backend</span>
+        <span class="badge danger">overdue</span>
+        <span class="badge warning">due soon</span>
+        <span class="badge success">done</span>
+      </div>
+    </div>
+
+    <!-- Task card -->
+    <div style="margin-top:18px;">
+      <div class="label" style="margin-bottom:6px;">Task card · radius.lg 12 · shadow.card</div>
+      <div class="surface card-shadow stack">
+        <div class="task">
+          <div class="task-checkbox"></div>
+          <div class="task-title text-strong">Refactor auth middleware</div>
+          <span class="badge priority">priority</span>
+          <span class="task-meta text-muted">Fri</span>
+        </div>
+        <div class="divider"></div>
+        <div class="task">
+          <div class="task-checkbox"></div>
+          <div class="task-title text-strong">Write zod-schemas migration doc</div>
+          <span class="badge info">backend</span>
+          <span class="task-meta text-muted">Mon</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Radius scale -->
+    <div style="margin-top:18px;">
+      <div class="label" style="margin-bottom:6px;">Radius scale</div>
+      <div class="row">
+        <div class="radius-pill" style="border-radius:4px;">xs 4</div>
+        <div class="radius-pill" style="border-radius:6px;">sm 6</div>
+        <div class="radius-pill" style="border-radius:8px;">md 8</div>
+        <div class="radius-pill" style="border-radius:12px;">lg 12</div>
+        <div class="radius-pill" style="border-radius:16px;">xl 16</div>
+        <div class="radius-pill" style="border-radius:9999px;">full</div>
+      </div>
+    </div>
+
+    <!-- Density -->
+    <div style="margin-top:18px;">
+      <div class="label" style="margin-bottom:6px;">Density · medium (row 40px / list-item 56px)</div>
+      <div class="stack">
+        <div class="density-row" style="height:40px;">Compact list row (40px) — toolbars, dense tables</div>
+        <div class="density-row" style="height:48px;">Default row (48px) — most list items</div>
+        <div class="density-row" style="height:56px;">Comfortable row (56px) — touch-friendly mobile</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIGHT -->
+  <div class="mode light">
+    <div class="label" style="color:#6B6770;">Light</div>
+
+    <!-- Buttons -->
+    <div style="margin-top:14px;">
+      <div class="label" style="margin-bottom:6px;">Buttons · radius.md 8 · shadow.elevated (primary)</div>
+      <div class="row">
+        <button class="btn btn-primary">Create task</button>
+        <button class="btn btn-secondary">Cancel</button>
+        <button class="btn btn-ghost">Skip</button>
+      </div>
+      <div class="row" style="margin-top:8px;">
+        <button class="btn sm btn-primary">sm</button>
+        <button class="btn btn-primary">md</button>
+        <button class="btn lg btn-primary">lg</button>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div style="margin-top:18px;">
+      <div class="label" style="margin-bottom:6px;">Input</div>
+      <input class="input" placeholder="Search tasks…">
+    </div>
+
+    <!-- Badges -->
+    <div style="margin-top:18px;">
+      <div class="label" style="margin-bottom:6px;">Badges</div>
+      <div class="row">
+        <span class="badge priority">priority</span>
+        <span class="badge info">backend</span>
+        <span class="badge danger">overdue</span>
+        <span class="badge warning">due soon</span>
+        <span class="badge success">done</span>
+      </div>
+    </div>
+
+    <!-- Task card -->
+    <div style="margin-top:18px;">
+      <div class="label" style="margin-bottom:6px;">Task card · radius.lg 12 · shadow.card</div>
+      <div class="surface card-shadow stack">
+        <div class="task">
+          <div class="task-checkbox"></div>
+          <div class="task-title text-strong">Refactor auth middleware</div>
+          <span class="badge priority">priority</span>
+          <span class="task-meta text-muted">Fri</span>
+        </div>
+        <div class="divider"></div>
+        <div class="task">
+          <div class="task-checkbox"></div>
+          <div class="task-title text-strong">Write zod-schemas migration doc</div>
+          <span class="badge info">backend</span>
+          <span class="task-meta text-muted">Mon</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Radius scale -->
+    <div style="margin-top:18px;">
+      <div class="label" style="margin-bottom:6px;">Radius scale</div>
+      <div class="row">
+        <div class="radius-pill" style="border-radius:4px;">xs 4</div>
+        <div class="radius-pill" style="border-radius:6px;">sm 6</div>
+        <div class="radius-pill" style="border-radius:8px;">md 8</div>
+        <div class="radius-pill" style="border-radius:12px;">lg 12</div>
+        <div class="radius-pill" style="border-radius:16px;">xl 16</div>
+        <div class="radius-pill" style="border-radius:9999px;">full</div>
+      </div>
+    </div>
+
+    <!-- Density -->
+    <div style="margin-top:18px;">
+      <div class="label" style="margin-bottom:6px;">Density · medium (row 40px / list-item 56px)</div>
+      <div class="stack">
+        <div class="density-row" style="height:40px;">Compact list row (40px) — toolbars, dense tables</div>
+        <div class="density-row" style="height:48px;">Default row (48px) — most list items</div>
+        <div class="density-row" style="height:56px;">Comfortable row (56px) — touch-friendly mobile</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:20px;">If anything looks off (too soft, too tight, too glowy, etc.) tell me and I'll iterate before the spec lands. Otherwise the tokens doc is being written in parallel at <code>docs/stable/_shared/design/01-tokens-and-theme.md</code>.</p>

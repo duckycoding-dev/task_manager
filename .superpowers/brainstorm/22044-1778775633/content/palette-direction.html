@@ -1,0 +1,226 @@
+<h2>Color direction — 3 variations</h2>
+<p class="subtitle">Same family (pink/violet/purple), different emphasis. Cyan handled differently per option. All values are starting points — exact stops finalized in the token spec.</p>
+
+<style>
+  .palette-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .palette-mode {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(128,128,128,0.2);
+  }
+  .palette-mode-head {
+    padding: 10px 14px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+  }
+  .palette-mode-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .swatch-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .swatch {
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    border: 1px solid rgba(0,0,0,0.15);
+  }
+  .swatch-meta {
+    font-family: ui-monospace, "JetBrains Mono", monospace;
+    font-size: 11px;
+    line-height: 1.4;
+  }
+  .swatch-name { font-weight: 600; }
+  .swatch-hex { opacity: 0.7; }
+  .sample-card {
+    margin-top: 10px;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 13px;
+  }
+  .sample-btn {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 6px;
+  }
+  .contrast-pill {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-family: ui-monospace, monospace;
+    margin-left: 6px;
+    background: rgba(0,200,100,0.15);
+    color: #2da06b;
+  }
+  .card h3 { margin-top: 4px; }
+  .card p.opt-meta { font-size: 12px; opacity: 0.7; margin: 4px 0 12px; }
+</style>
+
+<div class="cards" style="grid-template-columns: 1fr;">
+
+  <!-- OPTION A -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>A · Violet primary + sparing cyan (other-LLM proposal)</h3>
+      <p class="opt-meta">Saturated violet at dark mode, darker stop on light. Cyan reserved for info/tags only.</p>
+
+      <div class="palette-grid">
+        <!-- DARK -->
+        <div class="palette-mode" style="background:#0F0F13;color:#E8E6EF;">
+          <div class="palette-mode-head" style="background:#1A1A22;color:#A8A5B5;">Dark mode</div>
+          <div class="palette-mode-body">
+            <div class="swatch-row"><div class="swatch" style="background:#0F0F13"></div><div class="swatch-meta"><div class="swatch-name">bg.base</div><div class="swatch-hex">#0F0F13</div></div></div>
+            <div class="swatch-row"><div class="swatch" style="background:#1A1A22"></div><div class="swatch-meta"><div class="swatch-name">bg.surface</div><div class="swatch-hex">#1A1A22</div></div></div>
+            <div class="swatch-row"><div class="swatch" style="background:#C084FC"></div><div class="swatch-meta"><div class="swatch-name">accent.primary</div><div class="swatch-hex">#C084FC <span class="contrast-pill">8.1:1 on bg.base</span></div></div></div>
+            <div class="swatch-row"><div class="swatch" style="background:#67E8F9"></div><div class="swatch-meta"><div class="swatch-name">accent.secondary (cyan)</div><div class="swatch-hex">#67E8F9 <span class="contrast-pill">10.4:1</span></div></div></div>
+            <div class="swatch-row"><div class="swatch" style="background:#F87171"></div><div class="swatch-meta"><div class="swatch-name">state.danger</div><div class="swatch-hex">#F87171</div></div></div>
+            <div class="swatch-row"><div class="swatch" style="background:#FBBF24"></div><div class="swatch-meta"><div class="swatch-name">state.warning</div><div class="swatch-hex">#FBBF24</div></div></div>
+            <div class="swatch-row"><div class="swatch" style="background:#34D399"></div><div class="swatch-meta"><div class="swatch-name">state.success</div><div class="swatch-hex">#34D399</div></div></div>
+            <div class="sample-card" style="background:#1A1A22;border:1px solid rgba(192,132,252,0.2);">
+              <div style="color:#E8E6EF;font-weight:600;">Refactor auth middleware</div>
+              <div style="color:#A8A5B5;font-size:12px;margin-top:2px;">Due Fri · <span style="color:#67E8F9;">backend</span></div>
+              <div style="margin-top:10px;">
+                <span class="sample-btn" style="background:#C084FC;color:#0F0F13;">Start</span>
+                <span class="sample-btn" style="background:#1A1A22;color:#A8A5B5;border:1px solid #2A2A35;">Snooze</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LIGHT -->
+        <div class="palette-mode" style="background:#F8F7F9;color:#1A1A22;">
+          <div class="palette-mode-head" style="background:#EDEAEF;color:#46444F;">Light mode</div>
+          <div class="palette-mode-body">
+            <div class="swatch-row"><div class="swatch" style="background:#F8F7F9"></div><div class="swatch-meta"><div class="swatch-name">bg.base</div><div class="swatch-hex">#F8F7F9</div></div></div>
+            <div class="swatch-row"><div class="swatch" style="background:#FFFFFF"></div><div class="swatch-meta"><div class="swatch-name">bg.surface</div><div class="swatch-hex">#FFFFFF</div></div></div>
+            <div class="swatch-row"><div class="swatch" style="background:#7C3AED"></div><div class="swatch-meta"><div class="swatch-name">accent.primary</div><div class="swatch-hex">#7C3AED <span class="contrast-pill">5.7:1 on bg.base</span></div></div></div>
+            <div class="swatch-row"><div class="swatch" style="background:#0E7490"></div><div class="swatch-meta"><div class="swatch-name">accent.secondary (cyan)</div><div class="swatch-hex">#0E7490 <span class="contrast-pill">5.9:1</span></div></div></div>
+            <div class="swatch-row"><div class="swatch" style="background:#B91C1C"></div><div class="swatch-meta"><div class="swatch-name">state.danger</div><div class="swatch-hex">#B91C1C</div></div></div>
+            <div class="swatch-row"><div class="swatch" style="background:#B45309"></div><div class="swatch-meta"><div class="swatch-name">state.warning</div><div class="swatch-hex">#B45309</div></div></div>
+            <div class="swatch-row"><div class="swatch" style="background:#047857"></div><div class="swatch-meta"><div class="swatch-name">state.success</div><div class="swatch-hex">#047857</div></div></div>
+            <div class="sample-card" style="background:#FFFFFF;border:1px solid rgba(124,58,237,0.2);box-shadow:0 1px 2px rgba(0,0,0,0.04);">
+              <div style="color:#1A1A22;font-weight:600;">Refactor auth middleware</div>
+              <div style="color:#46444F;font-size:12px;margin-top:2px;">Due Fri · <span style="color:#0E7490;">backend</span></div>
+              <div style="margin-top:10px;">
+                <span class="sample-btn" style="background:#7C3AED;color:#FFFFFF;">Start</span>
+                <span class="sample-btn" style="background:#FFFFFF;color:#46444F;border:1px solid #DCD8E2;">Snooze</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION B -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>B · Pink-leaning primary (warmer)</h3>
+      <p class="opt-meta">Same family but primary pushed toward pink/magenta rather than blue-violet. Cyan still sparing.</p>
+
+      <div class="palette-grid">
+        <div class="palette-mode" style="background:#13101A;color:#EFE6EE;">
+          <div class="palette-mode-head" style="background:#1F1A28;color:#B6A8B5;">Dark mode</div>
+          <div class="palette-mode-body">
+            <div class="swatch-row"><div class="swatch" style="background:#13101A"></div><div class="swatch-meta"><div class="swatch-name">bg.base</div><div class="swatch-hex">#13101A</div></div></div>
+            <div class="swatch-row"><div class="swatch" style="background:#1F1A28"></div><div class="swatch-meta"><div class="swatch-name">bg.surface</div><div class="swatch-hex">#1F1A28</div></div></div>
+            <div class="swatch-row"><div class="swatch" style="background:#F0ABFC"></div><div class="swatch-meta"><div class="swatch-name">accent.primary</div><div class="swatch-hex">#F0ABFC <span class="contrast-pill">9.6:1</span></div></div></div>
+            <div class="swatch-row"><div class="swatch" style="background:#67E8F9"></div><div class="swatch-meta"><div class="swatch-name">accent.secondary (cyan)</div><div class="swatch-hex">#67E8F9</div></div></div>
+            <div class="sample-card" style="background:#1F1A28;border:1px solid rgba(240,171,252,0.2);">
+              <div style="color:#EFE6EE;font-weight:600;">Refactor auth middleware</div>
+              <div style="color:#B6A8B5;font-size:12px;margin-top:2px;">Due Fri · <span style="color:#67E8F9;">backend</span></div>
+              <div style="margin-top:10px;">
+                <span class="sample-btn" style="background:#F0ABFC;color:#13101A;">Start</span>
+                <span class="sample-btn" style="background:#1F1A28;color:#B6A8B5;border:1px solid #2E2638;">Snooze</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="palette-mode" style="background:#F9F7F9;color:#1F1A28;">
+          <div class="palette-mode-head" style="background:#EFEAEF;color:#4F4450;">Light mode</div>
+          <div class="palette-mode-body">
+            <div class="swatch-row"><div class="swatch" style="background:#F9F7F9"></div><div class="swatch-meta"><div class="swatch-name">bg.base</div><div class="swatch-hex">#F9F7F9</div></div></div>
+            <div class="swatch-row"><div class="swatch" style="background:#FFFFFF"></div><div class="swatch-meta"><div class="swatch-name">bg.surface</div><div class="swatch-hex">#FFFFFF</div></div></div>
+            <div class="swatch-row"><div class="swatch" style="background:#A21CAF"></div><div class="swatch-meta"><div class="swatch-name">accent.primary</div><div class="swatch-hex">#A21CAF <span class="contrast-pill">5.4:1</span></div></div></div>
+            <div class="swatch-row"><div class="swatch" style="background:#0E7490"></div><div class="swatch-meta"><div class="swatch-name">accent.secondary (cyan)</div><div class="swatch-hex">#0E7490</div></div></div>
+            <div class="sample-card" style="background:#FFFFFF;border:1px solid rgba(162,28,175,0.2);box-shadow:0 1px 2px rgba(0,0,0,0.04);">
+              <div style="color:#1F1A28;font-weight:600;">Refactor auth middleware</div>
+              <div style="color:#4F4450;font-size:12px;margin-top:2px;">Due Fri · <span style="color:#0E7490;">backend</span></div>
+              <div style="margin-top:10px;">
+                <span class="sample-btn" style="background:#A21CAF;color:#FFFFFF;">Start</span>
+                <span class="sample-btn" style="background:#FFFFFF;color:#4F4450;border:1px solid #E2D8E0;">Snooze</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION C -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>C · Pure violet, no cyan (maximum restraint)</h3>
+      <p class="opt-meta">Single accent. Info/tags use neutral grays at varying steps. Most monochrome, closest to Astro.build feel.</p>
+
+      <div class="palette-grid">
+        <div class="palette-mode" style="background:#0F0F13;color:#E8E6EF;">
+          <div class="palette-mode-head" style="background:#1A1A22;color:#A8A5B5;">Dark mode</div>
+          <div class="palette-mode-body">
+            <div class="swatch-row"><div class="swatch" style="background:#0F0F13"></div><div class="swatch-meta"><div class="swatch-name">bg.base</div><div class="swatch-hex">#0F0F13</div></div></div>
+            <div class="swatch-row"><div class="swatch" style="background:#1A1A22"></div><div class="swatch-meta"><div class="swatch-name">bg.surface</div><div class="swatch-hex">#1A1A22</div></div></div>
+            <div class="swatch-row"><div class="swatch" style="background:#C084FC"></div><div class="swatch-meta"><div class="swatch-name">accent (only)</div><div class="swatch-hex">#C084FC</div></div></div>
+            <div class="swatch-row"><div class="swatch" style="background:#A8A5B5"></div><div class="swatch-meta"><div class="swatch-name">neutral.500 (for info)</div><div class="swatch-hex">#A8A5B5</div></div></div>
+            <div class="sample-card" style="background:#1A1A22;border:1px solid rgba(192,132,252,0.2);">
+              <div style="color:#E8E6EF;font-weight:600;">Refactor auth middleware</div>
+              <div style="color:#A8A5B5;font-size:12px;margin-top:2px;">Due Fri · <span>backend</span></div>
+              <div style="margin-top:10px;">
+                <span class="sample-btn" style="background:#C084FC;color:#0F0F13;">Start</span>
+                <span class="sample-btn" style="background:#1A1A22;color:#A8A5B5;border:1px solid #2A2A35;">Snooze</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="palette-mode" style="background:#F8F7F9;color:#1A1A22;">
+          <div class="palette-mode-head" style="background:#EDEAEF;color:#46444F;">Light mode</div>
+          <div class="palette-mode-body">
+            <div class="swatch-row"><div class="swatch" style="background:#F8F7F9"></div><div class="swatch-meta"><div class="swatch-name">bg.base</div><div class="swatch-hex">#F8F7F9</div></div></div>
+            <div class="swatch-row"><div class="swatch" style="background:#FFFFFF"></div><div class="swatch-meta"><div class="swatch-name">bg.surface</div><div class="swatch-hex">#FFFFFF</div></div></div>
+            <div class="swatch-row"><div class="swatch" style="background:#7C3AED"></div><div class="swatch-meta"><div class="swatch-name">accent (only)</div><div class="swatch-hex">#7C3AED</div></div></div>
+            <div class="swatch-row"><div class="swatch" style="background:#46444F"></div><div class="swatch-meta"><div class="swatch-name">neutral.500 (for info)</div><div class="swatch-hex">#46444F</div></div></div>
+            <div class="sample-card" style="background:#FFFFFF;border:1px solid rgba(124,58,237,0.2);box-shadow:0 1px 2px rgba(0,0,0,0.04);">
+              <div style="color:#1A1A22;font-weight:600;">Refactor auth middleware</div>
+              <div style="color:#46444F;font-size:12px;margin-top:2px;">Due Fri · <span>backend</span></div>
+              <div style="margin-top:10px;">
+                <span class="sample-btn" style="background:#7C3AED;color:#FFFFFF;">Start</span>
+                <span class="sample-btn" style="background:#FFFFFF;color:#46444F;border:1px solid #DCD8E2;">Snooze</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top: 24px;">Click an option to select. All hex values shown are <strong>starting points</strong> — exact stops + full scales (50–950) get nailed down in the token spec after you pick a direction. Contrast ratios shown are illustrative (using accent on bg.base); body text uses higher-contrast neutrals not shown here.</p>

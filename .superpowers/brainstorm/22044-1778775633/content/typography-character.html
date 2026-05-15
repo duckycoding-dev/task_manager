@@ -1,0 +1,167 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap');
+
+  .type-card {
+    border: 1px solid rgba(128,128,128,0.2);
+    border-radius: 12px;
+    padding: 24px;
+    background: #FFFFFF;
+    color: #1A1A22;
+    margin-top: 12px;
+  }
+  .type-title {
+    font-size: 32px;
+    line-height: 1.15;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0 0 4px;
+  }
+  .type-tagline {
+    font-size: 14px;
+    color: #6B6770;
+    margin: 0 0 20px;
+  }
+  .specimen-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 600;
+    color: #7C3AED;
+    margin-bottom: 4px;
+  }
+  .specimen-h1 { font-size: 28px; line-height: 1.2; font-weight: 700; letter-spacing: -0.015em; margin: 0; }
+  .specimen-h2 { font-size: 18px; line-height: 1.3; font-weight: 600; margin: 0; }
+  .specimen-body { font-size: 14px; line-height: 1.55; color: #1A1A22; margin: 0; max-width: 60ch; }
+  .specimen-small { font-size: 12px; line-height: 1.4; color: #6B6770; }
+  .specimen-mono { font-size: 12px; letter-spacing: 0; }
+  .specimen-tab { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; color: #6B6770; }
+
+  .type-section { display: flex; flex-direction: column; gap: 14px; }
+
+  .sample-task {
+    background: #FFFFFF;
+    border: 1px solid #E5E2EA;
+    border-radius: 10px;
+    padding: 14px 16px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+  .sample-task-title { font-weight: 600; font-size: 14px; color: #1A1A22; }
+  .sample-task-meta { font-size: 12px; color: #6B6770; margin-top: 4px; }
+  .sample-task-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(124,58,237,0.1);
+    color: #7C3AED;
+    margin-right: 6px;
+  }
+
+  /* font assignments per card */
+  .font-A, .font-A * { font-family: 'Inter', system-ui, sans-serif; }
+  .font-A .specimen-mono, .font-A code { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+  .font-B, .font-B * { font-family: 'IBM Plex Sans', system-ui, sans-serif; }
+  .font-B .specimen-mono, .font-B code { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+
+  .font-C, .font-C * { font-family: 'Inter', system-ui, sans-serif; }
+  .font-C .type-title, .font-C .specimen-h1, .font-C .specimen-h2 { font-family: 'Space Grotesk', system-ui, sans-serif; }
+  .font-C .specimen-mono, .font-C code { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+  .font-D, .font-D * { font-family: 'Manrope', system-ui, sans-serif; }
+  .font-D .specimen-mono, .font-D code { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+</style>
+
+<h2>Typography character — 4 directions</h2>
+<p class="subtitle">Body + heading paired, same content shown in each. Mono used for IDs/dates. Click to pick. Specific font choice not locked here — what we're picking is the <em>feel</em>.</p>
+
+<div class="cards" style="grid-template-columns: 1fr;">
+
+  <!-- A -->
+  <div class="card font-A" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-body type-card">
+      <div class="specimen-label">A · Geometric modern</div>
+      <h1 class="type-title">Tasks for today</h1>
+      <p class="type-tagline">Neutral, dependable, no-personality. Reads like a tool. Excellent at small sizes.</p>
+      <div class="type-section">
+        <div>
+          <h2 class="specimen-h2">Backend</h2>
+          <p class="specimen-body">Five tasks in this project. Two are due this week, including the auth middleware refactor that has been blocking the API reorg.</p>
+        </div>
+        <div class="sample-task">
+          <div class="sample-task-title">Refactor auth middleware</div>
+          <div class="sample-task-meta">Due Fri · <span class="specimen-mono">#TASK-204</span></div>
+          <div style="margin-top:8px;"><span class="sample-task-badge">priority</span><span class="specimen-small">backend</span></div>
+        </div>
+        <div class="specimen-tab">section heading · uppercase tracking</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- B -->
+  <div class="card font-B" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-body type-card">
+      <div class="specimen-label">B · Humanist warm</div>
+      <h1 class="type-title">Tasks for today</h1>
+      <p class="type-tagline">Slightly warmer letterforms. More distinct character at body sizes. Feels mature, IBM-like.</p>
+      <div class="type-section">
+        <div>
+          <h2 class="specimen-h2">Backend</h2>
+          <p class="specimen-body">Five tasks in this project. Two are due this week, including the auth middleware refactor that has been blocking the API reorg.</p>
+        </div>
+        <div class="sample-task">
+          <div class="sample-task-title">Refactor auth middleware</div>
+          <div class="sample-task-meta">Due Fri · <span class="specimen-mono">#TASK-204</span></div>
+          <div style="margin-top:8px;"><span class="sample-task-badge">priority</span><span class="specimen-small">backend</span></div>
+        </div>
+        <div class="specimen-tab">section heading · uppercase tracking</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- C -->
+  <div class="card font-C" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-body type-card">
+      <div class="specimen-label">C · Distinctive display + neutral body</div>
+      <h1 class="type-title">Tasks for today</h1>
+      <p class="type-tagline">Headings have personality (slight geometric quirk, tighter letterspacing). Body stays neutral and readable. Two-font pairing.</p>
+      <div class="type-section">
+        <div>
+          <h2 class="specimen-h2">Backend</h2>
+          <p class="specimen-body">Five tasks in this project. Two are due this week, including the auth middleware refactor that has been blocking the API reorg.</p>
+        </div>
+        <div class="sample-task">
+          <div class="sample-task-title">Refactor auth middleware</div>
+          <div class="sample-task-meta">Due Fri · <span class="specimen-mono">#TASK-204</span></div>
+          <div style="margin-top:8px;"><span class="sample-task-badge">priority</span><span class="specimen-small">backend</span></div>
+        </div>
+        <div class="specimen-tab">section heading · uppercase tracking</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- D -->
+  <div class="card font-D" data-choice="d" onclick="toggleSelect(this)">
+    <div class="card-body type-card">
+      <div class="specimen-label">D · Rounded, friendly</div>
+      <h1 class="type-title">Tasks for today</h1>
+      <p class="type-tagline">Softer curves, more approachable. Still professional. Reads "modern productivity app" / Linear-ish but warmer.</p>
+      <div class="type-section">
+        <div>
+          <h2 class="specimen-h2">Backend</h2>
+          <p class="specimen-body">Five tasks in this project. Two are due this week, including the auth middleware refactor that has been blocking the API reorg.</p>
+        </div>
+        <div class="sample-task">
+          <div class="sample-task-title">Refactor auth middleware</div>
+          <div class="sample-task-meta">Due Fri · <span class="specimen-mono">#TASK-204</span></div>
+          <div style="margin-top:8px;"><span class="sample-task-badge">priority</span><span class="specimen-small">backend</span></div>
+        </div>
+        <div class="specimen-tab">section heading · uppercase tracking</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:22px;">Each card uses a real loaded font as a stand-in for the <em>character</em>: A = clean/neutral · B = warm/humanist · C = display+body split · D = rounded/friendly. The final pick can be any specific font in that family — that's a later detail.</p>

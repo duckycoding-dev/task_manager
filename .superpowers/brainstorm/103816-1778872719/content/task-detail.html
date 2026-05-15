@@ -1,0 +1,412 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+  .demo { font-family: 'Inter', system-ui, sans-serif; }
+  .device { border-radius: 12px; overflow: hidden; background: #0F0F13; border: 1px solid #2A2A35; }
+  .device-chrome { height: 22px; background: #1A1A22; border-bottom: 1px solid #2A2A35; display: flex; align-items: center; gap: 6px; padding: 0 10px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; } .dot.r { background: #F87171; } .dot.y { background: #FBBF24; } .dot.g { background: #34D399; }
+
+  /* shell variations: full app vs panel-only mockup */
+  .shell { display: grid; grid-template-columns: 56px 1fr; grid-template-rows: 44px 1fr; height: 660px; font-size: 12px; }
+  .topbar { grid-column: 1 / -1; display: flex; align-items: center; padding: 0 14px; background: #1A1A22; border-bottom: 1px solid #2A2A35; gap: 14px; }
+  .logo { font-weight: 700; color: #E8E6EF; } .logo b { color: #C084FC; }
+  .search { flex: 1; max-width: 340px; height: 28px; background: #15151B; border: 1px solid #2A2A35; border-radius: 8px; padding: 0 10px; display: flex; align-items: center; gap: 8px; color: #7A7787; font-size: 11px; }
+  .kbd { padding: 1px 6px; border-radius: 4px; background: #1A1A22; border: 1px solid #2A2A35; color: #A8A5B5; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+  .topbar-spacer { flex: 1; } .icon-btn { width: 30px; height: 30px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; color: #A8A5B5; font-size: 14px; }
+  .avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #C084FC, #67E8F9); }
+  .rail { background: #15151B; border-right: 1px solid #2A2A35; padding: 12px 6px; display: flex; flex-direction: column; gap: 2px; }
+  .rail-item { width: 100%; padding: 8px 0; border-radius: 8px; color: #A8A5B5; text-align: center; font-size: 14px; }
+  .rail-item.active { background: rgba(192,132,252,0.12); color: #C084FC; }
+
+  /* shared chrome */
+  .breadcrumbs { font-size: 11px; color: #7A7787; margin-bottom: 6px; }
+  .breadcrumbs a { color: #A8A5B5; }
+  .badge { padding: 1px 6px; border-radius: 8px; font-size: 9px; font-weight: 600; }
+  .badge.priority-h { background: rgba(248,113,113,0.12); color: #F87171; }
+  .badge.priority-m { background: rgba(192,132,252,0.12); color: #C084FC; }
+  .badge.priority-l { background: rgba(168,168,170,0.12); color: #A8A5B5; }
+  .badge.info { background: rgba(103,232,249,0.12); color: #67E8F9; }
+  .mono-meta { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #A8A5B5; }
+  .mono-meta.danger { color: #F87171; }
+
+  /* ===== context: project board with PANEL open ===== */
+  .ctx-content { background: #0F0F13; display: grid; grid-template-columns: 1fr 400px; overflow: hidden; }
+  .ctx-board-area { padding: 14px 18px; overflow: hidden; display: flex; flex-direction: column; }
+  .ctx-page-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .ctx-page-title { font-size: 18px; margin: 0; color: #E8E6EF; font-weight: 700; display:flex; align-items:center; gap:8px; opacity: 0.7; }
+  .color-dot { width: 10px; height: 10px; border-radius: 50%; background: #67E8F9; }
+  .mini-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; flex: 1; overflow: hidden; }
+  .mini-col { background: #15151B; border: 1px solid #2A2A35; border-radius: 10px; padding: 8px; opacity: 0.55; }
+  .mini-col-head { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #A8A5B5; font-weight: 600; margin-bottom: 6px; }
+  .mini-card { background: #1A1A22; border: 1px solid #2A2A35; border-radius: 6px; padding: 6px 8px; font-size: 10px; color: #CFCAD9; margin-bottom: 4px; }
+  .mini-card.selected { border-color: #C084FC; background: rgba(192,132,252,0.08); color: #E8E6EF; }
+
+  /* ===== INLINE PANEL ===== */
+  .panel { background: #0F0F13; border-left: 1px solid #2A2A35; display: flex; flex-direction: column; box-shadow: -20px 0 40px rgba(0,0,0,0.4); overflow: hidden; }
+  .panel-head { padding: 12px 16px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #2A2A35; }
+  .panel-close { color: #A8A5B5; font-size: 16px; cursor: pointer; }
+  .panel-actions { margin-left: auto; display: flex; gap: 4px; }
+  .panel-action { color: #A8A5B5; font-size: 13px; padding: 4px 6px; border-radius: 6px; cursor: pointer; }
+  .panel-action:hover { background: #1A1A22; }
+  .panel-open-full {
+    margin-left: auto;
+    padding: 4px 10px; background: #1A1A22; border: 1px solid #2A2A35; color: #CFCAD9; font-size: 11px; border-radius: 6px;
+  }
+  .panel-body { flex: 1; overflow-y: auto; padding: 16px 18px; display: flex; flex-direction: column; gap: 16px; }
+  .pb-title {
+    font-size: 18px; color: #E8E6EF; font-weight: 700; line-height: 1.25; letter-spacing: -0.01em;
+    padding: 4px 6px; margin: -4px -6px; border-radius: 6px;
+  }
+  .pb-title:hover { background: #1A1A22; }
+  .pb-title.editing { background: #1A1A22; outline: 1.5px solid rgba(192,132,252,0.4); }
+  .quick-toggles { display: flex; gap: 6px; flex-wrap: wrap; }
+  .seg { display: inline-flex; gap: 0; background: #1A1A22; border: 1px solid #2A2A35; border-radius: 8px; padding: 2px; }
+  .seg-btn { padding: 4px 9px; border-radius: 6px; color: #A8A5B5; font-size: 11px; font-weight: 600; cursor: pointer; }
+  .seg-btn.active.status-todo { background: rgba(168,168,170,0.15); color: #CFCAD9; }
+  .seg-btn.active.status-inp { background: rgba(192,132,252,0.18); color: #C084FC; }
+  .seg-btn.active.status-done { background: rgba(52,211,153,0.18); color: #34D399; }
+  .seg-btn.active.prio-l { background: rgba(168,168,170,0.15); color: #A8A5B5; }
+  .seg-btn.active.prio-m { background: rgba(192,132,252,0.18); color: #C084FC; }
+  .seg-btn.active.prio-h { background: rgba(248,113,113,0.18); color: #F87171; }
+
+  .field-grid {
+    display: grid; grid-template-columns: 84px 1fr; gap: 8px 12px;
+    font-size: 12px;
+  }
+  .field-label { color: #7A7787; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; padding-top: 5px; }
+  .field-value {
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-height: 24px;
+    padding: 4px 6px; margin: -4px -6px; border-radius: 6px; color: #E8E6EF;
+  }
+  .field-value:hover { background: #1A1A22; cursor: pointer; }
+  .field-value.empty { color: #6B6770; font-style: italic; }
+  .chip { padding: 2px 8px; border-radius: 6px; background: #1A1A22; border: 1px solid #2A2A35; color: #CFCAD9; font-size: 11px; display: inline-flex; align-items: center; gap: 4px; }
+  .chip.project { background: rgba(103,232,249,0.08); border-color: rgba(103,232,249,0.2); color: #67E8F9; }
+  .chip .x { color: #6B6770; font-size: 9px; cursor: pointer; }
+
+  .desc-area {
+    background: #1A1A22; border: 1px solid #2A2A35; border-radius: 8px; padding: 10px 12px;
+    color: #CFCAD9; font-size: 12px; line-height: 1.55; min-height: 90px;
+  }
+  .desc-area .md-h { color: #E8E6EF; font-weight: 600; margin: 4px 0; }
+  .desc-area code { background: #15151B; color: #67E8F9; padding: 1px 5px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+  .desc-toggle { display: flex; gap: 4px; font-size: 10px; margin-bottom: 4px; }
+  .desc-toggle-btn { padding: 2px 8px; border-radius: 4px; color: #7A7787; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; cursor: pointer; }
+  .desc-toggle-btn.active { background: rgba(192,132,252,0.12); color: #C084FC; }
+
+  .section-h {
+    display: flex; align-items: center; gap: 8px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #7A7787; font-weight: 600;
+    padding-bottom: 6px; border-bottom: 1px solid #2A2A35;
+  }
+  .section-count { background: #1A1A22; color: #A8A5B5; padding: 1px 6px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+  .section-add { margin-left: auto; color: #C084FC; font-size: 11px; cursor: pointer; }
+
+  .reminder-row { display: flex; align-items: center; gap: 10px; padding: 8px 10px; background: #1A1A22; border: 1px solid #2A2A35; border-radius: 6px; font-size: 11px; margin-top: 6px; }
+  .reminder-row .clock { color: #67E8F9; font-family: 'JetBrains Mono', monospace; font-size: 10px; min-width: 60px; }
+  .reminder-row .rtitle { flex: 1; color: #E8E6EF; }
+  .reminder-row .rdel { color: #6B6770; font-size: 11px; padding: 2px 4px; cursor: pointer; }
+
+  .activity-row { display: flex; gap: 10px; padding: 6px 0; font-size: 11px; color: #A8A5B5; }
+  .activity-time { color: #6B6770; font-family: 'JetBrains Mono', monospace; font-size: 9px; min-width: 56px; padding-top: 2px; }
+  .activity-text { flex: 1; color: #CFCAD9; }
+  .activity-text b { color: #E8E6EF; }
+  .activity-stub { background: rgba(251,191,36,0.08); border: 1px dashed rgba(251,191,36,0.3); border-radius: 8px; padding: 10px 12px; font-size: 11px; color: #FBBF24; }
+
+  /* ===== DEDICATED PAGE ===== */
+  .page-content { background: #0F0F13; padding: 22px 28px; overflow-y: auto; display: grid; grid-template-columns: 1fr 280px; gap: 24px; }
+  .page-main { display: flex; flex-direction: column; gap: 18px; }
+  .page-aside { display: flex; flex-direction: column; gap: 14px; }
+  .page-title-l { font-size: 26px; color: #E8E6EF; font-weight: 700; letter-spacing: -0.015em; line-height: 1.2; }
+  .aside-card { background: #1A1A22; border: 1px solid #2A2A35; border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .aside-card .field-grid { grid-template-columns: 76px 1fr; }
+
+  /* ===== RECURRENCE PICKER ===== */
+  .recur-row { display: flex; gap: 4px; align-items: center; }
+  .recur-pop {
+    background: #22222E; border: 1px solid #36364A; border-radius: 10px; padding: 6px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6); display: flex; flex-direction: column; min-width: 180px;
+  }
+  .recur-opt { padding: 8px 10px; font-size: 12px; color: #CFCAD9; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+  .recur-opt:hover { background: #2A2A35; }
+  .recur-opt.active { background: rgba(192,132,252,0.15); color: #C084FC; font-weight: 600; }
+  .recur-opt .check { color: #C084FC; }
+
+  .note-block { background: rgba(192,132,252,0.06); border: 1px solid rgba(192,132,252,0.18); border-radius: 8px; padding: 10px 12px; font-size: 11px; color: #CFCAD9; }
+  .note-block b { color: #C084FC; }
+</style>
+
+<div class="demo">
+
+<h2>Task detail · inline panel (consistent default · same on dashboard / all-tasks / project board)</h2>
+<p class="subtitle">Opens via <code>?task=&lt;id&gt;</code> on top of whatever page you were on. Page underneath stays visible; panel slides over right edge. Same component renders inside the panel and on the dedicated page.</p>
+
+<div class="device">
+  <div class="device-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+  <div class="shell">
+    <div class="topbar">
+      <div class="logo">task<b>·</b>mgr</div>
+      <div class="search">⌕ Search…<span class="kbd">⌘K</span></div>
+      <div class="topbar-spacer"></div><div class="icon-btn">🔔</div><div class="icon-btn">☾</div><div class="avatar"></div>
+    </div>
+    <div class="rail">
+      <div class="rail-item">▢</div><div class="rail-item">⌖</div><div class="rail-item">▥</div>
+      <div class="rail-item">≡</div><div class="rail-item active">▦</div><div class="rail-item">🏷</div><div class="rail-item">⚙</div>
+    </div>
+
+    <div class="ctx-content">
+      <div class="ctx-board-area">
+        <div class="breadcrumbs" style="opacity:0.6;"><a>Projects</a> › <a>Backend</a></div>
+        <div class="ctx-page-head"><div class="ctx-page-title"><span class="color-dot"></span>Backend</div></div>
+        <div class="mini-board">
+          <div class="mini-col"><div class="mini-col-head">Todo</div><div class="mini-card">Write zod doc</div><div class="mini-card">Audit endpoints</div><div class="mini-card">Multi-value filter</div></div>
+          <div class="mini-col"><div class="mini-col-head">In progress</div><div class="mini-card selected">Refactor auth middleware</div><div class="mini-card">Onboard team lead</div></div>
+          <div class="mini-col"><div class="mini-col-head">Done</div><div class="mini-card" style="opacity:0.5; text-decoration:line-through;">Bump hono stack</div></div>
+        </div>
+      </div>
+
+      <!-- THE PANEL -->
+      <div class="panel">
+        <div class="panel-head">
+          <span class="panel-close">✕</span>
+          <span class="panel-action">[</span>
+          <span class="panel-action">]</span>
+          <span class="panel-open-full">Open full page ↗</span>
+        </div>
+        <div class="panel-body">
+
+          <div>
+            <div class="breadcrumbs">Backend › TASK-204</div>
+            <div class="pb-title">Refactor auth middleware</div>
+          </div>
+
+          <div class="quick-toggles">
+            <div class="seg">
+              <span class="seg-btn">todo</span>
+              <span class="seg-btn active status-inp">in progress</span>
+              <span class="seg-btn">done</span>
+            </div>
+            <div class="seg">
+              <span class="seg-btn">low</span>
+              <span class="seg-btn">med</span>
+              <span class="seg-btn active prio-h">!high</span>
+            </div>
+          </div>
+
+          <div class="field-grid">
+            <div class="field-label">Project</div>
+            <div class="field-value"><span class="chip project"><span class="color-dot" style="width:8px; height:8px; background:#67E8F9;"></span>Backend</span></div>
+
+            <div class="field-label">Labels</div>
+            <div class="field-value">
+              <span class="chip"><span style="width:8px; height:8px; border-radius:50%; background:#F87171; display:inline-block;"></span>security<span class="x">×</span></span>
+              <span class="chip"><span style="width:8px; height:8px; border-radius:50%; background:#67E8F9; display:inline-block;"></span>backend<span class="x">×</span></span>
+              <span style="font-size:11px; color:#7A7787;">+ add</span>
+            </div>
+
+            <div class="field-label">Due</div>
+            <div class="field-value"><span class="mono-meta danger">Fri 15 May · 2d overdue</span></div>
+
+            <div class="field-label">Recurrence</div>
+            <div class="field-value">
+              <span class="chip"><span style="color:#7A7787;">↻</span> Never</span>
+              <span style="font-size:10px; color:#7A7787; font-style:italic;">single occurrence</span>
+            </div>
+          </div>
+
+          <div>
+            <div class="desc-toggle">
+              <span class="desc-toggle-btn active">Read</span>
+              <span class="desc-toggle-btn">Write</span>
+              <span style="margin-left:auto; color:#6B6770; font-size:10px; padding:2px 6px;">supports markdown</span>
+            </div>
+            <div class="desc-area">
+              <div class="md-h">Goals</div>
+              Make the auth middleware return the user object with <code>session.user.id</code> populated, not the raw session.
+              <ul style="margin: 6px 0 0 16px; padding: 0;">
+                <li>Update <code>addAuthMiddleware</code> in <code>src/utils/auth.ts</code></li>
+                <li>Test against the BetterAuth session helper</li>
+                <li>Backfill the <code>AppContext['Variables']</code> type</li>
+              </ul>
+            </div>
+          </div>
+
+          <div>
+            <div class="section-h">Reminders <span class="section-count">2</span><span class="section-add">+ Add</span></div>
+            <div class="reminder-row">
+              <span class="clock">15:30 · today</span>
+              <span class="rtitle">⏰ Standup prep</span>
+              <span class="rdel">×</span>
+            </div>
+            <div class="reminder-row">
+              <span class="clock">Fri · 09:30</span>
+              <span class="rtitle">⏰ Daily review</span>
+              <span class="rdel">×</span>
+            </div>
+          </div>
+
+          <div>
+            <div class="section-h">Activity</div>
+            <div class="activity-stub">
+              🟡 <b>No backend table yet.</b> v1 shows a stub with created/updated timestamps from the task itself. Full activity log (status changes, label add/remove, reminder fired, etc.) requires a <code>task_events</code> table — deferred to v2.
+            </div>
+            <div style="margin-top: 8px;">
+              <div class="activity-row"><span class="activity-time">Today 09:14</span><span class="activity-text"><b>You</b> updated this task</span></div>
+              <div class="activity-row"><span class="activity-time">Mon 11:02</span><span class="activity-text"><b>You</b> created this task</span></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="section-h">Comments</div>
+            <div class="activity-stub">
+              🟡 <b>No backend table.</b> Single-user v1 doesn't need comments. Surface deferred until multi-user / sharing lands.
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 6px; padding-top: 4px; border-top: 1px solid #2A2A35;">
+            <span class="panel-action" style="background:#1A1A22; border:1px solid #2A2A35; color:#CFCAD9;">Duplicate</span>
+            <span class="panel-action" style="background:#1A1A22; border:1px solid #2A2A35; color:#F87171; margin-left:auto;">🗑 Delete</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2 style="margin-top: 28px;">Task detail · dedicated page <code>/tasks/:id</code></h2>
+<p class="subtitle">Two-column layout. Same component, more room — fields live in a right aside; main column gets a roomier title + description + reminders. Useful for deep focus, bookmarking, sharing.</p>
+
+<div class="device">
+  <div class="device-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+  <div class="shell">
+    <div class="topbar">
+      <div class="logo">task<b>·</b>mgr</div>
+      <div class="search">⌕ Search…<span class="kbd">⌘K</span></div>
+      <div class="topbar-spacer"></div><div class="icon-btn">🔔</div><div class="icon-btn">☾</div><div class="avatar"></div>
+    </div>
+    <div class="rail">
+      <div class="rail-item">▢</div><div class="rail-item">⌖</div><div class="rail-item">▥</div>
+      <div class="rail-item">≡</div><div class="rail-item">▦</div><div class="rail-item">🏷</div><div class="rail-item">⚙</div>
+    </div>
+    <div class="page-content">
+      <div class="page-main">
+        <div>
+          <div class="breadcrumbs"><a>Tasks</a> › <a>Backend</a> › TASK-204</div>
+          <div class="page-title-l">Refactor auth middleware</div>
+        </div>
+
+        <div class="quick-toggles">
+          <div class="seg">
+            <span class="seg-btn">todo</span>
+            <span class="seg-btn active status-inp">in progress</span>
+            <span class="seg-btn">done</span>
+          </div>
+          <div class="seg">
+            <span class="seg-btn">low</span>
+            <span class="seg-btn">med</span>
+            <span class="seg-btn active prio-h">!high</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="desc-toggle">
+            <span class="desc-toggle-btn active">Read</span>
+            <span class="desc-toggle-btn">Write</span>
+          </div>
+          <div class="desc-area" style="min-height: 140px;">
+            <div class="md-h">Goals</div>
+            Update <code>addAuthMiddleware</code> in <code>src/utils/auth.ts</code> so handlers receive the user object directly instead of digging through <code>c.var.session.user</code>.
+            <div class="md-h" style="margin-top: 10px;">Acceptance</div>
+            <ul style="margin: 6px 0 0 16px; padding: 0;">
+              <li>BetterAuth session unchanged</li>
+              <li><code>AppContext['Variables']['user']</code> populated for all <code>/auth</code>-gated routes</li>
+              <li>checkAuthMiddleware uses it directly</li>
+            </ul>
+          </div>
+        </div>
+
+        <div>
+          <div class="section-h">Reminders <span class="section-count">2</span><span class="section-add">+ Add reminder</span></div>
+          <div class="reminder-row"><span class="clock">15:30 · today</span><span class="rtitle">⏰ Standup prep</span><span class="rdel">⋯</span></div>
+          <div class="reminder-row"><span class="clock">Fri · 09:30</span><span class="rtitle">⏰ Daily review</span><span class="rdel">⋯</span></div>
+        </div>
+
+        <div>
+          <div class="section-h">Activity</div>
+          <div class="activity-row"><span class="activity-time">Today 09:14</span><span class="activity-text"><b>You</b> changed status to <b>in progress</b></span></div>
+          <div class="activity-row"><span class="activity-time">Today 09:02</span><span class="activity-text"><b>You</b> added label <b>security</b></span></div>
+          <div class="activity-row"><span class="activity-time">Mon 11:02</span><span class="activity-text"><b>You</b> created this task</span></div>
+          <div class="activity-stub" style="margin-top: 8px;">🟡 Full activity log requires <code>task_events</code> table — v2.</div>
+        </div>
+      </div>
+
+      <div class="page-aside">
+        <div class="aside-card">
+          <div class="field-grid">
+            <div class="field-label">Project</div>
+            <div class="field-value"><span class="chip project"><span class="color-dot" style="width:8px; height:8px; background:#67E8F9;"></span>Backend</span></div>
+
+            <div class="field-label">Labels</div>
+            <div class="field-value" style="flex-direction:column; align-items:flex-start; gap: 4px;">
+              <span class="chip"><span style="width:8px; height:8px; border-radius:50%; background:#F87171; display:inline-block;"></span>security<span class="x">×</span></span>
+              <span class="chip"><span style="width:8px; height:8px; border-radius:50%; background:#67E8F9; display:inline-block;"></span>backend<span class="x">×</span></span>
+              <span style="font-size:11px; color:#7A7787;">+ add</span>
+            </div>
+
+            <div class="field-label">Due</div>
+            <div class="field-value"><span class="mono-meta danger">Fri 15 May · 2d overdue</span></div>
+
+            <div class="field-label">Recurrence</div>
+            <div class="field-value"><span class="chip"><span style="color:#C084FC;">↻</span>Weekly</span></div>
+
+            <div class="field-label">Created</div>
+            <div class="field-value" style="cursor:default;"><span class="mono-meta">Mon 11 May</span></div>
+
+            <div class="field-label">Updated</div>
+            <div class="field-value" style="cursor:default;"><span class="mono-meta">Today 09:14</span></div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:6px;">
+          <span style="padding:6px 12px; background:#1A1A22; border:1px solid #2A2A35; color:#CFCAD9; font-size:11px; border-radius:6px; flex:1; text-align:center;">Duplicate</span>
+          <span style="padding:6px 12px; background:#1A1A22; border:1px solid rgba(248,113,113,0.2); color:#F87171; font-size:11px; border-radius:6px; flex:1; text-align:center;">🗑 Delete</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2 style="margin-top: 28px;">Recurrence picker (single field, derived from backend's two fields)</h2>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 12px;">
+  <div>
+    <h3 style="font-size:14px; color:#E8E6EF; margin: 0 0 8px;">Backend reality (two redundant fields)</h3>
+    <pre style="background:#1A1A22; border:1px solid #2A2A35; border-radius:8px; padding:10px; color:#CFCAD9; font-size:11px; line-height:1.55; font-family:'JetBrains Mono', monospace;">isRecurring:       boolean
+recurringInterval: 'daily' | 'weekly' |
+                   'monthly' | 'none'</pre>
+    <p style="font-size:11px; color:#A8A5B5; margin-top:8px;">The two fields can disagree (<code>isRecurring=true, recurringInterval='none'</code> is technically allowed by the schema). v1 frontend collapses them into one picker; backend writes the consistent pair.</p>
+  </div>
+  <div>
+    <h3 style="font-size:14px; color:#E8E6EF; margin: 0 0 8px;">User-facing picker</h3>
+    <div class="recur-pop">
+      <div class="recur-opt active"><span class="check">✓</span>Weekly <span style="margin-left:auto; color:#7A7787; font-size:10px;">every 7 days from due date</span></div>
+      <div class="recur-opt">Daily</div>
+      <div class="recur-opt">Monthly</div>
+      <div class="recur-opt" style="border-top: 1px solid #2A2A35; margin-top:2px; padding-top: 10px;">Never <span style="margin-left:auto; color:#7A7787; font-size:10px;">single occurrence</span></div>
+    </div>
+    <p style="font-size:11px; color:#A8A5B5; margin-top:8px;"><b>Mapping:</b> Never → <code>{ isRecurring:false, recurringInterval:'none' }</code>. Any other option → <code>{ isRecurring:true, recurringInterval:&lt;choice&gt; }</code>.</p>
+  </div>
+</div>
+
+<div class="note-block" style="margin-top: 18px;">
+<b>Open Qs for spec</b> (terminal answers):
+<ul style="margin: 6px 0 0 16px; padding: 0;">
+  <li>Description editor: plain text vs markdown (recommended) vs rich-text?</li>
+  <li>Inline-edit fields (Linear-style click-to-edit on title / description / chips) vs explicit "Edit" mode?</li>
+  <li>Activity log v1 = stub (created/updated only) or wait for backend <code>task_events</code> table?</li>
+  <li>Recurrence: collapse two backend fields into one frontend picker as shown — fine?</li>
+  <li>"Duplicate task" action — does backend support it (no obvious endpoint)? If not, v1 frontend can compose <code>POST /tasks</code> from existing values. Defer to v2?</li>
+  <li>Soft delete on tasks: same question as reminders (was flagged). Today's <code>🗑 Delete</code> would be hard-delete unless we add <code>deletedAt</code>.</li>
+</ul>
+</div>
+
+</div>

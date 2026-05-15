@@ -1,0 +1,344 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  .demo { font-family: 'Inter', system-ui, sans-serif; }
+
+  .device { border-radius: 12px; overflow: hidden; background: #0F0F13; border: 1px solid #2A2A35; }
+  .device-chrome { height: 22px; background: #1A1A22; border-bottom: 1px solid #2A2A35; display: flex; align-items: center; gap: 6px; padding: 0 10px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot.r { background: #F87171; } .dot.y { background: #FBBF24; } .dot.g { background: #34D399; }
+
+  .desk { display: grid; height: 460px; font-size: 12px; }
+  .desk.collapsed { grid-template-columns: 56px 1fr; grid-template-rows: 44px 1fr; }
+  .desk.expanded { grid-template-columns: 220px 1fr; grid-template-rows: 44px 1fr; }
+
+  .topbar { display: flex; align-items: center; padding: 0 14px; background: #1A1A22; border-bottom: 1px solid #2A2A35; height: 44px; gap: 14px; grid-column: 1 / -1; }
+  .logo { font-weight: 700; color: #E8E6EF; }
+  .logo b { color: #C084FC; }
+  .search { flex: 1; max-width: 420px; height: 28px; background: #15151B; border: 1px solid #2A2A35; border-radius: 8px; padding: 0 10px; display: flex; align-items: center; gap: 8px; color: #7A7787; font-size: 11px; }
+  .kbd { margin-left: auto; padding: 1px 6px; border-radius: 4px; background: #1A1A22; border: 1px solid #2A2A35; color: #A8A5B5; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+  .topbar-spacer { flex: 1; }
+  .icon-btn { width: 30px; height: 30px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; color: #A8A5B5; font-size: 14px; }
+  .avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #C084FC, #67E8F9); }
+
+  .sidebar { background: #15151B; border-right: 1px solid #2A2A35; padding: 12px 8px; display: flex; flex-direction: column; gap: 2px; position: relative; }
+  .pin-toggle {
+    position: absolute;
+    top: 8px;
+    right: -10px;
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    background: #1A1A22;
+    border: 1px solid #2A2A35;
+    color: #C084FC;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+  }
+  .nav-section { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #7A7787; padding: 12px 8px 6px; font-weight: 600; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 8px; color: #CFCAD9; font-size: 12px; }
+  .nav-item .ico { width: 14px; text-align: center; color: #A8A5B5; }
+  .nav-item .count { margin-left: auto; font-size: 10px; background: #1A1A22; color: #A8A5B5; border-radius: 10px; padding: 1px 6px; font-family: 'JetBrains Mono', monospace; }
+  .nav-item.active { background: rgba(192,132,252,0.12); color: #C084FC; }
+  .nav-item.active .ico { color: #C084FC; }
+
+  .desk.collapsed .nav-item { justify-content: center; padding: 8px; }
+  .desk.collapsed .nav-item .label, .desk.collapsed .nav-item .count, .desk.collapsed .nav-section { display: none; }
+  .desk.collapsed .nav-item .ico { font-size: 16px; }
+
+  .content { padding: 16px 20px; background: #0F0F13; overflow: hidden; }
+  .content h3 { font-size: 18px; margin: 0; color: #E8E6EF; font-weight: 700; }
+  .crumbs { font-size: 10px; color: #7A7787; margin-bottom: 4px; }
+  .toolbar { display: flex; gap: 8px; margin-top: 14px; align-items: center; }
+  .filter-pill { padding: 4px 10px; background: #1A1A22; border: 1px solid #2A2A35; border-radius: 6px; color: #CFCAD9; font-size: 11px; }
+  .filter-pill.active { background: rgba(192,132,252,0.12); color: #C084FC; border-color: rgba(192,132,252,0.3); }
+  .btn-primary { padding: 6px 12px; background: #C084FC; color: #0F0F13; border-radius: 8px; font-weight: 600; font-size: 12px; margin-left: auto; }
+  .task-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; margin-top: 6px; background: #1A1A22; border: 1px solid #2A2A35; font-size: 12px; }
+  .checkbox { width: 14px; height: 14px; border-radius: 4px; border: 1.5px solid #4E4E66; flex-shrink: 0; }
+  .task-row .title { flex: 1; color: #E8E6EF; }
+  .badge { padding: 1px 6px; border-radius: 8px; font-size: 9px; font-weight: 600; }
+  .badge.priority { background: rgba(192,132,252,0.12); color: #C084FC; }
+  .badge.info { background: rgba(103,232,249,0.12); color: #67E8F9; }
+  .mono-meta { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #A8A5B5; }
+
+  /* MOBILE */
+  .mobile {
+    width: 280px; height: 540px; border-radius: 28px; background: #0F0F13; border: 6px solid #1A1A22;
+    overflow: hidden; display: flex; flex-direction: column;
+    position: relative;
+  }
+  .mobile-status { height: 22px; background: #1A1A22; color: #A8A5B5; font-size: 10px; display: flex; align-items: center; justify-content: space-between; padding: 0 14px; font-family: 'JetBrains Mono', monospace; }
+  .mobile-topbar { height: 48px; background: #1A1A22; border-bottom: 1px solid #2A2A35; display: flex; align-items: center; padding: 0 14px; gap: 10px; color: #E8E6EF; font-weight: 600; font-size: 14px; }
+  .mobile-topbar .ham { font-size: 16px; color: #A8A5B5; }
+  .mobile-topbar .right { margin-left: auto; display: flex; gap: 10px; color: #A8A5B5; }
+  .mobile-content { flex: 1; padding: 14px; overflow: hidden; }
+  .mobile-bottomnav { height: 60px; background: #1A1A22; border-top: 1px solid #2A2A35; display: flex; align-items: center; justify-content: space-around; padding: 0 6px; }
+  .mobile-nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; color: #7A7787; font-size: 9px; flex: 1; }
+  .mobile-nav-item .ico { font-size: 18px; }
+  .mobile-nav-item.active { color: #C084FC; }
+  .mobile-fab { position: relative; margin-top: -22px; width: 44px; height: 44px; background: #C084FC; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #0F0F13; font-size: 22px; font-weight: 600; box-shadow: 0 8px 24px rgba(192,132,252,0.4); }
+
+  .drawer-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); }
+  .drawer { position: absolute; top: 0; bottom: 0; width: 230px; background: #15151B; padding: 14px 8px; }
+  .drawer.left { left: 0; border-right: 1px solid #2A2A35; }
+  .drawer.right { right: 0; border-left: 1px solid #2A2A35; }
+
+  /* settings preview */
+  .settings-panel {
+    background: #1A1A22; border: 1px solid #2A2A35; border-radius: 12px; padding: 18px;
+    color: #E8E6EF; font-family: 'Inter', sans-serif; font-size: 13px;
+    margin-top: 12px;
+  }
+  .setting-row {
+    display: flex; align-items: flex-start; gap: 16px; padding: 12px 0;
+    border-bottom: 1px solid #2A2A35;
+  }
+  .setting-row:last-child { border-bottom: 0; }
+  .setting-meta { flex: 1; }
+  .setting-title { font-weight: 600; color: #E8E6EF; }
+  .setting-desc { font-size: 11px; color: #A8A5B5; margin-top: 2px; max-width: 50ch; }
+  .seg {
+    display: inline-flex; gap: 2px; background: #15151B; padding: 2px; border-radius: 8px;
+    border: 1px solid #2A2A35;
+  }
+  .seg-btn {
+    padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; color: #A8A5B5;
+  }
+  .seg-btn.active { background: rgba(192,132,252,0.15); color: #C084FC; }
+  .toggle-row { display: flex; align-items: center; gap: 10px; margin-top: 8px; font-size: 11px; color: #A8A5B5; }
+  .toggle {
+    width: 32px; height: 18px; background: #15151B; border: 1px solid #2A2A35; border-radius: 12px;
+    position: relative;
+  }
+  .toggle.on { background: rgba(192,132,252,0.2); border-color: rgba(192,132,252,0.4); }
+  .toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; background: #A8A5B5; border-radius: 50%; }
+  .toggle.on::after { left: 16px; background: #C084FC; }
+</style>
+
+<div class="demo">
+
+<h2>Desktop — B + A hybrid (pinnable rail)</h2>
+<p class="subtitle">Icon-only rail by default. Pin button (top-right of rail) expands to full-width sidebar with labels + counts and keeps it pinned across navigation. Same toggle re-collapses. State persists per device in user preferences.</p>
+
+<div class="cards" style="grid-template-columns: 1fr;">
+
+  <div class="card" data-choice="collapsed" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>State 1 · Collapsed (default)</h3>
+      <p class="opt-meta">56px rail. Icons only. Hovering a row reveals a tooltip with the label + count. Click the pin (top-right of rail) to expand-and-pin.</p>
+      <div class="device">
+        <div class="device-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+        <div class="desk collapsed">
+          <div class="topbar">
+            <div class="logo">task<b>·</b>mgr</div>
+            <div class="search">⌕ Search…<span class="kbd">⌘K</span></div>
+            <div class="topbar-spacer"></div>
+            <div class="icon-btn">🔔</div>
+            <div class="icon-btn">☾</div>
+            <div class="avatar"></div>
+          </div>
+          <div class="sidebar">
+            <div class="pin-toggle" title="Pin sidebar">▶</div>
+            <div class="nav-item active"><span class="ico">▢</span></div>
+            <div class="nav-item"><span class="ico">⌖</span></div>
+            <div class="nav-item"><span class="ico">▥</span></div>
+            <div class="nav-item"><span class="ico">≡</span></div>
+            <div class="nav-item"><span class="ico">▦</span></div>
+            <div class="nav-item"><span class="ico">🏷</span></div>
+            <div class="nav-item"><span class="ico">⚙</span></div>
+          </div>
+          <div class="content">
+            <div class="crumbs">Dashboard</div>
+            <h3>Today</h3>
+            <div class="toolbar">
+              <div class="filter-pill active">All</div>
+              <div class="filter-pill">Overdue · 2</div>
+              <div class="filter-pill">Due soon · 5</div>
+              <div class="filter-pill">My priorities</div>
+              <div class="btn-primary">+ New task</div>
+            </div>
+            <div class="task-row"><div class="checkbox"></div><div class="title">Refactor auth middleware</div><span class="badge priority">priority</span><span class="badge info">backend</span><span class="mono-meta">Fri</span></div>
+            <div class="task-row"><div class="checkbox"></div><div class="title">Write zod-schemas migration doc</div><span class="badge info">backend</span><span class="mono-meta">Mon</span></div>
+            <div class="task-row"><div class="checkbox"></div><div class="title">Pay car insurance</div><span class="mono-meta">Thu</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-choice="expanded" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>State 2 · Pinned / expanded</h3>
+      <p class="opt-meta">220px sidebar with labels, counts, section dividers. Pin button (top-right) re-collapses. State remembered.</p>
+      <div class="device">
+        <div class="device-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+        <div class="desk expanded">
+          <div class="topbar">
+            <div class="logo">task<b>·</b>mgr</div>
+            <div class="search">⌕ Search tasks, projects…<span class="kbd">⌘K</span></div>
+            <div class="topbar-spacer"></div>
+            <div class="icon-btn">🔔</div>
+            <div class="icon-btn">☾</div>
+            <div class="avatar"></div>
+          </div>
+          <div class="sidebar">
+            <div class="pin-toggle" title="Unpin sidebar">◀</div>
+            <div class="nav-section">Workspace</div>
+            <div class="nav-item active"><span class="ico">▢</span><span class="label">Dashboard</span></div>
+            <div class="nav-item"><span class="ico">⌖</span><span class="label">Inbox</span><span class="count">7</span></div>
+            <div class="nav-item"><span class="ico">▥</span><span class="label">Calendar</span></div>
+            <div class="nav-item"><span class="ico">≡</span><span class="label">All tasks</span><span class="count">42</span></div>
+            <div class="nav-section">Projects</div>
+            <div class="nav-item"><span class="ico">●</span><span class="label">Backend</span></div>
+            <div class="nav-item"><span class="ico">●</span><span class="label">Personal</span></div>
+            <div class="nav-item"><span class="ico">+</span><span class="label" style="color:#7A7787;">New project</span></div>
+            <div class="nav-section">More</div>
+            <div class="nav-item"><span class="ico">🏷</span><span class="label">Labels</span></div>
+            <div class="nav-item"><span class="ico">⚙</span><span class="label">Settings</span></div>
+          </div>
+          <div class="content">
+            <div class="crumbs">Dashboard</div>
+            <h3>Today</h3>
+            <div class="toolbar">
+              <div class="filter-pill active">All</div>
+              <div class="filter-pill">Overdue · 2</div>
+              <div class="filter-pill">Due soon · 5</div>
+              <div class="btn-primary">+ New task</div>
+            </div>
+            <div class="task-row"><div class="checkbox"></div><div class="title">Refactor auth middleware</div><span class="badge priority">priority</span><span class="mono-meta">Fri</span></div>
+            <div class="task-row"><div class="checkbox"></div><div class="title">Write zod-schemas migration doc</div><span class="mono-meta">Mon</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<h2 style="margin-top: 30px;">Mobile — thumb-side preference</h2>
+<p class="subtitle">Hamburger position + drawer slide-in side follow a user preference. Default = right (most users right-handed). Both states shown; same content + bottom nav unchanged.</p>
+
+<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 12px; place-items: center;">
+
+  <!-- Right-handed (default) -->
+  <div>
+    <div class="label" style="text-align:center; color: #A8A5B5; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; margin-bottom: 8px;">Right-handed (default)</div>
+    <div class="mobile">
+      <div class="mobile-status"><span>9:41</span><span>●●●● 100%</span></div>
+      <div class="mobile-topbar">
+        <span>Today</span>
+        <div class="right" style="margin-left:auto;">⌕ ☾ <span style="font-size:16px; color:#A8A5B5;">≡</span></div>
+      </div>
+      <div class="mobile-content">
+        <div class="task-row"><div class="checkbox"></div><div class="title" style="font-size:11px;">Refactor auth middleware</div></div>
+        <div class="task-row"><div class="checkbox"></div><div class="title" style="font-size:11px;">Write zod doc</div></div>
+        <div class="task-row"><div class="checkbox"></div><div class="title" style="font-size:11px;">Pay car insurance</div></div>
+      </div>
+      <div class="mobile-bottomnav">
+        <div class="mobile-nav-item active"><div class="ico">▢</div><div>Today</div></div>
+        <div class="mobile-nav-item"><div class="ico">▥</div><div>Cal</div></div>
+        <div class="mobile-fab">+</div>
+        <div class="mobile-nav-item"><div class="ico">▦</div><div>Projects</div></div>
+        <div class="mobile-nav-item"><div class="ico">⌖</div><div>Inbox</div></div>
+      </div>
+      <div class="drawer-overlay"></div>
+      <div class="drawer right">
+        <div class="nav-section">Workspace</div>
+        <div class="nav-item active"><span class="ico">▢</span><span class="label">Dashboard</span></div>
+        <div class="nav-item"><span class="ico">⌖</span><span class="label">Inbox</span><span class="count">7</span></div>
+        <div class="nav-item"><span class="ico">▥</span><span class="label">Calendar</span></div>
+        <div class="nav-item"><span class="ico">≡</span><span class="label">All tasks</span></div>
+        <div class="nav-section">Projects</div>
+        <div class="nav-item"><span class="ico">●</span><span class="label">Backend</span></div>
+        <div class="nav-item"><span class="ico">●</span><span class="label">Personal</span></div>
+        <div class="nav-section">More</div>
+        <div class="nav-item"><span class="ico">🏷</span><span class="label">Labels</span></div>
+        <div class="nav-item"><span class="ico">⚙</span><span class="label">Settings</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Left-handed (preference) -->
+  <div>
+    <div class="label" style="text-align:center; color: #A8A5B5; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; margin-bottom: 8px;">Left-handed (preference)</div>
+    <div class="mobile">
+      <div class="mobile-status"><span>9:41</span><span>●●●● 100%</span></div>
+      <div class="mobile-topbar">
+        <span style="font-size:16px; color:#A8A5B5;">≡</span>
+        <span>Today</span>
+        <div class="right">⌕ ☾</div>
+      </div>
+      <div class="mobile-content">
+        <div class="task-row"><div class="checkbox"></div><div class="title" style="font-size:11px;">Refactor auth middleware</div></div>
+        <div class="task-row"><div class="checkbox"></div><div class="title" style="font-size:11px;">Write zod doc</div></div>
+        <div class="task-row"><div class="checkbox"></div><div class="title" style="font-size:11px;">Pay car insurance</div></div>
+      </div>
+      <div class="mobile-bottomnav">
+        <div class="mobile-nav-item active"><div class="ico">▢</div><div>Today</div></div>
+        <div class="mobile-nav-item"><div class="ico">▥</div><div>Cal</div></div>
+        <div class="mobile-fab">+</div>
+        <div class="mobile-nav-item"><div class="ico">▦</div><div>Projects</div></div>
+        <div class="mobile-nav-item"><div class="ico">⌖</div><div>Inbox</div></div>
+      </div>
+      <div class="drawer-overlay"></div>
+      <div class="drawer left">
+        <div class="nav-section">Workspace</div>
+        <div class="nav-item active"><span class="ico">▢</span><span class="label">Dashboard</span></div>
+        <div class="nav-item"><span class="ico">⌖</span><span class="label">Inbox</span><span class="count">7</span></div>
+        <div class="nav-item"><span class="ico">▥</span><span class="label">Calendar</span></div>
+        <div class="nav-item"><span class="ico">≡</span><span class="label">All tasks</span></div>
+        <div class="nav-section">Projects</div>
+        <div class="nav-item"><span class="ico">●</span><span class="label">Backend</span></div>
+        <div class="nav-item"><span class="ico">●</span><span class="label">Personal</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<h2 style="margin-top: 30px;">Settings preview — handedness preference</h2>
+<p class="subtitle">Lives under Settings → Layout & Display. Default = right. Two sub-toggles: apply to mobile (always on), apply to desktop (off by default — see note).</p>
+
+<div class="settings-panel">
+  <div class="setting-row">
+    <div class="setting-meta">
+      <div class="setting-title">Primary thumb side</div>
+      <div class="setting-desc">Where the hamburger menu lives on mobile and which side the drawer slides in from. Pick the side your dominant thumb reaches more easily.</div>
+      <div class="toggle-row">
+        <div class="toggle on"></div><span>Apply to desktop too (mirror sidebar to chosen side; detail panel flips to the opposite side)</span>
+      </div>
+    </div>
+    <div class="seg">
+      <div class="seg-btn">Left</div>
+      <div class="seg-btn active">Right</div>
+    </div>
+  </div>
+  <div class="setting-row">
+    <div class="setting-meta">
+      <div class="setting-title">Sidebar (desktop)</div>
+      <div class="setting-desc">Pinned full-width or collapsed icon-rail. Pin button on the rail toggles this; setting just stores the default.</div>
+    </div>
+    <div class="seg">
+      <div class="seg-btn">Collapsed</div>
+      <div class="seg-btn active">Pinned</div>
+    </div>
+  </div>
+  <div class="setting-row">
+    <div class="setting-meta">
+      <div class="setting-title">Theme</div>
+      <div class="setting-desc">Follow system, or force a specific mode.</div>
+    </div>
+    <div class="seg">
+      <div class="seg-btn">System</div>
+      <div class="seg-btn">Light</div>
+      <div class="seg-btn active">Dark</div>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top: 18px;">Note on desktop mirror: the GitLab-style inline task-detail panel typically lives on the right edge. If desktop mirror is enabled and sidebar moves right, the detail panel flips to the left — the two never overlap. Default keeps mirror OFF on desktop so most users get the conventional layout. Power users can flip everything.</p>
+
+</div>

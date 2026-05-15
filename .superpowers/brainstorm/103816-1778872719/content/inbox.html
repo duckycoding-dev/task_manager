@@ -1,0 +1,223 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+  .demo { font-family: 'Inter', system-ui, sans-serif; }
+  .device { border-radius: 12px; overflow: hidden; background: #0F0F13; border: 1px solid #2A2A35; }
+  .device-chrome { height: 22px; background: #1A1A22; border-bottom: 1px solid #2A2A35; display: flex; align-items: center; gap: 6px; padding: 0 10px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; } .dot.r { background: #F87171; } .dot.y { background: #FBBF24; } .dot.g { background: #34D399; }
+  .shell { display: grid; grid-template-columns: 56px 1fr; grid-template-rows: 44px 1fr; height: 580px; font-size: 12px; }
+  .topbar { grid-column: 1 / -1; display: flex; align-items: center; padding: 0 14px; background: #1A1A22; border-bottom: 1px solid #2A2A35; gap: 14px; }
+  .logo { font-weight: 700; color: #E8E6EF; } .logo b { color: #C084FC; }
+  .search { flex: 1; max-width: 340px; height: 28px; background: #15151B; border: 1px solid #2A2A35; border-radius: 8px; padding: 0 10px; display: flex; align-items: center; gap: 8px; color: #7A7787; font-size: 11px; }
+  .kbd { padding: 1px 6px; border-radius: 4px; background: #1A1A22; border: 1px solid #2A2A35; color: #A8A5B5; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+  .topbar-spacer { flex: 1; } .icon-btn { width: 30px; height: 30px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; color: #A8A5B5; font-size: 14px; }
+  .avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #C084FC, #67E8F9); }
+  .rail { background: #15151B; border-right: 1px solid #2A2A35; padding: 12px 6px; display: flex; flex-direction: column; gap: 2px; }
+  .rail-item { width: 100%; padding: 8px 0; border-radius: 8px; color: #A8A5B5; text-align: center; font-size: 14px; }
+  .rail-item.active { background: rgba(192,132,252,0.12); color: #C084FC; }
+  .content { background: #0F0F13; padding: 18px 22px; overflow: hidden; display: flex; flex-direction: column; }
+
+  .page-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .page-title { font-size: 22px; margin: 0; color: #E8E6EF; font-weight: 700; letter-spacing: -0.015em; }
+  .page-sub { font-size: 11px; color: #A8A5B5; }
+  .new-btn { padding: 6px 12px; border-radius: 8px; background: #C084FC; color: #0F0F13; font-weight: 600; font-size: 12px; margin-left: auto; }
+  .ghost-btn { padding: 5px 10px; border-radius: 6px; background: #1A1A22; border: 1px solid #2A2A35; color: #CFCAD9; font-size: 11px; }
+
+  .filter-bar { display: flex; gap: 6px; margin-bottom: 14px; }
+  .filter-chip { padding: 4px 10px; border-radius: 6px; background: #1A1A22; border: 1px solid #2A2A35; color: #CFCAD9; font-size: 11px; display: inline-flex; align-items: center; gap: 6px; }
+  .filter-chip.active { background: rgba(192,132,252,0.10); border-color: rgba(192,132,252,0.3); color: #C084FC; }
+  .filter-chip .x { color: #6B6770; font-size: 9px; cursor: pointer; }
+
+  .section-h { display: flex; align-items: center; gap: 8px; margin-top: 16px; margin-bottom: 8px; }
+  .section-name { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; color: #7A7787; }
+  .section-name.now { color: #C084FC; }
+  .section-name.today { color: #67E8F9; }
+  .section-name.past { color: #6B6770; }
+  .section-count { background: #1A1A22; color: #A8A5B5; padding: 1px 6px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+  .section-collapse { margin-left: auto; font-size: 11px; color: #A8A5B5; cursor: pointer; }
+
+  .rem-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px; border-radius: 10px; background: #1A1A22; border: 1px solid #2A2A35;
+    margin-top: 6px; font-size: 12px;
+  }
+  .rem-row.now-row { border-color: rgba(192,132,252,0.4); background: rgba(192,132,252,0.05); }
+  .rem-row .clock { font-family: 'JetBrains Mono', monospace; color: #67E8F9; font-size: 11px; min-width: 70px; line-height: 1.3; }
+  .rem-row.now-row .clock { color: #C084FC; }
+  .rem-row.past-row { opacity: 0.55; }
+  .rem-row.past-row .clock { color: #6B6770; }
+  .rem-body { flex: 1; min-width: 0; }
+  .rem-title { color: #E8E6EF; font-weight: 500; font-size: 13px; }
+  .rem-content { color: #A8A5B5; font-size: 11px; margin-top: 2px; line-height: 1.4; }
+  .rem-task-link { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; color: #67E8F9; margin-top: 4px; text-decoration: none; }
+  .rem-actions { display: flex; gap: 4px; }
+  .rem-action {
+    padding: 4px 10px; border-radius: 6px; background: #15151B; border: 1px solid #2A2A35; color: #CFCAD9;
+    font-size: 11px; cursor: pointer;
+  }
+  .rem-action.primary { background: rgba(192,132,252,0.15); border-color: rgba(192,132,252,0.3); color: #C084FC; font-weight: 600; }
+  .rem-action.danger:hover { color: #F87171; border-color: rgba(248,113,113,0.3); }
+
+  .empty {
+    margin-top: 30px; text-align: center; padding: 30px;
+  }
+  .empty .icon { font-size: 32px; color: #36364A; margin-bottom: 8px; }
+  .empty h3 { font-size: 14px; color: #E8E6EF; font-weight: 600; margin: 0 0 4px; }
+  .empty p { font-size: 12px; color: #A8A5B5; margin: 0; }
+</style>
+
+<div class="demo">
+
+<h2>Inbox · <code>/inbox</code></h2>
+<p class="subtitle">Reminder home base. Date-organized buckets: Now (fired, awaiting action) · Today · Upcoming · Past (collapsed). v1 has no notification system — only reminders. Future system events (mentions, etc.) slot in later.</p>
+
+<div class="device">
+  <div class="device-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+  <div class="shell">
+    <div class="topbar">
+      <div class="logo">task<b>·</b>mgr</div>
+      <div class="search">⌕ Search reminders…<span class="kbd">⌘K</span></div>
+      <div class="topbar-spacer"></div>
+      <div class="icon-btn" style="position:relative;">🔔<span style="position:absolute; top:6px; right:7px; width:6px; height:6px; border-radius:50%; background:#C084FC;"></span></div>
+      <div class="icon-btn">☾</div>
+      <div class="avatar"></div>
+    </div>
+    <div class="rail">
+      <div class="rail-item">▢</div>
+      <div class="rail-item active">⌖</div>
+      <div class="rail-item">▥</div>
+      <div class="rail-item">≡</div>
+      <div class="rail-item">▦</div>
+      <div class="rail-item">🏷</div>
+      <div class="rail-item">⚙</div>
+    </div>
+    <div class="content">
+      <div class="page-head">
+        <h2 class="page-title">Inbox</h2>
+        <span class="page-sub">2 to action now · 4 upcoming</span>
+        <span class="new-btn">+ New reminder</span>
+      </div>
+
+      <div class="filter-bar">
+        <span class="filter-chip active">All</span>
+        <span class="filter-chip">Now <span style="background:rgba(192,132,252,0.2); padding:0 5px; border-radius:8px; font-size:9px;">2</span></span>
+        <span class="filter-chip">Today</span>
+        <span class="filter-chip">Upcoming</span>
+        <span class="filter-chip">By project ▾</span>
+      </div>
+
+      <!-- NOW -->
+      <div class="section-h">
+        <span class="section-name now">⚡ Now · awaiting action</span>
+        <span class="section-count">2</span>
+      </div>
+      <div class="rem-row now-row">
+        <div class="clock">
+          <div>15:30</div>
+          <div style="color:#7A7787; font-size:9px;">5 min ago</div>
+        </div>
+        <div class="rem-body">
+          <div class="rem-title">⏰ Standup prep</div>
+          <div class="rem-content">Review the auth refactor PR before standup. Pin questions for the team lead.</div>
+          <a class="rem-task-link">→ Refactor auth middleware · Backend</a>
+        </div>
+        <div class="rem-actions">
+          <span class="rem-action primary">Done</span>
+          <span class="rem-action">Snooze ▾</span>
+          <span class="rem-action danger">×</span>
+        </div>
+      </div>
+      <div class="rem-row now-row">
+        <div class="clock">
+          <div>14:00</div>
+          <div style="color:#7A7787; font-size:9px;">1h 35m ago</div>
+        </div>
+        <div class="rem-body">
+          <div class="rem-title">⏰ Lunch with Maria</div>
+          <a class="rem-task-link">→ Schedule one-on-one with Maria · Personal</a>
+        </div>
+        <div class="rem-actions">
+          <span class="rem-action primary">Done</span>
+          <span class="rem-action">Snooze ▾</span>
+          <span class="rem-action danger">×</span>
+        </div>
+      </div>
+
+      <!-- TODAY -->
+      <div class="section-h">
+        <span class="section-name today">Today · later</span>
+        <span class="section-count">2</span>
+      </div>
+      <div class="rem-row">
+        <div class="clock"><div>17:00</div><div style="color:#7A7787; font-size:9px;">in 1h 25m</div></div>
+        <div class="rem-body">
+          <div class="rem-title">Review PR feedback</div>
+          <a class="rem-task-link">→ Onboard new team lead · Backend</a>
+        </div>
+        <div class="rem-actions">
+          <span class="rem-action">Edit</span>
+          <span class="rem-action danger">×</span>
+        </div>
+      </div>
+      <div class="rem-row">
+        <div class="clock"><div>19:30</div><div style="color:#7A7787; font-size:9px;">in 3h 55m</div></div>
+        <div class="rem-body">
+          <div class="rem-title">Yoga class</div>
+          <a class="rem-task-link">→ Weekly self-care routine · Personal</a>
+        </div>
+        <div class="rem-actions">
+          <span class="rem-action">Edit</span>
+          <span class="rem-action danger">×</span>
+        </div>
+      </div>
+
+      <!-- UPCOMING -->
+      <div class="section-h">
+        <span class="section-name">Upcoming</span>
+        <span class="section-count">3</span>
+      </div>
+      <div class="rem-row">
+        <div class="clock"><div>Fri · 09:30</div><div style="color:#7A7787; font-size:9px;">in 17h</div></div>
+        <div class="rem-body">
+          <div class="rem-title">Daily standup</div>
+          <a class="rem-task-link">→ Refactor auth middleware · Backend</a>
+        </div>
+        <div class="rem-actions"><span class="rem-action">Edit</span><span class="rem-action danger">×</span></div>
+      </div>
+      <div class="rem-row">
+        <div class="clock"><div>Sat · 10:00</div><div style="color:#7A7787; font-size:9px;">in 2d</div></div>
+        <div class="rem-body">
+          <div class="rem-title">Call mom</div>
+          <a class="rem-task-link">→ Weekly call · Personal</a>
+        </div>
+        <div class="rem-actions"><span class="rem-action">Edit</span><span class="rem-action danger">×</span></div>
+      </div>
+
+      <!-- PAST (collapsed) -->
+      <div class="section-h">
+        <span class="section-name past">Past · dismissed / done</span>
+        <span class="section-count">12</span>
+        <span class="section-collapse">▸ Show</span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<h2 style="margin-top: 28px;">Per-row actions explained</h2>
+<ul style="color:#CFCAD9; font-size: 12px; line-height: 1.7;">
+  <li><b>Now (fired, awaiting action)</b> · <b>Done</b> · <b>Snooze ▾</b> (15m / 1h / 3h / tomorrow / pick…) · <b>× Dismiss</b> (soft-delete). Snooze updates <code>remindAt</code> to a future time.</li>
+  <li><b>Upcoming</b> · <b>Edit</b> (opens reminder dedicated page) · <b>× Delete</b> (soft-delete).</li>
+  <li><b>Past</b> · read-only, shown only when expanded. Click → reminder page (with restore option). v1 default = collapse, show only count.</li>
+</ul>
+
+<h2 style="margin-top: 18px;">Backend reality / gaps</h2>
+<div style="background: #1A1A22; border: 1px solid #2A2A35; border-radius: 10px; padding: 14px; font-size: 12px; color: #CFCAD9; line-height: 1.6;">
+  <div style="margin-bottom: 10px;"><b style="color:#FBBF24;">🟡 No "fired / acknowledged" state on reminders.</b> Today's <code>reminders</code> schema is just <code>{ id, taskId, userId, title, content, remindAt }</code>. There's no <code>acknowledgedAt</code> or <code>doneAt</code>. The "Now · awaiting action" bucket in v1 is **derived**: <code>remindAt &lt;= now AND deletedAt IS NULL</code>. "Done" and "Dismiss" both perform a soft delete (<code>deletedAt = now</code>). Distinguishing the two would need <code>acknowledgedAt</code> — deferred to v1.5 (paired with "Past · done" filter).</div>
+  <div style="margin-bottom: 10px;"><b style="color:#FBBF24;">🟡 Snooze is a <code>PATCH /reminders/:id</code> writing a new <code>remindAt</code>.</b> Already supported. No new endpoint needed; preset options (15m / 1h / 3h / tmrw / pick…) are pure client-side.</div>
+  <div><b style="color:#34D399;">🟢 Soft delete on reminders.</b> Already locked from earlier sections; "Dismiss × " uses it.</div>
+</div>
+
+<h2 style="margin-top: 18px;">Future expansion · notifications surface</h2>
+<p style="font-size:12px; color:#CFCAD9; line-height:1.6;">v2+ might add system notifications (mentions, comment replies, due-date approaching warnings, etc.). Those would slot in as an additional section at the top of the page, or as a sibling tab. Schema would be a new <code>notifications</code> table. v1 ships reminder-only and the page name "Inbox" leaves room for that growth.</p>
+
+</div>

@@ -1,0 +1,529 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  .demo { font-family: 'Inter', system-ui, sans-serif; }
+  .device { border-radius: 12px; overflow: hidden; background: #0F0F13; border: 1px solid #2A2A35; }
+  .device-chrome { height: 22px; background: #1A1A22; border-bottom: 1px solid #2A2A35; display: flex; align-items: center; gap: 6px; padding: 0 10px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot.r { background: #F87171; } .dot.y { background: #FBBF24; } .dot.g { background: #34D399; }
+
+  .shell { display: grid; grid-template-columns: 56px 1fr; grid-template-rows: 44px 1fr; height: 580px; font-size: 12px; }
+  .topbar { grid-column: 1 / -1; display: flex; align-items: center; padding: 0 14px; background: #1A1A22; border-bottom: 1px solid #2A2A35; gap: 14px; }
+  .logo { font-weight: 700; color: #E8E6EF; }
+  .logo b { color: #C084FC; }
+  .search { flex: 1; max-width: 380px; height: 28px; background: #15151B; border: 1px solid #2A2A35; border-radius: 8px; padding: 0 10px; display: flex; align-items: center; gap: 8px; color: #7A7787; font-size: 11px; }
+  .kbd { padding: 1px 6px; border-radius: 4px; background: #1A1A22; border: 1px solid #2A2A35; color: #A8A5B5; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+  .topbar-spacer { flex: 1; }
+  .icon-btn { width: 30px; height: 30px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; color: #A8A5B5; font-size: 14px; }
+  .avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #C084FC, #67E8F9); }
+  .rail { background: #15151B; border-right: 1px solid #2A2A35; padding: 12px 6px; display: flex; flex-direction: column; gap: 2px; }
+  .rail-item { width: 100%; padding: 8px 0; border-radius: 8px; color: #A8A5B5; text-align: center; font-size: 14px; }
+  .rail-item.active { background: rgba(192,132,252,0.12); color: #C084FC; }
+
+  .content { background: #0F0F13; padding: 18px 22px; overflow: hidden; display: flex; flex-direction: column; }
+
+  .page-head { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+  .page-title { font-size: 22px; margin: 0; color: #E8E6EF; font-weight: 700; letter-spacing: -0.015em; }
+  .month-nav { display: flex; align-items: center; gap: 8px; }
+  .month-arrow { color: #A8A5B5; font-size: 14px; padding: 4px 8px; border-radius: 6px; background: #1A1A22; border: 1px solid #2A2A35; cursor: pointer; }
+  .month-label { color: #E8E6EF; font-weight: 600; font-size: 13px; min-width: 100px; text-align: center; }
+  .today-btn { padding: 4px 10px; border-radius: 6px; background: #1A1A22; border: 1px solid #2A2A35; color: #CFCAD9; font-size: 11px; }
+  .view-switch { display: inline-flex; gap: 2px; background: #15151B; border: 1px solid #2A2A35; border-radius: 8px; padding: 2px; margin-left: auto; }
+  .view-btn { padding: 4px 10px; border-radius: 6px; color: #A8A5B5; font-size: 11px; font-weight: 600; }
+  .view-btn.active { background: rgba(192,132,252,0.15); color: #C084FC; }
+  .new-btn { padding: 6px 12px; border-radius: 8px; background: #C084FC; color: #0F0F13; font-weight: 600; font-size: 12px; }
+
+  .badge { padding: 1px 6px; border-radius: 8px; font-size: 9px; font-weight: 600; }
+  .badge.priority { background: rgba(192,132,252,0.12); color: #C084FC; }
+  .badge.info { background: rgba(103,232,249,0.12); color: #67E8F9; }
+  .badge.danger { background: rgba(248,113,113,0.12); color: #F87171; }
+  .mono-meta { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #A8A5B5; }
+
+  /* ====== MONTH GRID (large, with titles) ====== */
+  .cal-month-big { flex: 1; display: grid; grid-template-rows: auto 1fr; }
+  .cal-header-row { display: grid; grid-template-columns: repeat(7, 1fr); border-bottom: 1px solid #2A2A35; padding-bottom: 6px; margin-bottom: 4px; }
+  .cal-header-cell { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #7A7787; font-weight: 600; text-align: left; padding: 0 6px; }
+  .cal-grid-big { display: grid; grid-template-columns: repeat(7, 1fr); grid-template-rows: repeat(5, 1fr); gap: 4px; }
+  .cal-day-big {
+    background: #1A1A22; border: 1px solid #2A2A35; border-radius: 8px; padding: 6px 8px;
+    display: flex; flex-direction: column; gap: 3px; overflow: hidden; min-height: 78px;
+  }
+  .cal-day-big.dim { opacity: 0.4; }
+  .cal-day-big.today { border-color: rgba(192,132,252,0.5); background: rgba(192,132,252,0.05); }
+  .cal-day-big.selected { border-color: rgba(192,132,252,0.7); background: rgba(192,132,252,0.10); }
+  .cal-day-big.has-overdue { border-color: rgba(248,113,113,0.3); }
+  .cal-day-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #CFCAD9; font-weight: 600; display: flex; align-items: center; gap: 4px; margin-bottom: 2px; }
+  .cal-day-num.today { color: #C084FC; }
+  .cal-day-num .pip { font-size: 9px; color: #A8A5B5; font-weight: 400; }
+  .cal-event {
+    font-size: 10px; padding: 2px 5px; border-radius: 4px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    background: rgba(192,132,252,0.15); color: #C084FC;
+  }
+  .cal-event.reminder { background: rgba(103,232,249,0.12); color: #67E8F9; }
+  .cal-event.overdue { background: rgba(248,113,113,0.15); color: #F87171; }
+  .cal-more { font-size: 9px; color: #A8A5B5; padding: 0 4px; font-family: 'JetBrains Mono', monospace; }
+
+  /* ====== MONTH GRID (compact, dots only) ====== */
+  .cal-grid-compact { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .cal-day-compact {
+    aspect-ratio: 1; background: #1A1A22; border: 1px solid #2A2A35; border-radius: 6px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    cursor: pointer; font-family: 'JetBrains Mono', monospace; position: relative;
+  }
+  .cal-day-compact .num { font-size: 11px; color: #CFCAD9; }
+  .cal-day-compact.dim .num { color: #4E4E66; }
+  .cal-day-compact.today { background: rgba(192,132,252,0.15); border-color: rgba(192,132,252,0.4); }
+  .cal-day-compact.today .num { color: #C084FC; font-weight: 700; }
+  .cal-day-compact.selected { background: rgba(192,132,252,0.25); border-color: rgba(192,132,252,0.7); }
+  .cal-day-compact .dots { display: flex; gap: 2px; }
+  .cal-day-compact .dot-s { width: 4px; height: 4px; border-radius: 50%; background: #C084FC; }
+  .cal-day-compact .dot-s.r { background: #F87171; }
+  .cal-day-compact .dot-s.c { background: #67E8F9; }
+
+  /* ====== DAY DETAIL PANEL ====== */
+  .day-panel { background: #1A1A22; border: 1px solid #2A2A35; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+  .day-panel-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; padding-bottom: 8px; border-bottom: 1px solid #2A2A35; }
+  .day-panel-date { font-size: 16px; color: #E8E6EF; font-weight: 700; }
+  .day-panel-sub { font-size: 11px; color: #A8A5B5; }
+  .day-panel-counts { margin-left: auto; display: flex; gap: 6px; font-size: 10px; }
+  .day-section-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: #7A7787; font-weight: 600; margin-top: 6px; margin-bottom: 4px; }
+  .day-task-row, .day-reminder-row {
+    display: flex; align-items: center; gap: 8px; padding: 7px 9px; border-radius: 6px;
+    background: #15151B; border: 1px solid #2A2A35; font-size: 11px; margin-top: 4px;
+  }
+  .day-task-row .checkbox { width: 12px; height: 12px; border-radius: 3px; border: 1.5px solid #4E4E66; flex-shrink: 0; }
+  .day-task-row .title { flex: 1; color: #E8E6EF; }
+  .day-reminder-row .clock { color: #67E8F9; font-family: 'JetBrains Mono', monospace; font-size: 10px; min-width: 36px; }
+  .day-reminder-row .rtitle { flex: 1; color: #E8E6EF; }
+
+  /* ====== MOBILE ====== */
+  .mobile { width: 250px; height: 500px; border-radius: 26px; background: #0F0F13; border: 5px solid #1A1A22; overflow: hidden; display: flex; flex-direction: column; font-family: 'Inter', system-ui, sans-serif; font-size: 11px; }
+  .m-status { height: 18px; background: #1A1A22; color: #A8A5B5; font-size: 9px; display: flex; align-items: center; justify-content: space-between; padding: 0 10px; font-family: 'JetBrains Mono', monospace; }
+  .m-topbar { height: 44px; background: #1A1A22; border-bottom: 1px solid #2A2A35; display: flex; align-items: center; padding: 0 12px; gap: 8px; color: #E8E6EF; font-weight: 600; }
+  .m-topbar .right { margin-left: auto; color: #A8A5B5; display: flex; gap: 8px; }
+  .m-content { flex: 1; padding: 10px; overflow: hidden; }
+  .m-bottomnav { height: 50px; background: #1A1A22; border-top: 1px solid #2A2A35; display: flex; align-items: center; justify-content: space-around; padding: 0 4px; }
+  .m-nav-item { display: flex; flex-direction: column; align-items: center; gap: 1px; color: #7A7787; font-size: 8px; flex: 1; }
+  .m-nav-item .ico { font-size: 14px; }
+  .m-nav-item.active { color: #C084FC; }
+  .m-fab { margin-top: -18px; width: 36px; height: 36px; background: #C084FC; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #0F0F13; font-size: 18px; font-weight: 600; box-shadow: 0 6px 18px rgba(192,132,252,0.4); }
+
+  .m-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+  .m-cal-h { text-align: center; font-size: 7px; color: #7A7787; font-weight: 600; padding: 2px 0; font-family: 'JetBrains Mono', monospace; }
+  .m-cal-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 2px; font-family: 'JetBrains Mono', monospace; font-size: 9px; color: #A8A5B5; border-radius: 4px; position: relative; }
+  .m-cal-day.dim { color: #4E4E66; }
+  .m-cal-day.today { background: rgba(192,132,252,0.18); color: #C084FC; font-weight: 700; }
+  .m-cal-day.has::after { content: ''; position: absolute; bottom: 2px; width: 3px; height: 3px; border-radius: 50%; background: #C084FC; }
+  .m-cal-day.has.r::after { background: #F87171; }
+  .m-cal-day.selected { background: rgba(192,132,252,0.35); color: #E8E6EF; }
+  .m-agenda { margin-top: 10px; }
+  .m-agenda .day-h { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #7A7787; font-weight: 600; margin: 8px 0 4px; }
+  .m-agenda .row { display: flex; align-items: center; gap: 6px; padding: 6px 8px; background: #1A1A22; border: 1px solid #2A2A35; border-radius: 6px; margin-bottom: 3px; font-size: 10px; }
+  .m-agenda .row .checkbox { width: 10px; height: 10px; border-radius: 3px; border: 1.5px solid #4E4E66; flex-shrink: 0; }
+  .m-agenda .row .t { flex: 1; color: #E8E6EF; }
+  .m-agenda .row .meta { color: #A8A5B5; font-family: 'JetBrains Mono', monospace; font-size: 9px; }
+</style>
+
+<div class="demo">
+
+<h2>Calendar — 3 directions</h2>
+<p class="subtitle">Tasks (with <code>dueDate</code>) + reminders (with <code>remindAt</code>) plotted on the calendar. View switcher: Month / Week / Day. Mobile fallback shown per option.</p>
+
+<div class="cards" style="grid-template-columns: 1fr;">
+
+  <!-- ===== OPTION A: Month grid with titles ===== -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>A · Month grid with task titles in cells (Google Calendar-ish)</h3>
+      <p class="opt-meta">Each day cell shows the first 2-3 task titles + a "+N more" link. Click title → detail panel. Click day number → All-tasks page filtered to that day. Click empty cell → quick-add task for that date.</p>
+      <div class="device">
+        <div class="device-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+        <div class="shell">
+          <div class="topbar">
+            <div class="logo">task<b>·</b>mgr</div>
+            <div class="search">⌕ Search…<span class="kbd">⌘K</span></div>
+            <div class="topbar-spacer"></div>
+            <div class="icon-btn">🔔</div>
+            <div class="icon-btn">☾</div>
+            <div class="avatar"></div>
+          </div>
+          <div class="rail">
+            <div class="rail-item">▢</div>
+            <div class="rail-item">⌖</div>
+            <div class="rail-item active">▥</div>
+            <div class="rail-item">≡</div>
+            <div class="rail-item">▦</div>
+            <div class="rail-item">🏷</div>
+            <div class="rail-item">⚙</div>
+          </div>
+          <div class="content">
+            <div class="page-head">
+              <h2 class="page-title">Calendar</h2>
+              <div class="month-nav">
+                <span class="month-arrow">◂</span>
+                <span class="month-label">May 2026</span>
+                <span class="month-arrow">▸</span>
+                <span class="today-btn">Today</span>
+              </div>
+              <div class="view-switch">
+                <span class="view-btn active">Month</span>
+                <span class="view-btn">Week</span>
+                <span class="view-btn">Day</span>
+              </div>
+              <span class="new-btn">+ New task</span>
+            </div>
+
+            <div class="cal-month-big">
+              <div class="cal-header-row">
+                <div class="cal-header-cell">Mon</div><div class="cal-header-cell">Tue</div><div class="cal-header-cell">Wed</div><div class="cal-header-cell">Thu</div><div class="cal-header-cell">Fri</div><div class="cal-header-cell">Sat</div><div class="cal-header-cell">Sun</div>
+              </div>
+              <div class="cal-grid-big">
+                <div class="cal-day-big dim"><div class="cal-day-num">28</div></div>
+                <div class="cal-day-big dim"><div class="cal-day-num">29</div></div>
+                <div class="cal-day-big dim"><div class="cal-day-num">30</div></div>
+                <div class="cal-day-big"><div class="cal-day-num">1</div></div>
+                <div class="cal-day-big"><div class="cal-day-num">2 <span class="pip">·1</span></div><div class="cal-event">Quarterly review</div></div>
+                <div class="cal-day-big"><div class="cal-day-num">3</div></div>
+                <div class="cal-day-big"><div class="cal-day-num">4</div></div>
+
+                <div class="cal-day-big"><div class="cal-day-num">5</div></div>
+                <div class="cal-day-big"><div class="cal-day-num">6 <span class="pip">·2</span></div><div class="cal-event">Refactor auth</div><div class="cal-event reminder">⏰ Standup prep</div></div>
+                <div class="cal-day-big"><div class="cal-day-num">7</div></div>
+                <div class="cal-day-big"><div class="cal-day-num">8</div></div>
+                <div class="cal-day-big has-overdue"><div class="cal-day-num">9 <span class="pip">·3</span></div><div class="cal-event overdue">Pay car insurance</div><div class="cal-event">Doctor appt</div><div class="cal-more">+1 more</div></div>
+                <div class="cal-day-big"><div class="cal-day-num">10</div></div>
+                <div class="cal-day-big"><div class="cal-day-num">11</div></div>
+
+                <div class="cal-day-big"><div class="cal-day-num">12 <span class="pip">·1</span></div><div class="cal-event">Weekly status writeup</div></div>
+                <div class="cal-day-big"><div class="cal-day-num">13</div></div>
+                <div class="cal-day-big today"><div class="cal-day-num today">14 <span class="pip">·3</span></div><div class="cal-event">Write zod doc</div><div class="cal-event">Call dentist</div><div class="cal-event reminder">⏰ 15:30 Standup</div></div>
+                <div class="cal-day-big"><div class="cal-day-num">15 <span class="pip">·1</span></div><div class="cal-event">Refactor auth (due)</div></div>
+                <div class="cal-day-big"><div class="cal-day-num">16</div></div>
+                <div class="cal-day-big"><div class="cal-day-num">17</div></div>
+                <div class="cal-day-big"><div class="cal-day-num">18</div></div>
+
+                <div class="cal-day-big"><div class="cal-day-num">19</div></div>
+                <div class="cal-day-big"><div class="cal-day-num">20 <span class="pip">·1</span></div><div class="cal-event">Onboard team lead</div></div>
+                <div class="cal-day-big"><div class="cal-day-num">21</div></div>
+                <div class="cal-day-big"><div class="cal-day-num">22</div></div>
+                <div class="cal-day-big"><div class="cal-day-num">23</div></div>
+                <div class="cal-day-big"><div class="cal-day-num">24</div></div>
+                <div class="cal-day-big"><div class="cal-day-num">25</div></div>
+
+                <div class="cal-day-big"><div class="cal-day-num">26</div></div>
+                <div class="cal-day-big"><div class="cal-day-num">27</div></div>
+                <div class="cal-day-big"><div class="cal-day-num">28</div></div>
+                <div class="cal-day-big"><div class="cal-day-num">29</div></div>
+                <div class="cal-day-big"><div class="cal-day-num">30</div></div>
+                <div class="cal-day-big"><div class="cal-day-num">31</div></div>
+                <div class="cal-day-big dim"><div class="cal-day-num">1</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="opt-meta" style="margin-top:10px;"><b>Pros:</b> see distribution + names at a glance. <b>Cons:</b> cramped on narrow viewports; doesn't scale to busy days. <b>Mobile:</b> month falls back to <i>agenda list</i> (day-by-day vertical list grouped by date).</p>
+    </div>
+  </div>
+
+  <!-- ===== OPTION B: Compact month grid + day side panel ===== -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>B · Compact month grid + persistent day-detail side panel (Outlook-ish)</h3>
+      <p class="opt-meta">Day cells = number + dot indicators (count + overdue color). Selected day's full list appears in a right panel: tasks (sorted by priority) + reminders (sorted by time). Cleaner glance, full detail one click away.</p>
+      <div class="device">
+        <div class="device-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+        <div class="shell">
+          <div class="topbar">
+            <div class="logo">task<b>·</b>mgr</div>
+            <div class="search">⌕ Search…<span class="kbd">⌘K</span></div>
+            <div class="topbar-spacer"></div>
+            <div class="icon-btn">🔔</div>
+            <div class="icon-btn">☾</div>
+            <div class="avatar"></div>
+          </div>
+          <div class="rail">
+            <div class="rail-item">▢</div>
+            <div class="rail-item">⌖</div>
+            <div class="rail-item active">▥</div>
+            <div class="rail-item">≡</div>
+            <div class="rail-item">▦</div>
+            <div class="rail-item">🏷</div>
+            <div class="rail-item">⚙</div>
+          </div>
+          <div class="content" style="display:grid; grid-template-columns: 1fr 280px; gap: 14px; overflow: hidden;">
+            <div style="display:flex; flex-direction:column; overflow:hidden;">
+              <div class="page-head">
+                <h2 class="page-title">Calendar</h2>
+                <div class="month-nav">
+                  <span class="month-arrow">◂</span>
+                  <span class="month-label">May 2026</span>
+                  <span class="month-arrow">▸</span>
+                  <span class="today-btn">Today</span>
+                </div>
+                <div class="view-switch">
+                  <span class="view-btn active">Month</span>
+                  <span class="view-btn">Week</span>
+                  <span class="view-btn">Day</span>
+                </div>
+              </div>
+
+              <div class="cal-header-row">
+                <div class="cal-header-cell">M</div><div class="cal-header-cell">T</div><div class="cal-header-cell">W</div><div class="cal-header-cell">T</div><div class="cal-header-cell">F</div><div class="cal-header-cell">S</div><div class="cal-header-cell">S</div>
+              </div>
+              <div class="cal-grid-compact" style="flex:1; grid-template-rows: repeat(5, 1fr);">
+                <div class="cal-day-compact dim"><div class="num">28</div></div>
+                <div class="cal-day-compact dim"><div class="num">29</div></div>
+                <div class="cal-day-compact dim"><div class="num">30</div></div>
+                <div class="cal-day-compact"><div class="num">1</div></div>
+                <div class="cal-day-compact"><div class="num">2</div><div class="dots"><div class="dot-s"></div></div></div>
+                <div class="cal-day-compact"><div class="num">3</div></div>
+                <div class="cal-day-compact"><div class="num">4</div></div>
+
+                <div class="cal-day-compact"><div class="num">5</div></div>
+                <div class="cal-day-compact"><div class="num">6</div><div class="dots"><div class="dot-s"></div><div class="dot-s c"></div></div></div>
+                <div class="cal-day-compact"><div class="num">7</div></div>
+                <div class="cal-day-compact"><div class="num">8</div></div>
+                <div class="cal-day-compact"><div class="num">9</div><div class="dots"><div class="dot-s r"></div><div class="dot-s"></div><div class="dot-s"></div></div></div>
+                <div class="cal-day-compact"><div class="num">10</div></div>
+                <div class="cal-day-compact"><div class="num">11</div></div>
+
+                <div class="cal-day-compact"><div class="num">12</div><div class="dots"><div class="dot-s"></div></div></div>
+                <div class="cal-day-compact"><div class="num">13</div></div>
+                <div class="cal-day-compact today"><div class="num">14</div><div class="dots"><div class="dot-s"></div><div class="dot-s"></div><div class="dot-s c"></div></div></div>
+                <div class="cal-day-compact selected"><div class="num">15</div><div class="dots"><div class="dot-s r"></div></div></div>
+                <div class="cal-day-compact"><div class="num">16</div></div>
+                <div class="cal-day-compact"><div class="num">17</div></div>
+                <div class="cal-day-compact"><div class="num">18</div></div>
+
+                <div class="cal-day-compact"><div class="num">19</div></div>
+                <div class="cal-day-compact"><div class="num">20</div><div class="dots"><div class="dot-s"></div></div></div>
+                <div class="cal-day-compact"><div class="num">21</div></div>
+                <div class="cal-day-compact"><div class="num">22</div></div>
+                <div class="cal-day-compact"><div class="num">23</div></div>
+                <div class="cal-day-compact"><div class="num">24</div></div>
+                <div class="cal-day-compact"><div class="num">25</div></div>
+
+                <div class="cal-day-compact"><div class="num">26</div></div>
+                <div class="cal-day-compact"><div class="num">27</div></div>
+                <div class="cal-day-compact"><div class="num">28</div></div>
+                <div class="cal-day-compact"><div class="num">29</div></div>
+                <div class="cal-day-compact"><div class="num">30</div></div>
+                <div class="cal-day-compact"><div class="num">31</div></div>
+                <div class="cal-day-compact dim"><div class="num">1</div></div>
+              </div>
+
+              <div style="margin-top: 10px; font-size: 9px; color: #7A7787; display: flex; gap: 10px;">
+                <span><span style="display:inline-block; width:4px; height:4px; border-radius:50%; background:#C084FC; vertical-align:middle; margin-right:3px;"></span>task</span>
+                <span><span style="display:inline-block; width:4px; height:4px; border-radius:50%; background:#67E8F9; vertical-align:middle; margin-right:3px;"></span>reminder</span>
+                <span><span style="display:inline-block; width:4px; height:4px; border-radius:50%; background:#F87171; vertical-align:middle; margin-right:3px;"></span>overdue</span>
+              </div>
+            </div>
+
+            <!-- DAY DETAIL PANEL -->
+            <div class="day-panel">
+              <div class="day-panel-head">
+                <div>
+                  <div class="day-panel-date">Fri 15</div>
+                  <div class="day-panel-sub">May 2026 · tomorrow</div>
+                </div>
+                <div class="day-panel-counts"><span class="badge danger">1 overdue carry</span></div>
+              </div>
+
+              <div class="day-section-label">Tasks</div>
+              <div class="day-task-row"><div class="checkbox"></div><div class="title">Refactor auth middleware</div><span class="badge priority">!</span></div>
+
+              <div class="day-section-label" style="margin-top:8px;">Reminders</div>
+              <div class="day-reminder-row"><span class="clock">09:30</span><div class="rtitle">Daily standup</div></div>
+              <div class="day-reminder-row"><span class="clock">16:00</span><div class="rtitle">Review zod-doc draft</div></div>
+
+              <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #2A2A35; display: flex; gap: 6px;">
+                <span class="new-btn" style="font-size: 11px; padding: 5px 10px;">+ New task</span>
+                <span class="today-btn" style="font-size: 11px;">+ Reminder</span>
+                <span class="today-btn" style="font-size: 11px; margin-left:auto;">All-tasks for Fri →</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="opt-meta" style="margin-top:10px;"><b>Pros:</b> handles busy days well; clear hierarchy; reminders surface with time. <b>Cons:</b> need to click to see titles. <b>Mobile:</b> grid full-width; tap a day → day panel slides up as bottom sheet.</p>
+    </div>
+  </div>
+
+  <!-- ===== OPTION C: Hybrid agenda below ===== -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>C · Compact month + persistent agenda below ("week-at-glance")</h3>
+      <p class="opt-meta">Top half: compact month with dots. Bottom half: vertical agenda for the visible range (default: this week or selected day onwards). Both visible; less clicking, more scrolling.</p>
+      <div class="device">
+        <div class="device-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+        <div class="shell">
+          <div class="topbar">
+            <div class="logo">task<b>·</b>mgr</div>
+            <div class="search">⌕ Search…<span class="kbd">⌘K</span></div>
+            <div class="topbar-spacer"></div>
+            <div class="icon-btn">🔔</div>
+            <div class="icon-btn">☾</div>
+            <div class="avatar"></div>
+          </div>
+          <div class="rail">
+            <div class="rail-item">▢</div>
+            <div class="rail-item">⌖</div>
+            <div class="rail-item active">▥</div>
+            <div class="rail-item">≡</div>
+            <div class="rail-item">▦</div>
+            <div class="rail-item">🏷</div>
+            <div class="rail-item">⚙</div>
+          </div>
+          <div class="content">
+            <div class="page-head">
+              <h2 class="page-title">Calendar</h2>
+              <div class="month-nav">
+                <span class="month-arrow">◂</span>
+                <span class="month-label">May 2026</span>
+                <span class="month-arrow">▸</span>
+                <span class="today-btn">Today</span>
+              </div>
+              <div class="view-switch">
+                <span class="view-btn">Month</span>
+                <span class="view-btn active">Agenda</span>
+                <span class="view-btn">Week</span>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-rows: auto 1fr; gap: 14px; flex: 1; overflow: hidden;">
+              <!-- top: compact month -->
+              <div>
+                <div class="cal-header-row">
+                  <div class="cal-header-cell">M</div><div class="cal-header-cell">T</div><div class="cal-header-cell">W</div><div class="cal-header-cell">T</div><div class="cal-header-cell">F</div><div class="cal-header-cell">S</div><div class="cal-header-cell">S</div>
+                </div>
+                <div class="cal-grid-compact">
+                  <div class="cal-day-compact dim"><div class="num">28</div></div>
+                  <div class="cal-day-compact dim"><div class="num">29</div></div>
+                  <div class="cal-day-compact dim"><div class="num">30</div></div>
+                  <div class="cal-day-compact"><div class="num">1</div></div>
+                  <div class="cal-day-compact"><div class="num">2</div><div class="dots"><div class="dot-s"></div></div></div>
+                  <div class="cal-day-compact"><div class="num">3</div></div>
+                  <div class="cal-day-compact"><div class="num">4</div></div>
+
+                  <div class="cal-day-compact"><div class="num">5</div></div>
+                  <div class="cal-day-compact"><div class="num">6</div><div class="dots"><div class="dot-s"></div><div class="dot-s c"></div></div></div>
+                  <div class="cal-day-compact"><div class="num">7</div></div>
+                  <div class="cal-day-compact"><div class="num">8</div></div>
+                  <div class="cal-day-compact"><div class="num">9</div><div class="dots"><div class="dot-s r"></div></div></div>
+                  <div class="cal-day-compact"><div class="num">10</div></div>
+                  <div class="cal-day-compact"><div class="num">11</div></div>
+
+                  <div class="cal-day-compact"><div class="num">12</div><div class="dots"><div class="dot-s"></div></div></div>
+                  <div class="cal-day-compact"><div class="num">13</div></div>
+                  <div class="cal-day-compact today"><div class="num">14</div><div class="dots"><div class="dot-s"></div><div class="dot-s"></div></div></div>
+                  <div class="cal-day-compact"><div class="num">15</div><div class="dots"><div class="dot-s"></div></div></div>
+                  <div class="cal-day-compact"><div class="num">16</div></div>
+                  <div class="cal-day-compact"><div class="num">17</div></div>
+                  <div class="cal-day-compact"><div class="num">18</div></div>
+                </div>
+              </div>
+
+              <!-- bottom: agenda -->
+              <div style="overflow-y: auto;">
+                <div class="day-section-label" style="margin-top:0;">Today · Thu 14 May</div>
+                <div class="day-task-row"><div class="checkbox"></div><div class="title">Write zod-schemas migration doc</div><span class="badge info">backend</span></div>
+                <div class="day-task-row"><div class="checkbox"></div><div class="title">Call dentist</div></div>
+                <div class="day-reminder-row"><span class="clock">15:30</span><div class="rtitle">⏰ Standup prep</div></div>
+
+                <div class="day-section-label">Tomorrow · Fri 15 May</div>
+                <div class="day-task-row"><div class="checkbox"></div><div class="title">Refactor auth middleware</div><span class="badge priority">priority</span></div>
+                <div class="day-reminder-row"><span class="clock">09:30</span><div class="rtitle">⏰ Daily standup</div></div>
+
+                <div class="day-section-label">Wed 20 May</div>
+                <div class="day-task-row"><div class="checkbox"></div><div class="title">Onboard new team lead</div><span class="badge priority">priority</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="opt-meta" style="margin-top:10px;"><b>Pros:</b> mobile-equivalent on desktop; least clicking. <b>Cons:</b> less visual distribution sense. <b>Mobile:</b> the agenda IS the mobile view (just narrower) — least transformation needed.</p>
+    </div>
+  </div>
+
+</div>
+
+<h2 style="margin-top: 24px;">Mobile fallback comparison (regardless of desktop choice)</h2>
+
+<div style="display: flex; gap: 16px; margin-top: 12px; justify-content: center;">
+
+  <!-- mobile A: agenda list -->
+  <div>
+    <div style="text-align:center; color:#A8A5B5; font-size:10px; text-transform:uppercase; letter-spacing:0.1em; font-weight:600; margin-bottom:8px;">Agenda list (for A/C)</div>
+    <div class="mobile">
+      <div class="m-status"><span>9:41</span><span>●●●● 100%</span></div>
+      <div class="m-topbar">
+        <span>Calendar</span>
+        <div class="right">May ▾</div>
+      </div>
+      <div class="m-content">
+        <div class="m-agenda">
+          <div class="day-h">Today · Thu 14</div>
+          <div class="row"><div class="checkbox"></div><div class="t">Write zod doc</div></div>
+          <div class="row"><div class="checkbox"></div><div class="t">Call dentist</div></div>
+          <div class="row" style="border-color: rgba(103,232,249,0.3);"><span class="meta" style="color:#67E8F9;">15:30</span><div class="t">⏰ Standup prep</div></div>
+          <div class="day-h">Tomorrow · Fri 15</div>
+          <div class="row" style="border-color: rgba(192,132,252,0.3);"><div class="checkbox"></div><div class="t">Refactor auth</div></div>
+          <div class="row" style="border-color: rgba(103,232,249,0.3);"><span class="meta" style="color:#67E8F9;">09:30</span><div class="t">⏰ Standup</div></div>
+          <div class="day-h">Wed 20</div>
+          <div class="row"><div class="checkbox"></div><div class="t">Onboard team lead</div></div>
+        </div>
+      </div>
+      <div class="m-bottomnav">
+        <div class="m-nav-item"><div class="ico">▢</div><div>Today</div></div>
+        <div class="m-nav-item active"><div class="ico">▥</div><div>Cal</div></div>
+        <div class="m-fab">+</div>
+        <div class="m-nav-item"><div class="ico">▦</div><div>Projects</div></div>
+        <div class="m-nav-item"><div class="ico">⌖</div><div>Inbox</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- mobile B: grid + sheet -->
+  <div>
+    <div style="text-align:center; color:#A8A5B5; font-size:10px; text-transform:uppercase; letter-spacing:0.1em; font-weight:600; margin-bottom:8px;">Grid + tap-for-sheet (for B)</div>
+    <div class="mobile">
+      <div class="m-status"><span>9:41</span><span>●●●● 100%</span></div>
+      <div class="m-topbar">
+        <span>Calendar</span>
+        <div class="right">May ▾</div>
+      </div>
+      <div class="m-content">
+        <div class="m-cal">
+          <div class="m-cal-h">M</div><div class="m-cal-h">T</div><div class="m-cal-h">W</div><div class="m-cal-h">T</div><div class="m-cal-h">F</div><div class="m-cal-h">S</div><div class="m-cal-h">S</div>
+          <div class="m-cal-day dim">28</div><div class="m-cal-day dim">29</div><div class="m-cal-day dim">30</div><div class="m-cal-day">1</div><div class="m-cal-day has">2</div><div class="m-cal-day">3</div><div class="m-cal-day">4</div>
+          <div class="m-cal-day">5</div><div class="m-cal-day has">6</div><div class="m-cal-day">7</div><div class="m-cal-day">8</div><div class="m-cal-day has r">9</div><div class="m-cal-day">10</div><div class="m-cal-day">11</div>
+          <div class="m-cal-day has">12</div><div class="m-cal-day">13</div><div class="m-cal-day today has">14</div><div class="m-cal-day selected has">15</div><div class="m-cal-day">16</div><div class="m-cal-day">17</div><div class="m-cal-day">18</div>
+          <div class="m-cal-day">19</div><div class="m-cal-day has">20</div><div class="m-cal-day">21</div><div class="m-cal-day">22</div><div class="m-cal-day">23</div><div class="m-cal-day">24</div><div class="m-cal-day">25</div>
+          <div class="m-cal-day">26</div><div class="m-cal-day">27</div><div class="m-cal-day">28</div><div class="m-cal-day">29</div><div class="m-cal-day">30</div><div class="m-cal-day">31</div><div class="m-cal-day dim">1</div>
+        </div>
+        <div style="background:#1A1A22; border:1px solid #2A2A35; border-top: 2px solid #C084FC; border-radius: 10px 10px 0 0; margin: 10px -10px -10px; padding: 10px;">
+          <div style="font-size:11px; color:#E8E6EF; font-weight:600;">Fri 15 May</div>
+          <div class="row" style="margin-top:6px;"><div class="checkbox"></div><div class="t">Refactor auth</div></div>
+          <div class="row" style="border-color: rgba(103,232,249,0.3);"><span class="meta" style="color:#67E8F9;">09:30</span><div class="t">⏰ Standup</div></div>
+        </div>
+      </div>
+      <div class="m-bottomnav">
+        <div class="m-nav-item"><div class="ico">▢</div><div>Today</div></div>
+        <div class="m-nav-item active"><div class="ico">▥</div><div>Cal</div></div>
+        <div class="m-fab">+</div>
+        <div class="m-nav-item"><div class="ico">▦</div><div>Projects</div></div>
+        <div class="m-nav-item"><div class="ico">⌖</div><div>Inbox</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:20px;">Open Qs (answer in terminal): Default view (Month/Week/Day/Agenda)? Drag-to-reschedule on desktop yes/no for v1? Day-cell click behavior: open detail panel for day vs navigate to filtered All-tasks?</p>
+
+</div>

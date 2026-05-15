@@ -1,6 +1,6 @@
 ---
 created: 2026-05-13
-updated: 2026-05-13
+updated: 2026-05-14
 summary: Entry point for LLM agents working on the task_manager monorepo. Project orientation + links to per-workspace CLAUDE.md, behavior rules, and stable docs.
 ---
 
@@ -55,4 +55,4 @@ The codebase is ~1 year old; some prior docs are kept as-is but may drift from c
 - [docs/stable/backend/architecture.md](./docs/stable/backend/architecture.md) — controller/service/repository layout.
 - [docs/stable/backend/error-handling.md](./docs/stable/backend/error-handling.md) — AppError / EndpointError / domain errors.
 - [docs/stable/backend/responses.md](./docs/stable/backend/responses.md) — response-shape edge cases.
-- [docs/stable/backend/zod-schemas.md](./docs/stable/backend/zod-schemas.md) — ⚠ flagged outdated; user has newer practices from other projects.
+- [docs/stable/backend/zod-schemas.md](./docs/stable/backend/zod-schemas.md) — current zod + `@hono/zod-openapi` pattern (refreshed 2026-05-13).

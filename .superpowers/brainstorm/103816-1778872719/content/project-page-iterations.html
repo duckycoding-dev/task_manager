@@ -1,0 +1,368 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+  .demo { font-family: 'Inter', system-ui, sans-serif; }
+  .device { border-radius: 12px; overflow: hidden; background: #0F0F13; border: 1px solid #2A2A35; }
+  .device-chrome { height: 22px; background: #1A1A22; border-bottom: 1px solid #2A2A35; display: flex; align-items: center; gap: 6px; padding: 0 10px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; } .dot.r { background: #F87171; } .dot.y { background: #FBBF24; } .dot.g { background: #34D399; }
+  .shell { display: grid; grid-template-columns: 56px 1fr; grid-template-rows: 44px 1fr; height: 540px; font-size: 12px; }
+  .topbar { grid-column: 1 / -1; display: flex; align-items: center; padding: 0 14px; background: #1A1A22; border-bottom: 1px solid #2A2A35; gap: 14px; }
+  .logo { font-weight: 700; color: #E8E6EF; } .logo b { color: #C084FC; }
+  .search { flex: 1; max-width: 340px; height: 28px; background: #15151B; border: 1px solid #2A2A35; border-radius: 8px; padding: 0 10px; display: flex; align-items: center; gap: 8px; color: #7A7787; font-size: 11px; }
+  .kbd { padding: 1px 6px; border-radius: 4px; background: #1A1A22; border: 1px solid #2A2A35; color: #A8A5B5; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+  .topbar-spacer { flex: 1; } .icon-btn { width: 30px; height: 30px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; color: #A8A5B5; font-size: 14px; }
+  .avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #C084FC, #67E8F9); }
+  .rail { background: #15151B; border-right: 1px solid #2A2A35; padding: 12px 6px; display: flex; flex-direction: column; gap: 2px; }
+  .rail-item { width: 100%; padding: 8px 0; border-radius: 8px; color: #A8A5B5; text-align: center; font-size: 14px; }
+  .rail-item.active { background: rgba(192,132,252,0.12); color: #C084FC; }
+  .content { background: #0F0F13; padding: 18px 22px; overflow: hidden; display: flex; flex-direction: column; }
+
+  .breadcrumbs { font-size: 11px; color: #7A7787; margin-bottom: 4px; }
+  .breadcrumbs a { color: #A8A5B5; }
+  .page-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .page-title { font-size: 22px; margin: 0; color: #E8E6EF; font-weight: 700; letter-spacing: -0.015em; display:flex; align-items:center; gap:10px; }
+  .color-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; background: #67E8F9; }
+  .page-sub { font-size: 11px; color: #A8A5B5; }
+  .new-btn { padding: 6px 12px; border-radius: 8px; background: #C084FC; color: #0F0F13; font-weight: 600; font-size: 12px; margin-left: auto; }
+  .ghost-btn { padding: 5px 10px; border-radius: 6px; background: #1A1A22; border: 1px solid #2A2A35; color: #CFCAD9; font-size: 11px; }
+
+  /* common segment controls */
+  .seg { display: inline-flex; gap: 2px; background: #15151B; border: 1px solid #2A2A35; border-radius: 8px; padding: 2px; }
+  .seg-btn { padding: 4px 10px; border-radius: 6px; color: #A8A5B5; font-size: 11px; font-weight: 600; cursor: pointer; }
+  .seg-btn.active { background: rgba(192,132,252,0.15); color: #C084FC; }
+  .seg.lg .seg-btn { padding: 6px 14px; font-size: 12px; }
+  .seg.lg .seg-btn.active { background: rgba(192,132,252,0.2); }
+
+  .row-toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .label-tag { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #7A7787; font-weight: 600; }
+
+  /* board */
+  .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; flex: 1; overflow: hidden; }
+  .col { background: #15151B; border: 1px solid #2A2A35; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; }
+  .col-head { padding: 8px 10px; border-bottom: 1px solid #2A2A35; display: flex; align-items: center; gap: 6px; }
+  .col-name { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }
+  .col.todo .col-name { color: #A8A5B5; }
+  .col.inp .col-name { color: #C084FC; }
+  .col.done .col-name { color: #34D399; }
+  .col-count { background: #1A1A22; color: #A8A5B5; padding: 1px 6px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: 9px; }
+  .col-add { margin-left: auto; color: #7A7787; font-size: 14px; cursor: pointer; }
+  .col-body { padding: 6px; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; flex: 1; }
+  .kcard { background: #1A1A22; border: 1px solid #2A2A35; border-radius: 8px; padding: 8px 10px; cursor: grab; font-size: 11px; }
+  .kcard .ktitle { color: #E8E6EF; font-weight: 500; line-height: 1.35; }
+  .kcard .kmeta { display: flex; align-items: center; gap: 5px; margin-top: 6px; flex-wrap: wrap; }
+  .badge { padding: 1px 5px; border-radius: 6px; font-size: 8px; font-weight: 600; }
+  .badge.priority-h { background: rgba(248,113,113,0.12); color: #F87171; }
+  .badge.priority-m { background: rgba(192,132,252,0.12); color: #C084FC; }
+  .badge.priority-l { background: rgba(168,168,170,0.12); color: #A8A5B5; }
+  .badge.label-be { background: rgba(103,232,249,0.12); color: #67E8F9; }
+  .mono-meta { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: #A8A5B5; }
+  .col-add-bottom { padding: 5px 8px; background: transparent; color: #7A7787; font-size: 10px; cursor: pointer; border-radius: 6px; }
+
+  /* inline expanding quick-add */
+  .quick-add-inline {
+    background: #1A1A22; border: 1.5px solid rgba(192,132,252,0.5); border-radius: 8px; padding: 8px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .qai-input {
+    background: transparent; border: 0; color: #E8E6EF; outline: none; font-family: inherit; font-size: 11px; padding: 2px;
+  }
+  .qai-input::placeholder { color: #7A7787; }
+  .qai-actions { display: flex; gap: 4px; justify-content: flex-end; font-size: 10px; }
+  .qai-btn { padding: 3px 8px; border-radius: 5px; font-weight: 600; }
+  .qai-btn.primary { background: #C084FC; color: #0F0F13; }
+  .qai-btn.ghost { color: #A8A5B5; background: #15151B; border: 1px solid #2A2A35; }
+  .qai-hint { color: #6B6770; font-size: 9px; font-style: italic; }
+
+  /* list */
+  .listv { flex: 1; overflow-y: auto; }
+  .task-row { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; margin-top: 4px; background: #1A1A22; border: 1px solid #2A2A35; font-size: 11px; }
+  .checkbox { width: 13px; height: 13px; border-radius: 4px; border: 1.5px solid #4E4E66; flex-shrink: 0; }
+  .reminder-row { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; margin-top: 4px; background: #1A1A22; border: 1px solid #2A2A35; font-size: 11px; }
+  .reminder-row .clock { color: #67E8F9; font-family: 'JetBrains Mono', monospace; font-size: 10px; min-width: 60px; }
+  .reminder-row .parent { color: #A8A5B5; font-size: 10px; margin-left: auto; }
+  .section-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: #7A7787; font-weight: 600; margin-top: 10px; margin-bottom: 4px; }
+</style>
+
+<div class="demo">
+
+<h2>Project page — 3 ways to slice tasks vs reminders</h2>
+<p class="subtitle">Same underlying data; different mental model. Open Qs in terminal after picking.</p>
+
+<div class="cards" style="grid-template-columns: 1fr;">
+
+  <!-- ====== OPTION X: entity-primary ====== -->
+  <div class="card" data-choice="x" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>X · Entity primary · View mode secondary (recommended)</h3>
+      <p class="opt-meta">Top toggle = <b>Tasks ↔ Reminders</b> (what you're looking at). Inside Tasks, secondary <b>Board / List</b> toggle (how you view tasks). Inside Reminders, just a list — board has no meaning for reminders (no status enum). Cleanest mental model. No awkward "All" combination.</p>
+      <div class="device">
+        <div class="device-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+        <div class="shell">
+          <div class="topbar">
+            <div class="logo">task<b>·</b>mgr</div>
+            <div class="search">⌕ Search…<span class="kbd">⌘K</span></div>
+            <div class="topbar-spacer"></div><div class="icon-btn">🔔</div><div class="icon-btn">☾</div><div class="avatar"></div>
+          </div>
+          <div class="rail">
+            <div class="rail-item">▢</div><div class="rail-item">⌖</div><div class="rail-item">▥</div>
+            <div class="rail-item">≡</div><div class="rail-item active">▦</div><div class="rail-item">🏷</div><div class="rail-item">⚙</div>
+          </div>
+          <div class="content">
+            <div class="breadcrumbs"><a>Projects</a> › <a>Backend</a></div>
+            <div class="page-head">
+              <h2 class="page-title"><span class="color-dot"></span>Backend</h2>
+              <span class="page-sub">11 open · 3 overdue · 5 reminders</span>
+              <span class="ghost-btn">⋯</span>
+              <span class="new-btn">+ New task</span>
+            </div>
+
+            <div class="row-toolbar">
+              <div class="seg lg">
+                <span class="seg-btn active">Tasks <span style="opacity:0.7;">11</span></span>
+                <span class="seg-btn">Reminders <span style="opacity:0.7;">5</span></span>
+              </div>
+              <span class="label-tag" style="margin-left: 14px;">View</span>
+              <div class="seg">
+                <span class="seg-btn active">Board</span>
+                <span class="seg-btn">List</span>
+              </div>
+              <span class="ghost-btn" style="margin-left:auto;">Filters</span>
+            </div>
+
+            <div class="board">
+              <div class="col todo"><div class="col-head"><span class="col-name">To do</span><span class="col-count">5</span><span class="col-add">+</span></div>
+                <div class="col-body">
+                  <div class="kcard"><div class="ktitle">Write zod-schemas migration doc</div><div class="kmeta"><span class="badge priority-m">!med</span><span class="mono-meta">today</span></div></div>
+                  <div class="kcard"><div class="ktitle">Audit unused endpoints</div><div class="kmeta"><span class="badge priority-l">!low</span><span class="mono-meta">Sat</span></div></div>
+                  <div class="kcard"><div class="ktitle">Multi-value filter on GET /tasks</div><div class="kmeta"><span class="badge priority-h">!high</span><span class="mono-meta">Mon</span></div></div>
+                  <div class="col-add-bottom">+ Add task</div>
+                </div>
+              </div>
+              <div class="col inp"><div class="col-head"><span class="col-name">In progress</span><span class="col-count">3</span><span class="col-add">+</span></div>
+                <div class="col-body">
+                  <div class="kcard"><div class="ktitle">Refactor auth middleware</div><div class="kmeta"><span class="badge priority-h">!high</span><span class="mono-meta" style="color:#F87171;">2d late</span></div></div>
+                  <div class="kcard"><div class="ktitle">Onboard new team lead</div><div class="kmeta"><span class="badge priority-h">!high</span><span class="mono-meta">Wed</span></div></div>
+                  <div class="col-add-bottom">+ Add task</div>
+                </div>
+              </div>
+              <div class="col done"><div class="col-head"><span class="col-name">Done</span><span class="col-count">3</span><span class="col-add">+</span></div>
+                <div class="col-body">
+                  <div class="kcard" style="opacity:0.6;"><div class="ktitle" style="text-decoration:line-through;">Bump hono stack</div><div class="kmeta"><span class="mono-meta">Mon</span></div></div>
+                  <div class="kcard" style="opacity:0.6;"><div class="ktitle" style="text-decoration:line-through;">Doc the zod fix</div><div class="kmeta"><span class="mono-meta">Wed</span></div></div>
+                  <div class="col-add-bottom">+ Add task</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="opt-meta" style="margin-top:8px;"><b>Switching to Reminders</b> swaps the area to a single reminders list (date-sorted) — no board sub-toggle. Filters bar still available.</p>
+    </div>
+  </div>
+
+  <!-- ====== OPTION Y: view-primary with entity filter ====== -->
+  <div class="card" data-choice="y" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>Y · View primary · Entity as filter</h3>
+      <p class="opt-meta">Top toggle = <b>Board / List</b>. Filter chip selects entity: <b>Tasks</b> (default) / <b>Reminders</b> / <b>All</b>. "All" only makes sense in List view → if user is on Board and switches filter to Reminders or All, view auto-switches to List. Reactive but coupling makes the model heavier to explain.</p>
+      <div class="device">
+        <div class="device-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+        <div class="shell">
+          <div class="topbar">
+            <div class="logo">task<b>·</b>mgr</div>
+            <div class="search">⌕ Search…<span class="kbd">⌘K</span></div>
+            <div class="topbar-spacer"></div><div class="icon-btn">🔔</div><div class="icon-btn">☾</div><div class="avatar"></div>
+          </div>
+          <div class="rail">
+            <div class="rail-item">▢</div><div class="rail-item">⌖</div><div class="rail-item">▥</div>
+            <div class="rail-item">≡</div><div class="rail-item active">▦</div><div class="rail-item">🏷</div><div class="rail-item">⚙</div>
+          </div>
+          <div class="content">
+            <div class="breadcrumbs"><a>Projects</a> › <a>Backend</a></div>
+            <div class="page-head">
+              <h2 class="page-title"><span class="color-dot"></span>Backend</h2>
+              <span class="page-sub">11 tasks · 5 reminders</span>
+              <span class="ghost-btn">⋯</span>
+              <span class="new-btn">+ New task</span>
+            </div>
+
+            <div class="row-toolbar">
+              <span class="label-tag">View</span>
+              <div class="seg lg">
+                <span class="seg-btn">Board</span>
+                <span class="seg-btn active">List</span>
+              </div>
+              <span class="label-tag" style="margin-left: 14px;">Show</span>
+              <div class="seg">
+                <span class="seg-btn">Tasks</span>
+                <span class="seg-btn">Reminders</span>
+                <span class="seg-btn active">All</span>
+              </div>
+              <span class="ghost-btn" style="margin-left:auto;">Filters</span>
+            </div>
+
+            <div class="listv">
+              <div class="section-label">Today</div>
+              <div class="task-row"><div class="checkbox"></div><div style="flex:1; color:#E8E6EF;">Write zod-schemas migration doc</div><span class="badge priority-m">!med</span><span class="mono-meta">today</span></div>
+              <div class="reminder-row"><span class="clock">15:30</span><div style="flex:1; color:#E8E6EF;">⏰ Standup prep</div><span class="parent">Refactor auth</span></div>
+
+              <div class="section-label">Tomorrow</div>
+              <div class="reminder-row"><span class="clock">09:30</span><div style="flex:1; color:#E8E6EF;">⏰ Daily standup</div><span class="parent">Refactor auth</span></div>
+              <div class="task-row"><div class="checkbox"></div><div style="flex:1; color:#E8E6EF;">Refactor auth middleware</div><span class="badge priority-h">!high</span><span class="mono-meta">Fri</span></div>
+
+              <div class="section-label">Next week</div>
+              <div class="task-row"><div class="checkbox"></div><div style="flex:1; color:#E8E6EF;">Onboard new team lead</div><span class="badge priority-h">!high</span><span class="mono-meta">Wed</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="opt-meta" style="margin-top:8px;"><b>Pros:</b> "All" combined chronological list of tasks+reminders mixed — a planning view. <b>Cons:</b> Board+Reminders/All are illegal combos (auto-switch needed). Mixed list rows have different shapes (task vs reminder). More to explain.</p>
+    </div>
+  </div>
+
+  <!-- ====== OPTION Z: tasks primary, reminders as side rail ====== -->
+  <div class="card" data-choice="z" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>Z · Tasks-only main area · Reminders as collapsible side rail</h3>
+      <p class="opt-meta">Project page = tasks (Board/List toggle). Reminders for this project live in a collapsible right rail (~220px). Always-visible-but-secondary. No filters/entity switcher needed.</p>
+      <div class="device">
+        <div class="device-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+        <div class="shell">
+          <div class="topbar">
+            <div class="logo">task<b>·</b>mgr</div>
+            <div class="search">⌕ Search…<span class="kbd">⌘K</span></div>
+            <div class="topbar-spacer"></div><div class="icon-btn">🔔</div><div class="icon-btn">☾</div><div class="avatar"></div>
+          </div>
+          <div class="rail">
+            <div class="rail-item">▢</div><div class="rail-item">⌖</div><div class="rail-item">▥</div>
+            <div class="rail-item">≡</div><div class="rail-item active">▦</div><div class="rail-item">🏷</div><div class="rail-item">⚙</div>
+          </div>
+          <div class="content" style="display:grid; grid-template-columns: 1fr 220px; gap: 14px;">
+            <div style="display:flex; flex-direction:column; overflow:hidden;">
+              <div class="breadcrumbs"><a>Projects</a> › <a>Backend</a></div>
+              <div class="page-head">
+                <h2 class="page-title"><span class="color-dot"></span>Backend</h2>
+                <span class="page-sub">11 open · 3 overdue</span>
+                <span class="ghost-btn">⋯</span>
+              </div>
+
+              <div class="row-toolbar">
+                <div class="seg lg">
+                  <span class="seg-btn active">Board</span>
+                  <span class="seg-btn">List</span>
+                </div>
+                <span class="ghost-btn" style="margin-left:auto;">Filters</span>
+                <span class="new-btn">+ Task</span>
+              </div>
+
+              <div class="board">
+                <div class="col todo"><div class="col-head"><span class="col-name">Todo</span><span class="col-count">5</span></div>
+                  <div class="col-body">
+                    <div class="kcard"><div class="ktitle">Write zod-schemas doc</div><div class="kmeta"><span class="badge priority-m">!med</span></div></div>
+                    <div class="kcard"><div class="ktitle">Audit unused endpoints</div></div>
+                  </div>
+                </div>
+                <div class="col inp"><div class="col-head"><span class="col-name">In progress</span><span class="col-count">3</span></div>
+                  <div class="col-body">
+                    <div class="kcard"><div class="ktitle">Refactor auth</div><div class="kmeta"><span class="badge priority-h">!high</span></div></div>
+                  </div>
+                </div>
+                <div class="col done"><div class="col-head"><span class="col-name">Done</span><span class="col-count">3</span></div>
+                  <div class="col-body">
+                    <div class="kcard" style="opacity:0.6;"><div class="ktitle" style="text-decoration:line-through;">Bump hono</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style="background: #1A1A22; border: 1px solid #2A2A35; border-radius: 10px; padding: 12px; overflow: hidden;">
+              <div style="display:flex; align-items:center; gap:6px; margin-bottom:8px;">
+                <span style="font-size:11px; font-weight:600; color:#E8E6EF;">Reminders</span>
+                <span style="background: #15151B; color: #A8A5B5; padding: 1px 6px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: 9px;">5</span>
+                <span style="margin-left:auto; color: #7A7787; font-size:10px; cursor:pointer;">▾ Hide</span>
+              </div>
+              <div style="font-family: 'JetBrains Mono', monospace; font-size:9px; color:#67E8F9; margin-bottom:3px;">15:30 · today</div>
+              <div style="font-size:11px; color:#E8E6EF; margin-bottom:8px;">⏰ Standup prep</div>
+              <div style="font-family: 'JetBrains Mono', monospace; font-size:9px; color:#67E8F9; margin-bottom:3px;">09:30 · tmrw</div>
+              <div style="font-size:11px; color:#E8E6EF; margin-bottom:8px;">⏰ Daily standup</div>
+              <div style="font-family: 'JetBrains Mono', monospace; font-size:9px; color:#67E8F9; margin-bottom:3px;">16:00 · tmrw</div>
+              <div style="font-size:11px; color:#E8E6EF; margin-bottom:10px;">Review zod-doc draft</div>
+              <div style="padding-top: 8px; border-top: 1px solid #2A2A35; font-size: 10px; color: #C084FC; cursor: pointer;">+ New reminder</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="opt-meta" style="margin-top:8px;"><b>Pros:</b> simplest mental model — page is tasks. Reminders glanceable but never get in the way. <b>Cons:</b> reminders cramped; hard to scan many. Could collapse to icon-only on narrow viewports.</p>
+    </div>
+  </div>
+
+</div>
+
+<h2 style="margin-top: 30px;">Quick-add inside a board column · the inline-expanding row</h2>
+<p class="subtitle">Click "+ Add task" at the bottom of a column → the button transforms into an editable row in place. Type title, Enter saves, Esc cancels. Status + projectId are inferred from the column you clicked + this project.</p>
+
+<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; max-width: 700px; margin: 12px auto;">
+
+  <!-- BEFORE -->
+  <div>
+    <div style="font-size:10px; text-transform:uppercase; letter-spacing:0.1em; font-weight:600; color:#7A7787; margin-bottom:6px; text-align:center;">1. Idle</div>
+    <div class="col todo" style="height: 280px;">
+      <div class="col-head"><span class="col-name">To do</span><span class="col-count">3</span></div>
+      <div class="col-body">
+        <div class="kcard"><div class="ktitle">Write zod doc</div></div>
+        <div class="kcard"><div class="ktitle">Audit endpoints</div></div>
+        <div class="kcard"><div class="ktitle">Multi-value filter</div></div>
+        <div class="col-add-bottom" style="color:#7A7787;">+ Add task</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DURING -->
+  <div>
+    <div style="font-size:10px; text-transform:uppercase; letter-spacing:0.1em; font-weight:600; color:#C084FC; margin-bottom:6px; text-align:center;">2. Typing</div>
+    <div class="col todo" style="height: 280px;">
+      <div class="col-head"><span class="col-name">To do</span><span class="col-count">3</span></div>
+      <div class="col-body">
+        <div class="kcard"><div class="ktitle">Write zod doc</div></div>
+        <div class="kcard"><div class="ktitle">Audit endpoints</div></div>
+        <div class="kcard"><div class="ktitle">Multi-value filter</div></div>
+        <div class="quick-add-inline">
+          <input class="qai-input" value="Add input picker styles" placeholder="Task title…">
+          <div class="qai-actions">
+            <span class="qai-hint">⏎ save · esc cancel</span>
+            <span class="qai-btn ghost">Cancel</span>
+            <span class="qai-btn primary">Add</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AFTER -->
+  <div>
+    <div style="font-size:10px; text-transform:uppercase; letter-spacing:0.1em; font-weight:600; color:#34D399; margin-bottom:6px; text-align:center;">3. Saved · field resets</div>
+    <div class="col todo" style="height: 280px;">
+      <div class="col-head"><span class="col-name">To do</span><span class="col-count">4</span></div>
+      <div class="col-body">
+        <div class="kcard"><div class="ktitle">Write zod doc</div></div>
+        <div class="kcard"><div class="ktitle">Audit endpoints</div></div>
+        <div class="kcard"><div class="ktitle">Multi-value filter</div></div>
+        <div class="kcard" style="border-color: rgba(192,132,252,0.5); background: rgba(192,132,252,0.06);"><div class="ktitle">Add input picker styles</div><div class="kmeta"><span style="font-size:9px; color:#67E8F9;">click to edit ✎</span></div></div>
+        <div class="quick-add-inline">
+          <input class="qai-input" placeholder="Task title…">
+          <div class="qai-actions">
+            <span class="qai-hint">stays focused for rapid capture</span>
+            <span class="qai-btn ghost">Done</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top: 18px;">
+<b>Why inline instead of modal:</b> stays in context (you see where the new card lands), keyboard-only flow (click button → type → ⏎ → repeat), no focus-trap dialog overhead.<br>
+<b>Defaults applied silently:</b> <code>status</code> = column · <code>projectId</code> = this project · <code>priority='medium'</code>, <code>isRecurring=false</code>, <code>recurringInterval='none'</code>, <code>dueDate=null</code> (column quick-add doesn't presume a date — user adds via detail panel).<br>
+<b>After ⏎:</b> new card appears at column bottom with brief pulse + "click to edit ✎" hint. Input stays focused for the next entry. Esc / Done collapses the input back to a "+ Add task" button.
+</p>
+
+</div>

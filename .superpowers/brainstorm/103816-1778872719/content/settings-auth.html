@@ -1,0 +1,362 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+  .demo { font-family: 'Inter', system-ui, sans-serif; }
+  .device { border-radius: 12px; overflow: hidden; background: #0F0F13; border: 1px solid #2A2A35; }
+  .device-chrome { height: 22px; background: #1A1A22; border-bottom: 1px solid #2A2A35; display: flex; align-items: center; gap: 6px; padding: 0 10px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; } .dot.r { background: #F87171; } .dot.y { background: #FBBF24; } .dot.g { background: #34D399; }
+  .shell { display: grid; grid-template-columns: 56px 1fr; grid-template-rows: 44px 1fr; height: 560px; font-size: 12px; }
+  .topbar { grid-column: 1 / -1; display: flex; align-items: center; padding: 0 14px; background: #1A1A22; border-bottom: 1px solid #2A2A35; gap: 14px; }
+  .logo { font-weight: 700; color: #E8E6EF; } .logo b { color: #C084FC; }
+  .search { flex: 1; max-width: 340px; height: 28px; background: #15151B; border: 1px solid #2A2A35; border-radius: 8px; padding: 0 10px; display: flex; align-items: center; gap: 8px; color: #7A7787; font-size: 11px; }
+  .kbd { padding: 1px 6px; border-radius: 4px; background: #1A1A22; border: 1px solid #2A2A35; color: #A8A5B5; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+  .topbar-spacer { flex: 1; } .icon-btn { width: 30px; height: 30px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; color: #A8A5B5; font-size: 14px; }
+  .avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #C084FC, #67E8F9); }
+  .rail { background: #15151B; border-right: 1px solid #2A2A35; padding: 12px 6px; display: flex; flex-direction: column; gap: 2px; }
+  .rail-item { width: 100%; padding: 8px 0; border-radius: 8px; color: #A8A5B5; text-align: center; font-size: 14px; }
+  .rail-item.active { background: rgba(192,132,252,0.12); color: #C084FC; }
+
+  .content { background: #0F0F13; overflow: hidden; display: grid; grid-template-columns: 200px 1fr; height: 100%; }
+
+  /* settings sub-nav */
+  .sub-nav { background: #0F0F13; border-right: 1px solid #2A2A35; padding: 18px 12px; display: flex; flex-direction: column; gap: 2px; }
+  .sub-nav-title { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: #7A7787; font-weight: 600; padding: 6px 10px; }
+  .sub-nav-item { padding: 7px 10px; border-radius: 6px; color: #CFCAD9; font-size: 12px; cursor: pointer; }
+  .sub-nav-item.active { background: rgba(192,132,252,0.12); color: #C084FC; font-weight: 600; }
+
+  .panel { padding: 22px 26px; overflow-y: auto; }
+  .panel-title { font-size: 20px; font-weight: 700; color: #E8E6EF; letter-spacing: -0.015em; margin: 0 0 4px; }
+  .panel-desc { font-size: 12px; color: #A8A5B5; margin: 0 0 18px; }
+
+  .group {
+    background: #1A1A22; border: 1px solid #2A2A35; border-radius: 12px;
+    padding: 4px 16px; margin-bottom: 14px;
+  }
+  .row {
+    display: flex; align-items: flex-start; gap: 16px;
+    padding: 14px 0; border-bottom: 1px solid #2A2A35;
+  }
+  .row:last-child { border-bottom: 0; }
+  .row .meta { flex: 1; min-width: 0; }
+  .row .name { font-size: 13px; color: #E8E6EF; font-weight: 600; }
+  .row .desc { font-size: 11px; color: #A8A5B5; margin-top: 3px; line-height: 1.5; }
+  .row .control { flex-shrink: 0; }
+
+  .seg { display: inline-flex; gap: 0; background: #15151B; border: 1px solid #2A2A35; border-radius: 8px; padding: 2px; }
+  .seg-btn { padding: 5px 10px; border-radius: 6px; color: #A8A5B5; font-size: 11px; font-weight: 600; cursor: pointer; }
+  .seg-btn.active { background: rgba(192,132,252,0.18); color: #C084FC; }
+
+  .toggle { width: 32px; height: 18px; background: #15151B; border: 1px solid #2A2A35; border-radius: 12px; position: relative; cursor: pointer; }
+  .toggle.on { background: rgba(192,132,252,0.2); border-color: rgba(192,132,252,0.4); }
+  .toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; background: #A8A5B5; border-radius: 50%; transition: left 0.15s; }
+  .toggle.on::after { left: 16px; background: #C084FC; }
+
+  .field-input {
+    background: #15151B; border: 1px solid #2A2A35; border-radius: 6px;
+    padding: 6px 10px; color: #E8E6EF; font-family: inherit; font-size: 12px;
+    width: 220px;
+  }
+  .field-mono { font-family: 'JetBrains Mono', monospace; color: #A8A5B5; font-size: 11px; }
+
+  .btn { padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+  .btn.primary { background: #C084FC; color: #0F0F13; }
+  .btn.ghost { background: #15151B; border: 1px solid #2A2A35; color: #CFCAD9; }
+  .btn.danger { background: transparent; border: 1px solid rgba(248,113,113,0.3); color: #F87171; }
+
+  .info-block { font-size: 11px; color: #A8A5B5; padding: 12px 14px; background: rgba(103,232,249,0.06); border-left: 2px solid #67E8F9; border-radius: 0 6px 6px 0; margin-top: 8px; line-height: 1.5; }
+
+  /* AUTH */
+  .auth-shell {
+    background: #0F0F13; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .auth-shell::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(192,132,252,0.10), transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(103,232,249,0.06), transparent 50%);
+  }
+  .auth-card {
+    background: #1A1A22; border: 1px solid #2A2A35; border-radius: 16px;
+    padding: 28px 30px; width: 360px; box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+    z-index: 1; position: relative;
+  }
+  .auth-logo {
+    font-size: 18px; font-weight: 700; color: #E8E6EF; letter-spacing: -0.01em;
+    text-align: center; margin-bottom: 4px;
+  }
+  .auth-logo b { color: #C084FC; }
+  .auth-title { font-size: 18px; color: #E8E6EF; font-weight: 700; text-align: center; margin: 14px 0 4px; letter-spacing: -0.01em; }
+  .auth-sub { font-size: 11px; color: #A8A5B5; text-align: center; margin-bottom: 18px; }
+  .auth-field { margin-bottom: 12px; }
+  .auth-label { font-size: 11px; color: #A8A5B5; margin-bottom: 4px; display: block; font-weight: 500; }
+  .auth-input {
+    width: 100%; background: #15151B; border: 1px solid #2A2A35; border-radius: 8px;
+    padding: 9px 12px; color: #E8E6EF; font-family: inherit; font-size: 13px;
+    box-sizing: border-box;
+  }
+  .auth-input:focus { outline: none; border-color: rgba(192,132,252,0.5); }
+  .auth-row-between { display: flex; align-items: center; justify-content: space-between; font-size: 11px; margin-bottom: 14px; }
+  .auth-link { color: #C084FC; cursor: pointer; }
+  .auth-btn-primary {
+    width: 100%; padding: 11px; border-radius: 8px; background: #C084FC; color: #0F0F13;
+    font-weight: 700; font-size: 13px; box-shadow: 0 4px 14px rgba(192,132,252,0.25);
+  }
+  .auth-divider { display: flex; align-items: center; gap: 8px; margin: 18px 0; font-size: 10px; color: #7A7787; }
+  .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: #2A2A35; }
+  .auth-toggle { text-align: center; font-size: 11px; color: #A8A5B5; margin-top: 14px; }
+
+  .auth-error { background: rgba(248,113,113,0.10); border: 1px solid rgba(248,113,113,0.3); border-radius: 6px; padding: 8px 12px; font-size: 11px; color: #F87171; margin-bottom: 12px; display: flex; gap: 8px; }
+  .auth-helper { font-size: 10px; color: #6B6770; margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+</style>
+
+<div class="demo">
+
+<h2>Settings · <code>/settings/*</code></h2>
+<p class="subtitle">Sub-nav on the left, content on the right. Sections: Profile / Account · Display & layout · Notifications · Data · About. Each section = a route segment, deep-linkable.</p>
+
+<div class="device">
+  <div class="device-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+  <div class="shell">
+    <div class="topbar">
+      <div class="logo">task<b>·</b>mgr</div>
+      <div class="search">⌕ Search…<span class="kbd">⌘K</span></div>
+      <div class="topbar-spacer"></div><div class="icon-btn">🔔</div><div class="icon-btn">☾</div><div class="avatar"></div>
+    </div>
+    <div class="rail">
+      <div class="rail-item">▢</div><div class="rail-item">⌖</div><div class="rail-item">▥</div>
+      <div class="rail-item">≡</div><div class="rail-item">▦</div><div class="rail-item">🏷</div><div class="rail-item active">⚙</div>
+    </div>
+
+    <div class="content">
+      <div class="sub-nav">
+        <div class="sub-nav-title">Settings</div>
+        <div class="sub-nav-item">Profile</div>
+        <div class="sub-nav-item active">Display & layout</div>
+        <div class="sub-nav-item">Notifications</div>
+        <div class="sub-nav-item">Data</div>
+        <div class="sub-nav-item">About</div>
+      </div>
+
+      <div class="panel">
+        <h2 class="panel-title">Display & layout</h2>
+        <p class="panel-desc">Theme, density, and layout preferences. Stored locally and synced with your account.</p>
+
+        <div class="group">
+          <div class="row">
+            <div class="meta">
+              <div class="name">Theme</div>
+              <div class="desc">Follow your OS setting, or force a specific mode.</div>
+            </div>
+            <div class="control"><div class="seg"><span class="seg-btn">System</span><span class="seg-btn">Light</span><span class="seg-btn active">Dark</span></div></div>
+          </div>
+
+          <div class="row">
+            <div class="meta">
+              <div class="name">Density</div>
+              <div class="desc">Row heights in list views (All tasks, project lists, label table).</div>
+            </div>
+            <div class="control"><div class="seg"><span class="seg-btn">Compact</span><span class="seg-btn active">Default</span><span class="seg-btn">Comfortable</span></div></div>
+          </div>
+        </div>
+
+        <div class="group">
+          <div class="row">
+            <div class="meta">
+              <div class="name">Primary thumb side</div>
+              <div class="desc">Where the hamburger menu lives on mobile and which side the drawer slides in from. Pick the side your dominant thumb reaches more easily.</div>
+            </div>
+            <div class="control"><div class="seg"><span class="seg-btn">Left</span><span class="seg-btn active">Right</span></div></div>
+          </div>
+
+          <div class="row">
+            <div class="meta">
+              <div class="name">Apply to desktop too</div>
+              <div class="desc">Mirrors the sidebar to your chosen side on desktop. The inline detail panel flips to the opposite edge so the two never overlap.</div>
+            </div>
+            <div class="control"><div class="toggle"></div></div>
+          </div>
+
+          <div class="row">
+            <div class="meta">
+              <div class="name">Sidebar default (desktop)</div>
+              <div class="desc">Whether new sessions start with the sidebar collapsed (icons only) or pinned (full-width labels).</div>
+            </div>
+            <div class="control"><div class="seg"><span class="seg-btn">Collapsed</span><span class="seg-btn active">Pinned</span></div></div>
+          </div>
+        </div>
+
+        <div class="group">
+          <div class="row">
+            <div class="meta">
+              <div class="name">Reduce motion</div>
+              <div class="desc">Disables non-essential animations. Follows your OS <code style="color:#67E8F9;">prefers-reduced-motion</code> by default; toggle here to override.</div>
+            </div>
+            <div class="control"><div class="toggle"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2 style="margin-top: 28px;">Settings · Profile</h2>
+
+<div class="device" style="height: 480px;">
+  <div class="device-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+  <div class="shell" style="height: 100%;">
+    <div class="topbar">
+      <div class="logo">task<b>·</b>mgr</div>
+      <div class="search">⌕ Search…<span class="kbd">⌘K</span></div>
+      <div class="topbar-spacer"></div><div class="icon-btn">🔔</div><div class="icon-btn">☾</div><div class="avatar"></div>
+    </div>
+    <div class="rail">
+      <div class="rail-item">▢</div><div class="rail-item">⌖</div><div class="rail-item">▥</div>
+      <div class="rail-item">≡</div><div class="rail-item">▦</div><div class="rail-item">🏷</div><div class="rail-item active">⚙</div>
+    </div>
+    <div class="content">
+      <div class="sub-nav">
+        <div class="sub-nav-title">Settings</div>
+        <div class="sub-nav-item active">Profile</div>
+        <div class="sub-nav-item">Display & layout</div>
+        <div class="sub-nav-item">Notifications</div>
+        <div class="sub-nav-item">Data</div>
+        <div class="sub-nav-item">About</div>
+      </div>
+      <div class="panel">
+        <h2 class="panel-title">Profile</h2>
+        <p class="panel-desc">Account info handled by BetterAuth. Email changes require verification.</p>
+
+        <div class="group">
+          <div class="row">
+            <div class="meta">
+              <div class="name">Display name</div>
+              <div class="desc">Visible to you only in v1 (single-user). Becomes public once sharing lands.</div>
+            </div>
+            <div class="control"><input class="field-input" value="Ducky"></div>
+          </div>
+
+          <div class="row">
+            <div class="meta">
+              <div class="name">Email</div>
+              <div class="desc">Used to sign in and receive reminder emails (v1.5+).</div>
+            </div>
+            <div class="control" style="display:flex; flex-direction:column; gap:4px; align-items:flex-end;">
+              <input class="field-input" value="davide.milan@wavelop.com">
+              <span class="field-mono">✓ verified</span>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="meta">
+              <div class="name">Password</div>
+              <div class="desc">Hashed by BetterAuth. 8-30 characters.</div>
+            </div>
+            <div class="control"><span class="btn ghost">Change password…</span></div>
+          </div>
+        </div>
+
+        <div class="group">
+          <div class="row">
+            <div class="meta">
+              <div class="name" style="color:#F87171;">Delete account</div>
+              <div class="desc">Permanently removes your account, all tasks, projects, labels, and reminders. Not recoverable.</div>
+            </div>
+            <div class="control"><span class="btn danger">Delete my account…</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2 style="margin-top: 28px;">Auth · Login</h2>
+
+<div class="device" style="height: 480px;">
+  <div class="device-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+  <div class="auth-shell">
+    <div class="auth-card">
+      <div class="auth-logo">task<b>·</b>mgr</div>
+      <div class="auth-title">Welcome back</div>
+      <div class="auth-sub">Sign in to your task manager</div>
+
+      <div class="auth-field">
+        <label class="auth-label">Email</label>
+        <input class="auth-input" value="davide.milan@wavelop.com" type="email">
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Password</label>
+        <input class="auth-input" type="password" value="••••••••••">
+      </div>
+
+      <div class="auth-row-between">
+        <span style="color:#A8A5B5;"><input type="checkbox" checked style="vertical-align: middle;"> Remember me</span>
+        <span class="auth-link">Forgot password?</span>
+      </div>
+
+      <button class="auth-btn-primary">Sign in</button>
+
+      <div class="auth-divider">no account yet?</div>
+      <div class="auth-toggle"><span class="auth-link" style="font-weight:600;">Create one →</span></div>
+    </div>
+  </div>
+</div>
+
+<h2 style="margin-top: 28px;">Auth · Signup (with error state)</h2>
+
+<div class="device" style="height: 520px;">
+  <div class="device-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+  <div class="auth-shell">
+    <div class="auth-card" style="width: 380px;">
+      <div class="auth-logo">task<b>·</b>mgr</div>
+      <div class="auth-title">Create your account</div>
+      <div class="auth-sub">It takes 10 seconds. No email confirmation needed in v1.</div>
+
+      <div class="auth-error">
+        <span>⚠</span>
+        <span>This email is already registered. <span class="auth-link">Sign in instead</span> or use another email.</span>
+      </div>
+
+      <div class="auth-field">
+        <label class="auth-label">Display name</label>
+        <input class="auth-input" value="Ducky">
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Email</label>
+        <input class="auth-input" value="davide.milan@wavelop.com" type="email" style="border-color: rgba(248,113,113,0.4);">
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Password</label>
+        <input class="auth-input" type="password" value="••••••••">
+        <div class="auth-helper">8–30 chars · mix of upper/lower/number recommended</div>
+      </div>
+
+      <button class="auth-btn-primary">Create account</button>
+
+      <div class="auth-divider">already have one?</div>
+      <div class="auth-toggle"><span class="auth-link" style="font-weight:600;">Sign in →</span></div>
+    </div>
+  </div>
+</div>
+
+<h2 style="margin-top: 22px;">Spec notes</h2>
+<ul style="color:#CFCAD9; font-size:12px; line-height:1.7;">
+  <li><b>Settings IA</b> — Sub-nav routes: Profile · Display & layout · Notifications · Data · About. Mobile: sub-nav collapses to a list page (`/settings`); each item navigates to its own route on tap. Back button returns to the list.</li>
+  <li><b>Preference persistence</b> — All Display & layout settings stored under <code>users/preferences</code> (v1: localStorage; v1.5: backend endpoint adds sync). Settings page writes to whichever is current.</li>
+  <li><b>Profile</b> — BetterAuth endpoints already handle email change + password change. Email change kicks off verification (already in schema). Display name = part of user record.</li>
+  <li><b>Notifications section</b> — v1 placeholder. Surfaces: email digest, reminder fire mechanism. <b>🟡 backend gap</b> — no email/push delivery today. Section is visible but most controls are disabled with a "Coming soon" note. Or hide the section entirely for v1 — call it.</li>
+  <li><b>Data section</b> — Export tasks (CSV/JSON), import (later), delete-all-data (different from delete-account; nukes the data but keeps the account). 🟡 backend export endpoint needed.</li>
+  <li><b>Auth screens</b> — Standalone shell (no top bar / sidebar / bottom nav). Centered card on a subtle gradient background (the same violet/cyan accents from the palette, very low-saturation). Cards: <code>--shadow-pop</code> + <code>--radius-xl</code>. Mobile: card becomes full-width with margin.</li>
+  <li><b>Auth routes</b> — <code>/auth/login</code>, <code>/auth/signup</code>, <code>/auth/forgot</code>, <code>/auth/reset?token=…</code>, <code>/auth/verify?token=…</code>. All standalone.</li>
+  <li><b>Post-auth redirect</b> — Sign-in success → Dashboard (or the originally-requested route if user was bounced from a protected page).</li>
+</ul>
+
+<h2 style="margin-top: 18px;">Open Qs</h2>
+<ul style="color:#CFCAD9; font-size:12px; line-height:1.7;">
+  <li>Notifications section in v1: visible w/ disabled controls + "Coming soon", or hide entirely?</li>
+  <li>Email verification on signup: v1 skips (auto-sign-in is currently configured on BetterAuth), or v1 enables it?</li>
+  <li>"Remember me" checkbox on login: needed v1 or is the default session length good enough?</li>
+  <li>Export format(s): CSV / JSON / both? Tasks only or full workspace dump?</li>
+</ul>
+
+</div>

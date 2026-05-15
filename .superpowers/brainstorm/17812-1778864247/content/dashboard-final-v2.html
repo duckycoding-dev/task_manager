@@ -1,0 +1,201 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  .demo { font-family: 'Inter', system-ui, sans-serif; }
+  .device { border-radius: 12px; overflow: hidden; background: #0F0F13; border: 1px solid #2A2A35; }
+  .device-chrome { height: 22px; background: #1A1A22; border-bottom: 1px solid #2A2A35; display: flex; align-items: center; gap: 6px; padding: 0 10px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot.r { background: #F87171; } .dot.y { background: #FBBF24; } .dot.g { background: #34D399; }
+
+  .shell { display: grid; grid-template-columns: 56px 1fr; grid-template-rows: 44px 1fr; height: 560px; font-size: 12px; }
+  .topbar { grid-column: 1 / -1; display: flex; align-items: center; padding: 0 14px; background: #1A1A22; border-bottom: 1px solid #2A2A35; gap: 14px; }
+  .logo { font-weight: 700; color: #E8E6EF; }
+  .logo b { color: #C084FC; }
+  .search { flex: 1; max-width: 380px; height: 28px; background: #15151B; border: 1px solid #2A2A35; border-radius: 8px; padding: 0 10px; display: flex; align-items: center; gap: 8px; color: #7A7787; font-size: 11px; }
+  .kbd { margin-left: auto; padding: 1px 6px; border-radius: 4px; background: #1A1A22; border: 1px solid #2A2A35; color: #A8A5B5; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+  .topbar-spacer { flex: 1; }
+  .icon-btn { width: 30px; height: 30px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; color: #A8A5B5; font-size: 14px; }
+  .avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #C084FC, #67E8F9); }
+  .rail { background: #15151B; border-right: 1px solid #2A2A35; padding: 12px 6px; display: flex; flex-direction: column; gap: 2px; }
+  .rail-item { width: 100%; padding: 8px 0; border-radius: 8px; color: #A8A5B5; text-align: center; font-size: 14px; }
+  .rail-item.active { background: rgba(192,132,252,0.12); color: #C084FC; }
+
+  .content { background: #0F0F13; padding: 18px 22px; overflow: hidden; display: grid; grid-template-columns: 1fr 210px; gap: 18px; }
+
+  .page-title { font-size: 22px; margin: 0; color: #E8E6EF; font-weight: 700; letter-spacing: -0.015em; }
+  .page-subtitle { font-size: 12px; color: #A8A5B5; margin-top: 2px; margin-bottom: 14px; }
+
+  /* quick-add — title-only flat */
+  .qa { background: #1A1A22; border: 1px solid #2A2A35; border-radius: 10px; margin-bottom: 14px; transition: border-color 0.15s; display: flex; align-items: center; gap: 10px; padding: 11px 12px; }
+  .qa.focused { border-color: rgba(192,132,252,0.4); }
+  .qa-plus { color: #C084FC; font-size: 16px; font-weight: 600; }
+  .qa input { flex: 1; background: transparent; border: 0; color: #E8E6EF; outline: none; font-family: inherit; font-size: 13px; }
+  .qa input::placeholder { color: #7A7787; }
+  .qa-defaults { display: flex; gap: 4px; align-items: center; color: #6B6770; font-size: 10px; font-family: 'JetBrains Mono', monospace; }
+  .qa-defaults .pip { background: #15151B; border: 1px solid #2A2A35; padding: 1px 5px; border-radius: 4px; }
+  .qa-shortcut { background: #15151B; border: 1px solid #2A2A35; color: #A8A5B5; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-family: 'JetBrains Mono', monospace; }
+
+  /* section headers */
+  .section-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: #7A7787; font-weight: 600; margin-top: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .section-label .count { background: #1A1A22; color: #A8A5B5; padding: 1px 6px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+
+  /* task rows */
+  .task-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; margin-top: 6px; background: #1A1A22; border: 1px solid #2A2A35; font-size: 12px; }
+  .task-row.overdue { border-color: rgba(248,113,113,0.3); background: rgba(248,113,113,0.04); }
+  .task-row.fresh { border-color: rgba(192,132,252,0.4); background: rgba(192,132,252,0.06); animation: pulse 1.2s ease-out; }
+  @keyframes pulse { 0% { background: rgba(192,132,252,0.18); } 100% { background: rgba(192,132,252,0.06); } }
+  .checkbox { width: 14px; height: 14px; border-radius: 4px; border: 1.5px solid #4E4E66; flex-shrink: 0; }
+  .task-row .title { flex: 1; color: #E8E6EF; }
+  .badge { padding: 1px 6px; border-radius: 8px; font-size: 9px; font-weight: 600; }
+  .badge.priority { background: rgba(192,132,252,0.12); color: #C084FC; }
+  .badge.info { background: rgba(103,232,249,0.12); color: #67E8F9; }
+  .badge.warning { background: rgba(251,191,36,0.12); color: #FBBF24; }
+  .mono-meta { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #A8A5B5; }
+  .mono-meta.danger { color: #F87171; }
+  .mono-meta.warning { color: #FBBF24; }
+  .task-edit-hint { font-size: 10px; color: #67E8F9; }
+
+  /* widgets */
+  .widget { background: #1A1A22; border: 1px solid #2A2A35; border-radius: 12px; padding: 12px; }
+  .widget-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .widget-title { font-size: 12px; font-weight: 600; color: #E8E6EF; }
+  .widget-link { margin-left: auto; font-size: 10px; color: #C084FC; cursor: pointer; }
+
+  .cal-mini { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; font-family: 'JetBrains Mono', monospace; font-size: 9px; }
+  .cal-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 4px; color: #A8A5B5; position: relative; cursor: pointer; }
+  .cal-cell:hover { background: #22222E; color: #E8E6EF; }
+  .cal-cell.dim { color: #4E4E66; }
+  .cal-cell.today { background: rgba(192,132,252,0.18); color: #C084FC; font-weight: 700; }
+  .cal-cell.has::after { content: ''; position: absolute; bottom: 2px; width: 3px; height: 3px; border-radius: 50%; background: #C084FC; }
+  .cal-cell.has.heavy::after { background: #F87171; }
+  .cal-header { text-align: center; font-size: 8px; color: #7A7787; font-weight: 600; padding: 2px 0; }
+  .cal-month-nav { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #E8E6EF; font-weight: 600; }
+  .cal-month-nav .arrow { color: #7A7787; cursor: pointer; padding: 0 2px; }
+
+  /* reminders widget */
+  .reminder-row { display: flex; align-items: flex-start; gap: 8px; padding: 7px 0; border-bottom: 1px solid #2A2A35; font-size: 11px; }
+  .reminder-row:last-child { border-bottom: 0; }
+  .reminder-time { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: #67E8F9; min-width: 36px; padding-top: 1px; }
+  .reminder-body { flex: 1; min-width: 0; }
+  .reminder-title { color: #E8E6EF; font-weight: 500; cursor: pointer; }
+  .reminder-title:hover { color: #C084FC; }
+  .reminder-task { color: #A8A5B5; font-size: 10px; margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .reminder-del { color: #6B6770; font-size: 10px; padding: 2px 4px; border-radius: 4px; cursor: pointer; opacity: 0.6; }
+  .reminder-del:hover { color: #F87171; background: rgba(248,113,113,0.1); opacity: 1; }
+
+  .step { padding: 8px 0; display: flex; gap: 10px; font-size: 12px; align-items: flex-start; }
+  .step .n { width: 18px; height: 18px; border-radius: 50%; background: rgba(192,132,252,0.15); color: #C084FC; font-weight: 700; font-size: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-family: 'JetBrains Mono', monospace; }
+  .step .what { color: #E8E6EF; font-weight: 500; }
+  .step .how { color: #A8A5B5; font-size: 11px; margin-top: 2px; }
+  .flow-box { background: #1A1A22; border: 1px solid #2A2A35; border-radius: 12px; padding: 14px 18px; margin-top: 10px; }
+</style>
+
+<div class="demo">
+
+<h2>Dashboard — title-only quick-add</h2>
+<p class="subtitle">No chips, no pickers. Just type → Enter → task created. Defaults applied silently. Editing details = click new task → detail panel.</p>
+
+<div class="device">
+  <div class="device-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+  <div class="shell">
+    <div class="topbar">
+      <div class="logo">task<b>·</b>mgr</div>
+      <div class="search">⌕ Search…<span class="kbd">⌘K</span></div>
+      <div class="topbar-spacer"></div>
+      <div class="icon-btn">🔔</div>
+      <div class="icon-btn">☾</div>
+      <div class="avatar"></div>
+    </div>
+    <div class="rail">
+      <div class="rail-item active">▢</div>
+      <div class="rail-item">⌖</div>
+      <div class="rail-item">▥</div>
+      <div class="rail-item">≡</div>
+      <div class="rail-item">▦</div>
+      <div class="rail-item">🏷</div>
+      <div class="rail-item">⚙</div>
+    </div>
+
+    <div class="content">
+      <div>
+        <h2 class="page-title">Today</h2>
+        <div class="page-subtitle">Thursday, 14 May · 4 tasks · 2 overdue</div>
+
+        <!-- TITLE-ONLY QUICK ADD -->
+        <div class="qa focused">
+          <span class="qa-plus">+</span>
+          <input value="Schedule one-on-one with Maria" placeholder="Add a task and hit ⏎…">
+          <span class="qa-defaults">→</span>
+          <span class="qa-defaults"><span class="pip">today</span><span class="pip">medium</span></span>
+          <span class="qa-shortcut">⏎</span>
+        </div>
+
+        <div class="section-label" style="color:#F87171; margin-top: 0;">Overdue <span class="count" style="background:rgba(248,113,113,0.12); color:#F87171;">2</span></div>
+        <div class="task-row overdue"><div class="checkbox"></div><div class="title">Refactor auth middleware</div><span class="badge priority">priority</span><span class="badge info">backend</span><span class="mono-meta danger">2d late</span></div>
+        <div class="task-row overdue"><div class="checkbox"></div><div class="title">Pay car insurance</div><span class="mono-meta danger">1d late</span></div>
+
+        <div class="section-label">Today <span class="count">3</span></div>
+        <div class="task-row"><div class="checkbox"></div><div class="title">Write zod-schemas migration doc</div><span class="badge info">backend</span><span class="mono-meta">today</span></div>
+        <div class="task-row"><div class="checkbox"></div><div class="title">Call dentist</div><span class="mono-meta">today</span></div>
+        <div class="task-row fresh">
+          <div class="checkbox"></div>
+          <div class="title">Schedule one-on-one with Maria</div>
+          <span class="task-edit-hint">click to edit</span>
+          <span class="mono-meta">today</span>
+        </div>
+
+        <div class="section-label">Coming up · 7 days <span class="count">2</span></div>
+        <div class="task-row"><div class="checkbox"></div><div class="title">Onboard new team lead</div><span class="badge priority">priority</span><span class="mono-meta warning">Wed</span></div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div class="widget">
+          <div class="widget-head">
+            <div class="cal-month-nav"><span class="arrow">◂</span> May 2026 <span class="arrow">▸</span></div>
+            <a class="widget-link">Open →</a>
+          </div>
+          <div class="cal-mini">
+            <div class="cal-header">M</div><div class="cal-header">T</div><div class="cal-header">W</div><div class="cal-header">T</div><div class="cal-header">F</div><div class="cal-header">S</div><div class="cal-header">S</div>
+            <div class="cal-cell dim">28</div><div class="cal-cell dim">29</div><div class="cal-cell dim">30</div><div class="cal-cell">1</div><div class="cal-cell has">2</div><div class="cal-cell">3</div><div class="cal-cell">4</div>
+            <div class="cal-cell">5</div><div class="cal-cell has">6</div><div class="cal-cell">7</div><div class="cal-cell">8</div><div class="cal-cell has heavy">9</div><div class="cal-cell">10</div><div class="cal-cell">11</div>
+            <div class="cal-cell has">12</div><div class="cal-cell">13</div><div class="cal-cell today has">14</div><div class="cal-cell has">15</div><div class="cal-cell">16</div><div class="cal-cell">17</div><div class="cal-cell">18</div>
+            <div class="cal-cell">19</div><div class="cal-cell has">20</div><div class="cal-cell">21</div><div class="cal-cell">22</div><div class="cal-cell">23</div><div class="cal-cell">24</div><div class="cal-cell">25</div>
+            <div class="cal-cell">26</div><div class="cal-cell">27</div><div class="cal-cell">28</div><div class="cal-cell">29</div><div class="cal-cell">30</div><div class="cal-cell">31</div><div class="cal-cell dim">1</div>
+          </div>
+          <div style="margin-top: 8px; font-size: 9px; color: #7A7787; display: flex; gap: 10px;">
+            <span><span style="display:inline-block; width:4px; height:4px; border-radius:50%; background:#C084FC; vertical-align: middle; margin-right: 3px;"></span>tasks</span>
+            <span><span style="display:inline-block; width:4px; height:4px; border-radius:50%; background:#F87171; vertical-align: middle; margin-right: 3px;"></span>overdue</span>
+          </div>
+        </div>
+
+        <div class="widget">
+          <div class="widget-head">
+            <div class="widget-title">Reminders</div>
+            <a class="widget-link">Inbox →</a>
+          </div>
+          <div class="reminder-row"><span class="reminder-time">15:30</span><div class="reminder-body"><div class="reminder-title">Standup prep</div><div class="reminder-task">Refactor auth middleware</div></div><span class="reminder-del">×</span></div>
+          <div class="reminder-row"><span class="reminder-time">17:00</span><div class="reminder-body"><div class="reminder-title">Review PR feedback</div><div class="reminder-task">Onboard team lead</div></div><span class="reminder-del">×</span></div>
+          <div class="reminder-row"><span class="reminder-time">tmrw</span><div class="reminder-body"><div class="reminder-title">Pay invoice</div><div class="reminder-task">Pay car insurance</div></div><span class="reminder-del">×</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2 style="margin-top: 24px;">Quick-add flow (silent defaults)</h2>
+<div class="flow-box">
+  <div class="step"><div class="n">1</div><div><div class="what">User types title, hits ⏎</div><div class="how">Field re-focuses for the next entry (rapid-capture mode).</div></div></div>
+  <div class="step"><div class="n">2</div><div><div class="what">POST /tasks with <code style="color:#67E8F9;">{ title, dueDate: today, status: 'todo', priority: 'medium', isRecurring: false, recurringInterval: 'none', projectId: null }</code></div><div class="how">All omitted-but-required values use backend defaults already declared in <code>tasks.db.ts</code>. Only <code>dueDate=today</code> is a client-side override (so it shows up on this page).</div></div></div>
+  <div class="step"><div class="n">3</div><div><div class="what">New task row appears in "Today", briefly pulse-highlighted</div><div class="how">"click to edit" hint visible for ~3s, then fades. Click the row → opens detail panel (route adds <code>?task=&lt;id&gt;</code>).</div></div></div>
+  <div class="step"><div class="n">4</div><div><div class="what">In the detail panel: set project, priority, labels, description, reminders, recurring</div><div class="how">Same panel used everywhere — single source of truth for "all the fields a task has".</div></div></div>
+</div>
+
+<h2 style="margin-top: 24px;">Why this works</h2>
+<ul style="color: #CFCAD9; font-size: 12px; line-height: 1.6;">
+  <li>No new picker components needed for v1 (date / project / label / priority / recur pickers all live in the detail panel, which gets one shared implementation).</li>
+  <li>Capture is one input + Enter. Fastest possible.</li>
+  <li>The user still gets a full edit-affordance, just one click later.</li>
+  <li>FAB on mobile + ⌘N anywhere = open the same detail panel pre-focused on title (or a bottom-sheet form on mobile). Decided in task-detail spec.</li>
+</ul>
+
+</div>

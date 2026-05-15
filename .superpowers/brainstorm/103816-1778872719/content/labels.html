@@ -1,0 +1,284 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+  .demo { font-family: 'Inter', system-ui, sans-serif; }
+  .device { border-radius: 12px; overflow: hidden; background: #0F0F13; border: 1px solid #2A2A35; }
+  .device-chrome { height: 22px; background: #1A1A22; border-bottom: 1px solid #2A2A35; display: flex; align-items: center; gap: 6px; padding: 0 10px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; } .dot.r { background: #F87171; } .dot.y { background: #FBBF24; } .dot.g { background: #34D399; }
+  .shell { display: grid; grid-template-columns: 56px 1fr; grid-template-rows: 44px 1fr; height: 560px; font-size: 12px; }
+  .topbar { grid-column: 1 / -1; display: flex; align-items: center; padding: 0 14px; background: #1A1A22; border-bottom: 1px solid #2A2A35; gap: 14px; }
+  .logo { font-weight: 700; color: #E8E6EF; } .logo b { color: #C084FC; }
+  .search { flex: 1; max-width: 340px; height: 28px; background: #15151B; border: 1px solid #2A2A35; border-radius: 8px; padding: 0 10px; display: flex; align-items: center; gap: 8px; color: #7A7787; font-size: 11px; }
+  .kbd { padding: 1px 6px; border-radius: 4px; background: #1A1A22; border: 1px solid #2A2A35; color: #A8A5B5; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+  .topbar-spacer { flex: 1; } .icon-btn { width: 30px; height: 30px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; color: #A8A5B5; font-size: 14px; }
+  .avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #C084FC, #67E8F9); }
+  .rail { background: #15151B; border-right: 1px solid #2A2A35; padding: 12px 6px; display: flex; flex-direction: column; gap: 2px; }
+  .rail-item { width: 100%; padding: 8px 0; border-radius: 8px; color: #A8A5B5; text-align: center; font-size: 14px; }
+  .rail-item.active { background: rgba(192,132,252,0.12); color: #C084FC; }
+  .content { background: #0F0F13; padding: 18px 22px; overflow: hidden; display: flex; flex-direction: column; }
+
+  .page-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .page-title { font-size: 22px; margin: 0; color: #E8E6EF; font-weight: 700; letter-spacing: -0.015em; }
+  .page-sub { font-size: 11px; color: #A8A5B5; }
+  .new-btn { padding: 6px 12px; border-radius: 8px; background: #C084FC; color: #0F0F13; font-weight: 600; font-size: 12px; margin-left: auto; }
+  .ghost-btn { padding: 5px 10px; border-radius: 6px; background: #1A1A22; border: 1px solid #2A2A35; color: #CFCAD9; font-size: 11px; }
+
+  .search-bar { display: flex; align-items: center; gap: 8px; background: #1A1A22; border: 1px solid #2A2A35; border-radius: 8px; padding: 6px 10px; font-size: 11px; color: #7A7787; margin-bottom: 14px; max-width: 360px; }
+
+  /* INLINE create row */
+  .create-row {
+    background: #1A1A22; border: 1.5px solid rgba(192,132,252,0.4); border-radius: 10px;
+    padding: 10px 12px; display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+  }
+  .create-row .swatch {
+    width: 22px; height: 22px; border-radius: 6px; flex-shrink: 0; cursor: pointer; position: relative;
+  }
+  .create-row .swatch::after {
+    content: '▾'; position: absolute; bottom: -2px; right: -2px; width: 12px; height: 12px;
+    background: #15151B; border-radius: 3px; color: #A8A5B5; font-size: 9px; display: flex; align-items: center; justify-content: center;
+  }
+  .create-row input {
+    background: transparent; border: 0; outline: none; color: #E8E6EF; font-family: inherit; font-size: 13px; flex: 1;
+  }
+  .create-row input::placeholder { color: #7A7787; }
+  .create-row .btn-primary {
+    padding: 4px 10px; border-radius: 6px; background: #C084FC; color: #0F0F13; font-size: 11px; font-weight: 600;
+  }
+  .create-row .btn-ghost {
+    padding: 4px 10px; border-radius: 6px; background: #15151B; border: 1px solid #2A2A35; color: #A8A5B5; font-size: 11px;
+  }
+
+  /* color picker popover */
+  .color-pop {
+    position: absolute; left: 14px; top: 70px; background: #22222E; border: 1px solid #36364A;
+    border-radius: 10px; padding: 12px; box-shadow: 0 12px 40px rgba(0,0,0,0.6); width: 200px; z-index: 5;
+  }
+  .color-pop-title { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #7A7787; font-weight: 600; margin-bottom: 8px; }
+  .color-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+  .color-grid .c { width: 20px; height: 20px; border-radius: 5px; cursor: pointer; border: 1.5px solid transparent; }
+  .color-grid .c.selected { border-color: #E8E6EF; box-shadow: 0 0 0 2px #22222E, 0 0 0 3.5px #C084FC; }
+  .color-pop-custom { margin-top: 10px; padding-top: 8px; border-top: 1px solid #36364A; display: flex; align-items: center; gap: 8px; font-size: 11px; color: #A8A5B5; }
+  .color-pop-custom input { background: #15151B; border: 1px solid #36364A; color: #E8E6EF; padding: 3px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 11px; width: 70px; }
+
+  /* table */
+  .labels-table { background: #1A1A22; border: 1px solid #2A2A35; border-radius: 10px; overflow: hidden; }
+  .thead { display: grid; grid-template-columns: 28px 1fr 80px 100px; background: #15151B; padding: 9px 14px; gap: 14px; font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: #7A7787; font-weight: 600; border-bottom: 1px solid #2A2A35; align-items: center; }
+  .trow { display: grid; grid-template-columns: 28px 1fr 80px 100px; padding: 10px 14px; gap: 14px; align-items: center; font-size: 12px; color: #E8E6EF; border-bottom: 1px solid #2A2A35; }
+  .trow:last-child { border-bottom: 0; }
+  .trow:hover { background: rgba(192,132,252,0.04); }
+  .trow .swatch { width: 16px; height: 16px; border-radius: 4px; cursor: pointer; }
+  .trow .name-edit { font-size: 13px; color: #E8E6EF; padding: 3px 6px; margin: -3px -6px; border-radius: 4px; }
+  .trow .name-edit:hover { background: #15151B; }
+  .trow .name-edit.editing { background: #15151B; outline: 1.5px solid rgba(192,132,252,0.4); }
+  .trow .count { font-family: 'JetBrains Mono', monospace; color: #A8A5B5; font-size: 11px; }
+  .trow .count.zero { color: #6B6770; }
+  .trow .actions { display: flex; gap: 4px; justify-content: flex-end; }
+  .trow .actions .a {
+    padding: 3px 8px; border-radius: 6px; background: transparent; color: #7A7787; font-size: 11px; cursor: pointer;
+  }
+  .trow .actions .a:hover { background: #15151B; color: #CFCAD9; }
+  .trow .actions .a.danger:hover { color: #F87171; }
+
+  .empty {
+    margin-top: 40px; text-align: center; padding: 30px;
+  }
+  .empty .icon { font-size: 32px; color: #36364A; margin-bottom: 8px; }
+  .empty h3 { font-size: 14px; color: #E8E6EF; font-weight: 600; margin: 0 0 4px; }
+  .empty p { font-size: 12px; color: #A8A5B5; margin: 0 0 12px; }
+
+  .delete-modal {
+    position: absolute; top: 30%; left: 50%; transform: translateX(-50%);
+    background: #22222E; border: 1px solid #36364A; border-radius: 10px;
+    padding: 16px 18px; box-shadow: 0 12px 40px rgba(0,0,0,0.6); width: 320px; z-index: 6;
+  }
+  .delete-modal h3 { font-size: 14px; color: #E8E6EF; margin: 0 0 6px; }
+  .delete-modal p { font-size: 12px; color: #CFCAD9; margin: 0 0 12px; line-height: 1.5; }
+  .delete-modal .stat { font-family: 'JetBrains Mono', monospace; color: #C084FC; background: rgba(192,132,252,0.10); padding: 1px 6px; border-radius: 4px; }
+  .delete-modal .actions { display: flex; gap: 6px; justify-content: flex-end; }
+  .delete-modal .btn { padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+  .delete-modal .btn.cancel { background: #15151B; border: 1px solid #36364A; color: #CFCAD9; }
+  .delete-modal .btn.danger { background: #F87171; color: #0F0F13; }
+</style>
+
+<div class="demo">
+
+<h2>Labels · <code>/labels</code></h2>
+<p class="subtitle">Manage your labels: name + color + count of tasks using it. Inline create row at top, table below. No tabs / sub-pages.</p>
+
+<div class="device">
+  <div class="device-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+  <div class="shell">
+    <div class="topbar">
+      <div class="logo">task<b>·</b>mgr</div>
+      <div class="search">⌕ Search…<span class="kbd">⌘K</span></div>
+      <div class="topbar-spacer"></div><div class="icon-btn">🔔</div><div class="icon-btn">☾</div><div class="avatar"></div>
+    </div>
+    <div class="rail">
+      <div class="rail-item">▢</div><div class="rail-item">⌖</div><div class="rail-item">▥</div>
+      <div class="rail-item">≡</div><div class="rail-item">▦</div><div class="rail-item active">🏷</div><div class="rail-item">⚙</div>
+    </div>
+    <div class="content" style="position: relative;">
+      <div class="page-head">
+        <h2 class="page-title">Labels</h2>
+        <span class="page-sub">6 labels · 18 tasks tagged</span>
+        <span class="ghost-btn">Sort: usage ↓</span>
+      </div>
+
+      <div class="search-bar">⌕ Filter by name…</div>
+
+      <!-- Inline create row -->
+      <div class="create-row">
+        <div class="swatch" style="background: #C084FC;"></div>
+        <input value="docs" placeholder="Label name…">
+        <span class="btn-ghost">Cancel</span>
+        <span class="btn-primary">⏎ Create</span>
+      </div>
+
+      <!-- color picker popover (visual demo of the swatch click) -->
+      <div class="color-pop">
+        <div class="color-pop-title">Color</div>
+        <div class="color-grid">
+          <div class="c" style="background: #F87171;"></div>
+          <div class="c" style="background: #FB923C;"></div>
+          <div class="c" style="background: #FBBF24;"></div>
+          <div class="c" style="background: #84CC16;"></div>
+          <div class="c" style="background: #34D399;"></div>
+          <div class="c" style="background: #2DD4BF;"></div>
+          <div class="c" style="background: #67E8F9;"></div>
+          <div class="c" style="background: #60A5FA;"></div>
+          <div class="c" style="background: #818CF8;"></div>
+          <div class="c selected" style="background: #C084FC;"></div>
+          <div class="c" style="background: #E879F9;"></div>
+          <div class="c" style="background: #F472B6;"></div>
+        </div>
+        <div class="color-pop-custom">
+          <span>Custom:</span>
+          <input value="#C084FC">
+        </div>
+      </div>
+
+      <!-- Labels table -->
+      <div class="labels-table">
+        <div class="thead">
+          <span></span>
+          <span>Name</span>
+          <span>Tasks</span>
+          <span style="text-align: right;">Actions</span>
+        </div>
+
+        <div class="trow">
+          <div class="swatch" style="background: #67E8F9;"></div>
+          <div class="name-edit">backend</div>
+          <div class="count">8</div>
+          <div class="actions">
+            <span class="a">Filter →</span>
+            <span class="a">Edit</span>
+            <span class="a danger">Delete</span>
+          </div>
+        </div>
+
+        <div class="trow">
+          <div class="swatch" style="background: #F87171;"></div>
+          <div class="name-edit">security</div>
+          <div class="count">3</div>
+          <div class="actions">
+            <span class="a">Filter →</span>
+            <span class="a">Edit</span>
+            <span class="a danger">Delete</span>
+          </div>
+        </div>
+
+        <div class="trow">
+          <div class="swatch" style="background: #FBBF24;"></div>
+          <div class="name-edit editing">priority-research</div>
+          <div class="count">4</div>
+          <div class="actions">
+            <span class="a" style="color:#34D399;">✓ Save</span>
+            <span class="a" style="color:#A8A5B5;">✗</span>
+          </div>
+        </div>
+
+        <div class="trow">
+          <div class="swatch" style="background: #34D399;"></div>
+          <div class="name-edit">infra</div>
+          <div class="count">2</div>
+          <div class="actions">
+            <span class="a">Filter →</span>
+            <span class="a">Edit</span>
+            <span class="a danger">Delete</span>
+          </div>
+        </div>
+
+        <div class="trow">
+          <div class="swatch" style="background: #818CF8;"></div>
+          <div class="name-edit">migration</div>
+          <div class="count">1</div>
+          <div class="actions">
+            <span class="a">Filter →</span>
+            <span class="a">Edit</span>
+            <span class="a danger">Delete</span>
+          </div>
+        </div>
+
+        <div class="trow">
+          <div class="swatch" style="background: #A8A5B5;"></div>
+          <div class="name-edit">low-effort</div>
+          <div class="count zero">0</div>
+          <div class="actions">
+            <span class="a">Edit</span>
+            <span class="a danger">Delete</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<h2 style="margin-top: 28px;">Delete confirmation</h2>
+<p class="subtitle">Deleting a label that's in use surfaces the impact. Per-label deletion → soft-delete the label; the M2M join rows for tagged tasks stay or get pruned by the same delete (backend choice).</p>
+
+<div class="device" style="height: 280px; position: relative;">
+  <div class="device-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+  <div style="background: #0F0F13; padding: 18px; height: 100%; position: relative;">
+    <div style="opacity: 0.4;">
+      <div class="trow" style="background:#1A1A22; border: 1px solid #2A2A35; border-radius:10px; margin-bottom: 6px;">
+        <div class="swatch" style="background: #F87171;"></div>
+        <div class="name-edit">security</div>
+        <div class="count">3</div>
+        <div class="actions"><span class="a danger">Delete</span></div>
+      </div>
+    </div>
+    <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.55);"></div>
+    <div class="delete-modal">
+      <h3>Delete label "security"?</h3>
+      <p>This will remove the label from <span class="stat">3 tasks</span>. Tasks themselves are not affected. The label is soft-deleted (can be restored from the deleted-items view later if needed).</p>
+      <div class="actions">
+        <span class="btn cancel">Cancel</span>
+        <span class="btn danger">Delete label</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2 style="margin-top: 22px;">Interactions summary</h2>
+<ul style="color: #CFCAD9; font-size: 12px; line-height: 1.7;">
+  <li><b>Inline create row at top</b> — swatch (click opens color popover with 12 presets + custom hex) + name input + Enter to create. Default color = hash-derived from name (same trick as projects). After create, row stays focused and clears for rapid creation.</li>
+  <li><b>Click name</b> in a row → inline editable (same pencil→✓/✗ pattern as task title? — or click directly since this is a more lightweight context). Pick one. Recommended: click-to-edit directly here (lighter than pencil for short text in a table row).</li>
+  <li><b>Click swatch</b> in a row → opens the color popover; immediately commits on selection.</li>
+  <li><b>Filter →</b> action → navigates to All-tasks with the label preselected as a filter chip (`/tasks?labelId=&lt;id&gt;`).</li>
+  <li><b>Delete</b> → confirmation modal showing impact count. Soft-delete (planned, like tasks/reminders).</li>
+  <li><b>Sort</b> → mono toggle "Sort: usage ↓ / name ↑ / recent ↓". Persisted via URL.</li>
+  <li><b>Filter by name</b> → client-side string match across the loaded list.</li>
+</ul>
+
+<h2 style="margin-top: 18px;">Backend changes for v1</h2>
+<div style="background: #1A1A22; border: 1px solid #2A2A35; border-radius: 10px; padding: 14px; font-size: 12px; color: #CFCAD9; line-height: 1.6;">
+  <div style="margin-bottom: 8px;"><b style="color:#34D399;">🟢 Add <code>labels.color</code> as <code>NOT NULL</code></b> — today it's nullable. UX wants every label to have a color; if missing on create, fallback to hash-derived default. Migration backfills existing rows with the hash.</div>
+  <div style="margin-bottom: 8px;"><b style="color:#34D399;">🟢 Soft delete on labels</b> — same pattern as tasks/reminders. <code>deletedAt: timestamp nullable</code>. List endpoints filter <code>deletedAt IS NULL</code>.</div>
+  <div><b style="color:#34D399;">🟢 <code>GET /labels</code> with per-label task count</b> — either compute via JOIN on <code>task_labels</code> + tasks (deleted-filtered), or expose a separate <code>GET /labels/:id/usage</code>. Decide at backend phase. <i>(Mockup shows counts; without this, the column is empty in v1.)</i></div>
+</div>
+
+<p class="subtitle" style="margin-top: 18px;">Mobile: same single-column table; row actions collapse into a ⋯ menu when the viewport narrows. Filter chip "Filter →" still goes to All-tasks page.</p>
+
+</div>

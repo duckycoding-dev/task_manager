@@ -1,0 +1,281 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+  .demo { font-family: 'Inter', system-ui, sans-serif; }
+  .device { border-radius: 12px; overflow: hidden; background: #0F0F13; border: 1px solid #2A2A35; }
+  .device-chrome { height: 22px; background: #1A1A22; border-bottom: 1px solid #2A2A35; display: flex; align-items: center; gap: 6px; padding: 0 10px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; } .dot.r { background: #F87171; } .dot.y { background: #FBBF24; } .dot.g { background: #34D399; }
+  .shell { display: grid; grid-template-columns: 56px 1fr; grid-template-rows: 44px 1fr; height: 560px; font-size: 12px; }
+  .topbar { grid-column: 1 / -1; display: flex; align-items: center; padding: 0 14px; background: #1A1A22; border-bottom: 1px solid #2A2A35; gap: 14px; }
+  .logo { font-weight: 700; color: #E8E6EF; } .logo b { color: #C084FC; }
+  .search { flex: 1; max-width: 380px; height: 28px; background: #15151B; border: 1px solid #2A2A35; border-radius: 8px; padding: 0 10px; display: flex; align-items: center; gap: 8px; color: #7A7787; font-size: 11px; }
+  .kbd { padding: 1px 6px; border-radius: 4px; background: #1A1A22; border: 1px solid #2A2A35; color: #A8A5B5; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+  .topbar-spacer { flex: 1; } .icon-btn { width: 30px; height: 30px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; color: #A8A5B5; font-size: 14px; }
+  .avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #C084FC, #67E8F9); }
+  .rail { background: #15151B; border-right: 1px solid #2A2A35; padding: 12px 6px; display: flex; flex-direction: column; gap: 2px; }
+  .rail-item { width: 100%; padding: 8px 0; border-radius: 8px; color: #A8A5B5; text-align: center; font-size: 14px; }
+  .rail-item.active { background: rgba(192,132,252,0.12); color: #C084FC; }
+  .content { background: #0F0F13; padding: 18px 22px; overflow: hidden; display: flex; flex-direction: column; }
+  .page-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .page-title { font-size: 22px; margin: 0; color: #E8E6EF; font-weight: 700; letter-spacing: -0.015em; }
+  .page-sub { font-size: 11px; color: #A8A5B5; }
+  .new-btn { padding: 6px 12px; border-radius: 8px; background: #C084FC; color: #0F0F13; font-weight: 600; font-size: 12px; margin-left: auto; }
+  .ghost-btn { padding: 5px 10px; border-radius: 6px; background: #1A1A22; border: 1px solid #2A2A35; color: #CFCAD9; font-size: 11px; }
+
+  .filter-bar { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 0 12px; align-items: center; border-bottom: 1px solid #2A2A35; }
+  .filter-chip { padding: 4px 10px; border-radius: 6px; background: #1A1A22; border: 1px solid #2A2A35; color: #CFCAD9; font-size: 11px; display: inline-flex; align-items: center; gap: 6px; }
+  .filter-chip.active { background: rgba(192,132,252,0.10); border-color: rgba(192,132,252,0.3); color: #C084FC; }
+  .filter-chip .x { color: #6B6770; font-size: 9px; cursor: pointer; }
+  .filter-chip .ico { font-size: 10px; opacity: 0.7; }
+  .filter-add { padding: 4px 8px; border-radius: 6px; background: transparent; border: 1px dashed #36364A; color: #7A7787; font-size: 11px; }
+
+  .section-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: #7A7787; font-weight: 600; margin-top: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .section-label .count { background: #1A1A22; color: #A8A5B5; padding: 1px 6px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+  .task-row { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; margin-top: 4px; background: #1A1A22; border: 1px solid #2A2A35; font-size: 12px; }
+  .task-row:hover { border-color: #36364A; }
+  .task-row.selected { background: rgba(192,132,252,0.06); border-color: rgba(192,132,252,0.3); }
+  .task-row.overdue { border-color: rgba(248,113,113,0.3); }
+  .task-row.done { opacity: 0.5; }
+  .task-row.done .title { text-decoration: line-through; }
+  .checkbox { width: 14px; height: 14px; border-radius: 4px; border: 1.5px solid #4E4E66; flex-shrink: 0; }
+  .checkbox.checked { background: #C084FC; border-color: #C084FC; }
+  .task-row .title { flex: 1; color: #E8E6EF; }
+  .badge { padding: 1px 6px; border-radius: 8px; font-size: 9px; font-weight: 600; }
+  .badge.priority-h { background: rgba(248,113,113,0.12); color: #F87171; }
+  .badge.priority-m { background: rgba(192,132,252,0.12); color: #C084FC; }
+  .badge.priority-l { background: rgba(168,168,170,0.12); color: #A8A5B5; }
+  .badge.info { background: rgba(103,232,249,0.12); color: #67E8F9; }
+  .mono-meta { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #A8A5B5; }
+  .mono-meta.danger { color: #F87171; }
+  .mono-meta.warning { color: #FBBF24; }
+
+  /* OPTION B: linear-style controls */
+  .lin-controls { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; align-items: center; }
+  .lin-btn { padding: 4px 10px; border-radius: 6px; background: #15151B; border: 1px solid #2A2A35; color: #CFCAD9; font-size: 11px; display: inline-flex; align-items: center; gap: 6px; }
+  .lin-btn .lbl { color: #7A7787; font-size: 10px; }
+  .lin-btn .val { color: #C084FC; font-weight: 600; }
+
+  /* OPTION B: saved views drawer (left of filter bar) */
+  .views-bar { display: flex; gap: 4px; padding: 6px 0; border-bottom: 1px solid #2A2A35; margin-bottom: 12px; align-items: center; overflow-x: auto; }
+  .view-tab { padding: 4px 10px; border-radius: 6px; font-size: 11px; color: #A8A5B5; cursor: pointer; white-space: nowrap; }
+  .view-tab.active { background: rgba(192,132,252,0.15); color: #C084FC; font-weight: 600; }
+  .view-tab .x { color: #6B6770; font-size: 9px; margin-left: 4px; }
+  .view-add { padding: 4px 8px; border-radius: 6px; background: transparent; color: #7A7787; font-size: 11px; }
+
+  /* OPTION C: table */
+  .table-wrap { background: #1A1A22; border: 1px solid #2A2A35; border-radius: 10px; overflow: hidden; }
+  .thead { display: grid; grid-template-columns: 22px 1fr 80px 80px 100px 100px 60px; background: #15151B; padding: 8px 12px; gap: 10px; font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: #7A7787; font-weight: 600; border-bottom: 1px solid #2A2A35; align-items: center; }
+  .trow { display: grid; grid-template-columns: 22px 1fr 80px 80px 100px 100px 60px; padding: 9px 12px; gap: 10px; align-items: center; font-size: 11px; color: #E8E6EF; border-bottom: 1px solid #2A2A35; }
+  .trow:hover { background: rgba(192,132,252,0.04); }
+  .trow:last-child { border-bottom: 0; }
+  .trow.done { opacity: 0.5; }
+  .trow.done .ttitle { text-decoration: line-through; }
+
+  .bulk-bar { background: rgba(192,132,252,0.12); border: 1px solid rgba(192,132,252,0.3); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 12px; color: #E8E6EF; }
+  .bulk-bar .count { font-weight: 600; color: #C084FC; }
+  .bulk-bar .actions { margin-left: auto; display: flex; gap: 4px; }
+  .bulk-bar .action { padding: 3px 8px; border-radius: 6px; background: #15151B; color: #CFCAD9; font-size: 11px; border: 1px solid #2A2A35; }
+</style>
+
+<div class="demo">
+
+<h2>All tasks · <code>/tasks</code> — 3 directions</h2>
+<p class="subtitle">Same data + same backend; different interaction philosophies. Sort/group/filter, saved views, bulk actions vary per option.</p>
+
+<div class="cards" style="grid-template-columns: 1fr;">
+
+  <!-- ============ OPTION A: Calm chips ============ -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>A · Calm · filter chips + smart sections (Todoist-ish)</h3>
+      <p class="opt-meta">Simple horizontal chip bar at top. Click chip → toggle filter (multi-select OK). Auto-grouped sections by relative date (Overdue / Today / Tomorrow / This week / Later / No date). No bulk actions in v1. Inline checkbox marks complete.</p>
+      <div class="device">
+        <div class="device-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+        <div class="shell">
+          <div class="topbar">
+            <div class="logo">task<b>·</b>mgr</div>
+            <div class="search">⌕ Search…<span class="kbd">⌘K</span></div>
+            <div class="topbar-spacer"></div>
+            <div class="icon-btn">🔔</div><div class="icon-btn">☾</div><div class="avatar"></div>
+          </div>
+          <div class="rail">
+            <div class="rail-item">▢</div><div class="rail-item">⌖</div><div class="rail-item">▥</div>
+            <div class="rail-item active">≡</div><div class="rail-item">▦</div><div class="rail-item">🏷</div><div class="rail-item">⚙</div>
+          </div>
+          <div class="content">
+            <div class="page-head">
+              <h2 class="page-title">All tasks</h2>
+              <span class="page-sub">23 open · 47 completed this week</span>
+              <span class="new-btn">+ New task</span>
+            </div>
+
+            <div class="filter-bar">
+              <span class="filter-chip active">Open <span class="x">×</span></span>
+              <span class="filter-chip"><span class="ico">●</span>Backend</span>
+              <span class="filter-chip">Personal</span>
+              <span class="filter-chip">Side gig</span>
+              <span class="filter-chip">!high</span>
+              <span class="filter-chip">!medium</span>
+              <span class="filter-chip">overdue</span>
+              <span class="filter-chip">recurring</span>
+              <span class="filter-add">+ Label</span>
+              <span class="filter-add">+ Date range</span>
+              <span class="ghost-btn" style="margin-left:auto;">Sort: Due ↑</span>
+            </div>
+
+            <div class="section-label" style="color:#F87171;">Overdue <span class="count" style="background:rgba(248,113,113,0.12); color:#F87171;">2</span></div>
+            <div class="task-row overdue"><div class="checkbox"></div><div class="title">Refactor auth middleware</div><span class="badge priority-h">!high</span><span class="badge info">backend</span><span class="mono-meta danger">2d late</span></div>
+            <div class="task-row overdue"><div class="checkbox"></div><div class="title">Pay car insurance</div><span class="badge priority-m">!med</span><span class="mono-meta danger">1d late</span></div>
+
+            <div class="section-label">Today <span class="count">2</span></div>
+            <div class="task-row"><div class="checkbox"></div><div class="title">Write zod-schemas migration doc</div><span class="badge priority-m">!med</span><span class="badge info">backend</span><span class="mono-meta">today</span></div>
+            <div class="task-row"><div class="checkbox"></div><div class="title">Call dentist</div><span class="badge priority-l">!low</span><span class="mono-meta">today</span></div>
+
+            <div class="section-label">This week <span class="count">3</span></div>
+            <div class="task-row"><div class="checkbox"></div><div class="title">Onboard new team lead</div><span class="badge priority-h">!high</span><span class="mono-meta warning">Wed</span></div>
+            <div class="task-row"><div class="checkbox"></div><div class="title">Weekly status writeup</div><span class="badge priority-l">!low</span><span class="mono-meta">Fri</span></div>
+          </div>
+        </div>
+      </div>
+      <p class="opt-meta" style="margin-top:8px;"><b>Pros:</b> calm, fast to scan. <b>Cons:</b> no power-user features (no group-by, no saved views, no bulk). Adding any later = scope-creep risk.</p>
+    </div>
+  </div>
+
+  <!-- ============ OPTION B: Linear-rich ============ -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>B · Power · saved views + composable filters + group-by + bulk (Linear-ish)</h3>
+      <p class="opt-meta">Tabs at top for saved views ("All open", "My priorities", "This week", "Recurring"). Filter row supports composable predicates (project · status · priority · label · due range · text). Toolbar adds Group-by + Sort. Multi-select with bulk toolbar. URL reflects state.</p>
+      <div class="device">
+        <div class="device-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+        <div class="shell">
+          <div class="topbar">
+            <div class="logo">task<b>·</b>mgr</div>
+            <div class="search">⌕ Search…<span class="kbd">⌘K</span></div>
+            <div class="topbar-spacer"></div>
+            <div class="icon-btn">🔔</div><div class="icon-btn">☾</div><div class="avatar"></div>
+          </div>
+          <div class="rail">
+            <div class="rail-item">▢</div><div class="rail-item">⌖</div><div class="rail-item">▥</div>
+            <div class="rail-item active">≡</div><div class="rail-item">▦</div><div class="rail-item">🏷</div><div class="rail-item">⚙</div>
+          </div>
+          <div class="content">
+            <div class="page-head">
+              <h2 class="page-title">All tasks</h2>
+              <span class="page-sub">23 open · 47 completed this week</span>
+              <span class="new-btn">+ New task</span>
+            </div>
+
+            <div class="views-bar">
+              <span class="view-tab active">All open</span>
+              <span class="view-tab">My priorities</span>
+              <span class="view-tab">This week</span>
+              <span class="view-tab">Recurring</span>
+              <span class="view-tab">Inbox (no project)</span>
+              <span class="view-add">+ Save current as view…</span>
+            </div>
+
+            <div class="filter-bar" style="border:0; padding-bottom:0;">
+              <span class="filter-chip active">status = open <span class="x">×</span></span>
+              <span class="filter-chip active"><span class="ico">●</span>project ∈ Backend <span class="x">×</span></span>
+              <span class="filter-chip active">priority ≥ medium <span class="x">×</span></span>
+              <span class="filter-add">+ Add filter…</span>
+            </div>
+
+            <div class="lin-controls">
+              <span class="lin-btn"><span class="lbl">Group:</span><span class="val">Due date</span></span>
+              <span class="lin-btn"><span class="lbl">Sort:</span><span class="val">Priority ↓</span></span>
+              <span class="lin-btn" style="margin-left:auto;">Columns ▾</span>
+              <span class="lin-btn">Density ▾</span>
+            </div>
+
+            <!-- bulk -->
+            <div class="bulk-bar" style="margin-top:12px;">
+              <span class="count">2 selected</span>
+              <span style="color:#A8A5B5; font-size:11px;">↑↓ to navigate · ⏎ to open · ⌫ delete</span>
+              <div class="actions">
+                <span class="action">Complete</span>
+                <span class="action">Set due…</span>
+                <span class="action">Move to project…</span>
+                <span class="action">+ Label</span>
+                <span class="action" style="color:#F87171;">Delete</span>
+              </div>
+            </div>
+
+            <div class="section-label" style="margin-top:4px;">Today <span class="count">2</span></div>
+            <div class="task-row selected"><div class="checkbox checked"></div><div class="title">Write zod-schemas migration doc</div><span class="badge priority-m">!med</span><span class="badge info">backend</span><span class="mono-meta">today</span></div>
+            <div class="task-row selected"><div class="checkbox checked"></div><div class="title">Refactor auth middleware</div><span class="badge priority-h">!high</span><span class="badge info">backend</span><span class="mono-meta danger">2d late</span></div>
+
+            <div class="section-label">This week <span class="count">2</span></div>
+            <div class="task-row"><div class="checkbox"></div><div class="title">Onboard new team lead</div><span class="badge priority-h">!high</span><span class="mono-meta warning">Wed</span></div>
+          </div>
+        </div>
+      </div>
+      <p class="opt-meta" style="margin-top:8px;"><b>Pros:</b> power-user friendly, sharable filtered URLs, bulk operations. <b>Cons:</b> more affordances = more to build (filter operator UI, group-by reactivity, multi-select + keyboard nav). Backend GET /tasks may need extension (currently single-value filters; need OR/IN for ranges and array fields).</p>
+    </div>
+  </div>
+
+  <!-- ============ OPTION C: Table ============ -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>C · Table view (Notion-ish)</h3>
+      <p class="opt-meta">Columnar table with sortable headers. Column visibility toggle. Multi-select for bulk. View switcher (List · Table · Board · Calendar) at top — same data, different shapes.</p>
+      <div class="device">
+        <div class="device-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+        <div class="shell">
+          <div class="topbar">
+            <div class="logo">task<b>·</b>mgr</div>
+            <div class="search">⌕ Search…<span class="kbd">⌘K</span></div>
+            <div class="topbar-spacer"></div>
+            <div class="icon-btn">🔔</div><div class="icon-btn">☾</div><div class="avatar"></div>
+          </div>
+          <div class="rail">
+            <div class="rail-item">▢</div><div class="rail-item">⌖</div><div class="rail-item">▥</div>
+            <div class="rail-item active">≡</div><div class="rail-item">▦</div><div class="rail-item">🏷</div><div class="rail-item">⚙</div>
+          </div>
+          <div class="content">
+            <div class="page-head">
+              <h2 class="page-title">All tasks</h2>
+              <span class="page-sub">23 open</span>
+              <div style="display:inline-flex; gap:2px; background:#15151B; border:1px solid #2A2A35; border-radius:8px; padding:2px; margin-left:14px;">
+                <span style="padding:4px 10px; border-radius:6px; color:#A8A5B5; font-size:11px;">List</span>
+                <span style="padding:4px 10px; border-radius:6px; background:rgba(192,132,252,0.15); color:#C084FC; font-size:11px; font-weight:600;">Table</span>
+                <span style="padding:4px 10px; border-radius:6px; color:#A8A5B5; font-size:11px;">Board</span>
+              </div>
+              <span class="new-btn">+ New task</span>
+            </div>
+
+            <div class="filter-bar" style="border:0;">
+              <span class="filter-chip active">Open <span class="x">×</span></span>
+              <span class="filter-chip">!high</span>
+              <span class="filter-add">+ Filter</span>
+              <span class="ghost-btn" style="margin-left:auto;">Columns ▾</span>
+            </div>
+
+            <div class="table-wrap" style="margin-top:8px;">
+              <div class="thead">
+                <span></span>
+                <span>Title ▴</span>
+                <span>Status</span>
+                <span>Priority</span>
+                <span>Project</span>
+                <span>Due</span>
+                <span></span>
+              </div>
+              <div class="trow"><div class="checkbox"></div><span class="ttitle">Refactor auth middleware</span><span class="badge priority-h" style="justify-self:start;">!high</span><span class="badge priority-h" style="justify-self:start;">high</span><span class="badge info" style="justify-self:start;">Backend</span><span class="mono-meta danger">2d late</span><span style="color:#7A7787;">⋯</span></div>
+              <div class="trow"><div class="checkbox"></div><span class="ttitle">Pay car insurance</span><span class="badge priority-m" style="justify-self:start;">todo</span><span class="badge priority-m" style="justify-self:start;">medium</span><span style="color:#7A7787;">—</span><span class="mono-meta danger">1d late</span><span style="color:#7A7787;">⋯</span></div>
+              <div class="trow"><div class="checkbox"></div><span class="ttitle">Write zod-schemas migration doc</span><span class="badge priority-m" style="justify-self:start;">todo</span><span class="badge priority-m" style="justify-self:start;">medium</span><span class="badge info" style="justify-self:start;">Backend</span><span class="mono-meta">today</span><span style="color:#7A7787;">⋯</span></div>
+              <div class="trow"><div class="checkbox"></div><span class="ttitle">Call dentist</span><span class="badge priority-l" style="justify-self:start;">todo</span><span class="badge priority-l" style="justify-self:start;">low</span><span style="color:#7A7787;">—</span><span class="mono-meta">today</span><span style="color:#7A7787;">⋯</span></div>
+              <div class="trow done"><div class="checkbox checked"></div><span class="ttitle">Submit timesheet</span><span class="badge priority-l" style="justify-self:start;">done</span><span class="badge priority-l" style="justify-self:start;">low</span><span class="badge info" style="justify-self:start;">Personal</span><span class="mono-meta">Mon</span><span style="color:#7A7787;">⋯</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="opt-meta" style="margin-top:8px;"><b>Pros:</b> dense data scanning, column customization, easy compare. <b>Cons:</b> formal/heavy aesthetic; less personal-task-app vibe. Best as a power-user opt-in via view switcher.</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top: 22px;">Open decisions: bulk actions in v1 (yes/no)? Saved views in v1 (yes/no)? Group-by in v1? URL state for filters (sharable links)? Backend may need extension for multi-value filter queries (today's <code>GET /tasks</code> takes single values).</p>
+
+</div>
