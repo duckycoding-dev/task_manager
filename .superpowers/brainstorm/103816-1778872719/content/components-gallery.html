@@ -1,0 +1,577 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  /* --- Tokens (dark mode) --- */
+  :root {
+    --color-bg-base: #0F0F13;
+    --color-bg-surface: #1A1A22;
+    --color-bg-surface-raised: #22222E;
+    --color-bg-muted: #15151B;
+    --color-bg-overlay: rgba(0,0,0,0.6);
+
+    --color-text-strong: #E8E6EF;
+    --color-text: #CFCAD9;
+    --color-text-muted: #A8A5B5;
+    --color-text-faint: #7A7787;
+    --color-text-on-accent: #0F0F13;
+
+    --color-border-subtle: #2A2A35;
+    --color-border: #36364A;
+    --color-border-strong: #4E4E66;
+
+    --color-accent-primary: #C084FC;
+    --color-accent-primary-hover: #CD9BFC;
+    --color-accent-primary-pressed: #A765E8;
+    --color-accent-primary-subtle: rgba(192,132,252,0.12);
+    --color-accent-secondary: #67E8F9;
+    --color-accent-secondary-subtle: rgba(103,232,249,0.12);
+
+    --color-state-danger: #F87171;
+    --color-state-danger-subtle: rgba(248,113,113,0.12);
+    --color-state-warning: #FBBF24;
+    --color-state-warning-subtle: rgba(251,191,36,0.12);
+    --color-state-success: #34D399;
+    --color-state-success-subtle: rgba(52,211,153,0.12);
+
+    --color-focus-ring: rgba(192,132,252,0.55);
+
+    --shadow-card: 0 1px 0 rgba(255,255,255,0.04), 0 8px 24px rgba(0,0,0,0.4);
+    --shadow-pop: 0 12px 40px rgba(0,0,0,0.6);
+    --shadow-elevated: 0 4px 14px rgba(192,132,252,0.25), 0 1px 2px rgba(0,0,0,0.5);
+    --shadow-focus-ring: 0 0 0 2px var(--color-bg-base), 0 0 0 4px var(--color-focus-ring);
+
+    --radius-xs: 4px;
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-full: 9999px;
+
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-6: 24px;
+  }
+
+  .demo { font-family: 'Inter', system-ui, sans-serif; }
+
+  .group { background: var(--color-bg-surface); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-lg); padding: 18px 20px; margin-bottom: 16px; }
+  .group h3 { color: var(--color-text-strong); font-size: 14px; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 4px; }
+  .group .desc { color: var(--color-text-muted); font-size: 11px; margin: 0 0 14px; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 8px; }
+  .label-tag { font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-text-faint); font-weight: 600; min-width: 80px; }
+
+  /* === Buttons === */
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: var(--radius-md); font-size: 12px; font-weight: 600; font-family: inherit; border: 0; cursor: pointer; transition: all 0.15s; }
+  .btn.sm { padding: 5px 10px; font-size: 11px; min-height: 28px; }
+  .btn.md { padding: 8px 12px; font-size: 12px; min-height: 36px; }
+  .btn.lg { padding: 10px 16px; font-size: 13px; min-height: 44px; }
+  .btn.primary { background: var(--color-accent-primary); color: var(--color-text-on-accent); box-shadow: var(--shadow-elevated); }
+  .btn.primary:hover { background: var(--color-accent-primary-hover); }
+  .btn.secondary { background: var(--color-bg-surface); color: var(--color-text); border: 1px solid var(--color-border); }
+  .btn.secondary:hover { border-color: var(--color-border-strong); }
+  .btn.ghost { background: transparent; color: var(--color-accent-primary); }
+  .btn.ghost:hover { background: var(--color-accent-primary-subtle); }
+  .btn.danger { background: transparent; color: var(--color-state-danger); border: 1px solid rgba(248,113,113,0.3); }
+  .btn.danger:hover { background: var(--color-state-danger-subtle); }
+  .btn.danger-solid { background: var(--color-state-danger); color: #0F0F13; }
+  .btn.focused { box-shadow: var(--shadow-focus-ring); }
+  .btn.disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn .kbd-chip { background: rgba(0,0,0,0.2); color: inherit; opacity: 0.7; padding: 1px 5px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 10px; margin-left: 4px; }
+  .spinner { width: 12px; height: 12px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* === Input === */
+  .input { display: inline-flex; align-items: center; gap: 8px; background: var(--color-bg-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 0 10px; min-height: 36px; min-width: 220px; color: var(--color-text-strong); font-size: 12px; }
+  .input input { flex: 1; background: transparent; border: 0; outline: none; color: inherit; font-family: inherit; font-size: 13px; padding: 8px 0; }
+  .input input::placeholder { color: var(--color-text-faint); }
+  .input.focused { border-color: var(--color-accent-primary); box-shadow: var(--shadow-focus-ring); }
+  .input.error { border-color: var(--color-state-danger); }
+  .input.disabled { opacity: 0.5; background: var(--color-bg-muted); }
+  .input .ico { color: var(--color-text-muted); font-size: 13px; }
+  .input .kbd-chip { background: var(--color-bg-base); border: 1px solid var(--color-border-subtle); color: var(--color-text-muted); padding: 1px 5px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+  .input .clear-x { color: var(--color-text-faint); font-size: 11px; cursor: pointer; padding: 0 4px; }
+  .error-hint { color: var(--color-state-danger); font-size: 11px; margin-top: 4px; padding-left: 4px; }
+
+  /* === Checkbox === */
+  .cb { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 12px; color: var(--color-text); }
+  .cb .box { width: 16px; height: 16px; border-radius: var(--radius-xs); border: 1.5px solid var(--color-border-strong); display: inline-flex; align-items: center; justify-content: center; font-size: 10px; color: var(--color-text-on-accent); }
+  .cb.checked .box { background: var(--color-accent-primary); border-color: var(--color-accent-primary); }
+  .cb.indeterminate .box { background: var(--color-accent-primary); border-color: var(--color-accent-primary); }
+  .cb.focused .box { box-shadow: var(--shadow-focus-ring); }
+  .cb.disabled { opacity: 0.5; }
+
+  /* === Toggle === */
+  .toggle { width: 32px; height: 18px; background: var(--color-bg-muted); border: 1px solid var(--color-border-subtle); border-radius: 12px; position: relative; cursor: pointer; flex-shrink: 0; }
+  .toggle.on { background: var(--color-accent-primary-subtle); border-color: rgba(192,132,252,0.4); }
+  .toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; background: var(--color-text-muted); border-radius: 50%; transition: left 0.15s, background 0.15s; }
+  .toggle.on::after { left: 16px; background: var(--color-accent-primary); }
+
+  /* === Segmented === */
+  .seg { display: inline-flex; gap: 0; background: var(--color-bg-muted); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); padding: 2px; }
+  .seg-btn { padding: 5px 10px; border-radius: var(--radius-sm); color: var(--color-text-muted); font-size: 11px; font-weight: 600; cursor: pointer; }
+  .seg-btn.active { background: var(--color-accent-primary-subtle); color: var(--color-accent-primary); }
+  .seg.status .seg-btn.active.todo { background: rgba(168,168,178,0.18); color: var(--color-text); }
+  .seg.status .seg-btn.active.inp { background: var(--color-accent-primary-subtle); color: var(--color-accent-primary); }
+  .seg.status .seg-btn.active.done { background: var(--color-state-success-subtle); color: var(--color-state-success); }
+
+  /* === Badges === */
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: var(--radius-full); font-size: 10px; font-weight: 600; }
+  .badge.priority-h { background: var(--color-state-danger-subtle); color: var(--color-state-danger); }
+  .badge.priority-m { background: var(--color-accent-primary-subtle); color: var(--color-accent-primary); }
+  .badge.priority-l { background: rgba(168,168,178,0.15); color: var(--color-text-muted); }
+  .badge.info { background: var(--color-accent-secondary-subtle); color: var(--color-accent-secondary); }
+  .badge.warning { background: var(--color-state-warning-subtle); color: var(--color-state-warning); }
+  .badge.success { background: var(--color-state-success-subtle); color: var(--color-state-success); }
+  .badge.neutral { background: var(--color-bg-base); color: var(--color-text-muted); }
+  .badge .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  /* === Avatar === */
+  .avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary)); }
+  .avatar.sm { width: 20px; height: 20px; }
+  .avatar.lg { width: 40px; height: 40px; }
+
+  /* === Card === */
+  .card { background: var(--color-bg-surface); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-lg); padding: 14px; min-width: 220px; max-width: 240px; }
+  .card .title { font-size: 13px; color: var(--color-text-strong); font-weight: 600; }
+  .card .body { font-size: 11px; color: var(--color-text-muted); margin-top: 4px; }
+  .card.elevated { box-shadow: var(--shadow-card); }
+
+  /* === Popover/Menu === */
+  .popover { background: var(--color-bg-surface-raised); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 6px; box-shadow: var(--shadow-pop); min-width: 200px; display: inline-block; }
+  .popover-section-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-text-faint); font-weight: 600; padding: 8px 8px 4px; }
+  .menu-item { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: var(--radius-sm); color: var(--color-text); font-size: 12px; cursor: pointer; }
+  .menu-item:hover { background: var(--color-bg-surface); }
+  .menu-item.selected { background: var(--color-accent-primary-subtle); color: var(--color-accent-primary); }
+  .menu-item .ico { color: var(--color-text-muted); width: 14px; }
+  .menu-item .kbd-chip { margin-left: auto; background: var(--color-bg-base); border: 1px solid var(--color-border-subtle); color: var(--color-text-muted); padding: 1px 5px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+  .menu-item.danger { color: var(--color-state-danger); }
+  .menu-item.danger:hover { background: var(--color-state-danger-subtle); }
+  .menu-divider { height: 1px; background: var(--color-border-subtle); margin: 4px 8px; }
+
+  /* === Dialog === */
+  .dialog { background: var(--color-bg-surface); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-xl); padding: 20px 22px; box-shadow: var(--shadow-pop); max-width: 420px; }
+  .dialog h3 { font-size: 15px; color: var(--color-text-strong); margin: 0 0 6px; font-weight: 700; letter-spacing: -0.01em; }
+  .dialog p { font-size: 12px; color: var(--color-text); margin: 0 0 14px; line-height: 1.5; }
+  .dialog .footer { display: flex; gap: 8px; justify-content: flex-end; padding-top: 12px; border-top: 1px solid var(--color-border-subtle); }
+
+  /* === Toast === */
+  .toast { display: inline-flex; align-items: center; gap: 12px; background: var(--color-bg-surface-raised); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 10px 14px; box-shadow: var(--shadow-pop); font-size: 12px; color: var(--color-text); min-width: 320px; max-width: 480px; }
+  .toast .ico { font-size: 14px; }
+  .toast.success .ico { color: var(--color-state-success); }
+  .toast.danger { border-color: rgba(248,113,113,0.3); }
+  .toast.danger .ico { color: var(--color-state-danger); }
+  .toast.loading .ico { color: var(--color-accent-primary); }
+  .toast .action { margin-left: auto; color: var(--color-accent-primary); font-weight: 600; cursor: pointer; }
+  .toast .x { color: var(--color-text-faint); font-size: 12px; cursor: pointer; padding: 0 4px; }
+
+  /* === Tabs === */
+  .tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--color-border-subtle); }
+  .tab { padding: 9px 14px; font-size: 12px; color: var(--color-text-muted); font-weight: 500; border-bottom: 2px solid transparent; margin-bottom: -1px; cursor: pointer; }
+  .tab.active { color: var(--color-accent-primary); border-color: var(--color-accent-primary); font-weight: 600; }
+  .tab .count { background: var(--color-bg-base); color: var(--color-text-muted); padding: 1px 6px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: 10px; margin-left: 6px; }
+
+  /* === Breadcrumbs === */
+  .crumbs { display: inline-flex; gap: 4px; font-size: 11px; color: var(--color-text-muted); }
+  .crumbs a { color: var(--color-text-muted); }
+  .crumbs .last { color: var(--color-text); }
+  .crumbs .sep { color: var(--color-text-faint); }
+
+  /* === Tooltip === */
+  .tooltip { display: inline-block; background: var(--color-bg-surface-raised); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 5px 9px; font-size: 11px; color: var(--color-text-strong); box-shadow: var(--shadow-pop); position: relative; }
+  .tooltip::after { content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%) rotate(45deg); width: 8px; height: 8px; background: var(--color-bg-surface-raised); border-right: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); }
+
+  /* === Skeleton === */
+  @keyframes pulse-bg { 0%, 100% { background: var(--color-bg-surface); } 50% { background: var(--color-bg-muted); } }
+  .sk { border-radius: var(--radius-sm); height: 12px; animation: pulse-bg 1.4s ease-in-out infinite; }
+  .sk.text-line { height: 12px; width: 60%; }
+  .sk.title-line { height: 16px; width: 40%; }
+  .sk.row { display: flex; gap: 10px; align-items: center; padding: 10px 12px; background: var(--color-bg-surface); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); }
+  .sk.cb { width: 14px; height: 14px; border-radius: var(--radius-xs); flex-shrink: 0; }
+
+  /* === Empty state === */
+  .empty { text-align: center; padding: 30px 20px; color: var(--color-text-muted); }
+  .empty .ico { font-size: 36px; color: var(--color-border); margin-bottom: 8px; }
+  .empty h4 { font-size: 14px; color: var(--color-text-strong); margin: 0 0 4px; font-weight: 600; }
+  .empty p { font-size: 12px; margin: 0 0 12px; }
+
+  /* === Color picker === */
+  .swatch { width: 20px; height: 20px; border-radius: var(--radius-sm); cursor: pointer; }
+  .swatch.selected { box-shadow: 0 0 0 1.5px var(--color-bg-base), 0 0 0 3px var(--color-text-strong); }
+  .color-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+
+  /* === Filter chip === */
+  .filter-chip { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: var(--radius-sm); background: var(--color-bg-surface); border: 1px solid var(--color-border-subtle); color: var(--color-text); font-size: 11px; }
+  .filter-chip.active { background: var(--color-accent-primary-subtle); border-color: rgba(192,132,252,0.3); color: var(--color-accent-primary); }
+  .filter-chip.dashed { background: transparent; border-style: dashed; color: var(--color-text-faint); }
+  .filter-chip .op { color: var(--color-text-faint); font-style: italic; }
+  .filter-chip.active .op { color: var(--color-accent-primary); opacity: 0.7; }
+  .filter-chip .x { color: var(--color-text-faint); font-size: 9px; cursor: pointer; margin-left: 2px; }
+
+  /* === Kanban === */
+  .kcard { background: var(--color-bg-surface); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-sm); padding: 9px 10px; min-width: 200px; }
+  .kcard .ktitle { font-size: 12px; color: var(--color-text-strong); font-weight: 500; line-height: 1.35; }
+  .kcard .kmeta { display: flex; gap: 5px; margin-top: 7px; align-items: center; flex-wrap: wrap; }
+  .kcard.dragging { box-shadow: var(--shadow-pop); transform: rotate(1deg); opacity: 0.9; }
+
+  /* === Reminder row === */
+  .rem-row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: var(--color-bg-surface); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); font-size: 12px; min-width: 480px; }
+  .rem-row.now { border-color: rgba(192,132,252,0.4); background: rgba(192,132,252,0.05); }
+  .rem-row .clock { font-family: 'JetBrains Mono', monospace; color: var(--color-accent-secondary); font-size: 10px; min-width: 60px; }
+  .rem-row.now .clock { color: var(--color-accent-primary); }
+  .rem-row .body { flex: 1; }
+  .rem-row .rtitle { color: var(--color-text-strong); font-weight: 500; }
+  .rem-row .actions { display: flex; gap: 4px; }
+
+  /* page chrome */
+  body { background: var(--color-bg-base); color: var(--color-text); }
+  .gallery-head { padding: 14px 0 8px; }
+  .gallery-head h2 { color: var(--color-text-strong); font-size: 18px; margin: 0 0 6px; }
+  .gallery-head p { color: var(--color-text-muted); font-size: 12px; margin: 0; }
+</style>
+
+<div class="demo">
+
+<div class="gallery-head">
+  <h2>Components gallery</h2>
+  <p>Visual reference of the primitives in spec 04. Scroll. Tokens applied directly. Iterate on anything that feels off — these are starting shapes, will be polished during implementation.</p>
+</div>
+
+<!-- BUTTONS -->
+<div class="group">
+  <h3>Buttons</h3>
+  <p class="desc">5 variants × 3 sizes × states. Primary uses the accent-tinted shadow.</p>
+
+  <div class="row"><div class="label-tag">variants</div>
+    <button class="btn md primary">+ New task</button>
+    <button class="btn md secondary">Cancel</button>
+    <button class="btn md ghost">Skip</button>
+    <button class="btn md danger">Delete</button>
+    <button class="btn md danger-solid">Confirm delete</button>
+  </div>
+  <div class="row"><div class="label-tag">sizes</div>
+    <button class="btn sm primary">sm</button>
+    <button class="btn md primary">md</button>
+    <button class="btn lg primary">lg</button>
+  </div>
+  <div class="row"><div class="label-tag">states</div>
+    <button class="btn md primary">default</button>
+    <button class="btn md primary" style="background: var(--color-accent-primary-hover);">hover</button>
+    <button class="btn md primary" style="background: var(--color-accent-primary-pressed);">pressed</button>
+    <button class="btn md primary focused">focus</button>
+    <button class="btn md primary disabled">disabled</button>
+    <button class="btn md primary"><span class="spinner"></span>loading…</button>
+  </div>
+  <div class="row"><div class="label-tag">with extras</div>
+    <button class="btn md secondary">⌖ <span>Inbox</span><span class="kbd-chip">g i</span></button>
+    <button class="btn md ghost">⌕ Search<span class="kbd-chip">⌘K</span></button>
+    <button class="btn lg primary">↗ Open project</button>
+  </div>
+</div>
+
+<!-- INPUTS -->
+<div class="group">
+  <h3>Inputs</h3>
+  <p class="desc">Text / search / states. Search variant adds leading icon + trailing kbd chip + clear ×.</p>
+
+  <div class="row"><div class="label-tag">states</div>
+    <div class="input"><input placeholder="Default empty"></div>
+    <div class="input focused"><input value="Focused with value"></div>
+    <div class="input error"><input value="invalid@" type="email"></div>
+    <div class="input disabled"><input value="Read-only" disabled></div>
+  </div>
+  <div class="error-hint" style="margin-left: 90px;">⚠ Must be a valid email address</div>
+
+  <div class="row" style="margin-top: 12px;"><div class="label-tag">search</div>
+    <div class="input" style="min-width: 320px;"><span class="ico">⌕</span><input placeholder="Search tasks, projects…"><span class="kbd-chip">⌘K</span></div>
+    <div class="input" style="min-width: 320px;"><span class="ico">⌕</span><input value="auth refactor"><span class="clear-x">×</span></div>
+  </div>
+
+  <div class="row" style="margin-top: 12px;"><div class="label-tag">sizes</div>
+    <div class="input" style="min-height:28px; min-width:160px;"><input placeholder="sm"></div>
+    <div class="input" style="min-width:160px;"><input placeholder="md (default)"></div>
+    <div class="input" style="min-height:44px; min-width:160px;"><input placeholder="lg (touch)"></div>
+  </div>
+</div>
+
+<!-- CHECKBOX, TOGGLE, SEGMENTED -->
+<div class="group">
+  <h3>Checkbox · Toggle · Segmented Control</h3>
+  <p class="desc">Boolean and mutually-exclusive primitives.</p>
+
+  <div class="row"><div class="label-tag">checkbox</div>
+    <div class="cb"><span class="box"></span><span>Unchecked</span></div>
+    <div class="cb checked"><span class="box">✓</span><span>Checked</span></div>
+    <div class="cb indeterminate"><span class="box">−</span><span>Indeterminate</span></div>
+    <div class="cb focused"><span class="box"></span><span>Focused</span></div>
+    <div class="cb disabled"><span class="box"></span><span>Disabled</span></div>
+  </div>
+
+  <div class="row" style="margin-top: 12px;"><div class="label-tag">toggle</div>
+    <div class="toggle"></div>
+    <span style="color: var(--color-text-muted); font-size: 11px;">Off</span>
+    <div class="toggle on" style="margin-left: 14px;"></div>
+    <span style="color: var(--color-text-muted); font-size: 11px;">On</span>
+  </div>
+
+  <div class="row" style="margin-top: 12px;"><div class="label-tag">segmented</div>
+    <div class="seg"><span class="seg-btn">System</span><span class="seg-btn active">Light</span><span class="seg-btn">Dark</span></div>
+    <div class="seg"><span class="seg-btn">Compact</span><span class="seg-btn active">Default</span><span class="seg-btn">Comfortable</span></div>
+  </div>
+  <div class="row" style="margin-top: 8px;"><div class="label-tag">status variant</div>
+    <div class="seg status"><span class="seg-btn">todo</span><span class="seg-btn active inp">in progress</span><span class="seg-btn">done</span></div>
+    <div class="seg status"><span class="seg-btn">todo</span><span class="seg-btn">in progress</span><span class="seg-btn active done">done</span></div>
+  </div>
+</div>
+
+<!-- BADGES -->
+<div class="group">
+  <h3>Badges / Pills</h3>
+  <p class="desc">Inline non-interactive markers. Color-dot prefix variant used for project / label chips.</p>
+
+  <div class="row"><div class="label-tag">priority</div>
+    <span class="badge priority-h">!high</span>
+    <span class="badge priority-m">!med</span>
+    <span class="badge priority-l">!low</span>
+  </div>
+  <div class="row"><div class="label-tag">state</div>
+    <span class="badge info">info</span>
+    <span class="badge warning">warning</span>
+    <span class="badge success">success</span>
+    <span class="badge priority-h">danger</span>
+    <span class="badge neutral">neutral</span>
+  </div>
+  <div class="row"><div class="label-tag">with dot</div>
+    <span class="badge info"><span class="dot" style="background: var(--color-accent-secondary);"></span>backend</span>
+    <span class="badge priority-h"><span class="dot" style="background: var(--color-state-danger);"></span>security</span>
+    <span class="badge priority-m"><span class="dot" style="background: var(--color-accent-primary);"></span>Backend project</span>
+    <span class="badge success"><span class="dot" style="background: var(--color-state-success);"></span>infra</span>
+  </div>
+</div>
+
+<!-- AVATAR / CARD -->
+<div class="group">
+  <h3>Avatar · Card</h3>
+  <div class="row"><div class="label-tag">avatar</div>
+    <div class="avatar sm"></div>
+    <div class="avatar"></div>
+    <div class="avatar lg"></div>
+  </div>
+  <div class="row" style="margin-top: 12px;"><div class="label-tag">cards</div>
+    <div class="card">
+      <div class="title">Refactor auth middleware</div>
+      <div class="body">Backend · Due Fri · 2d overdue</div>
+    </div>
+    <div class="card elevated">
+      <div class="title">Quarterly review</div>
+      <div class="body">Personal · Due May 2</div>
+    </div>
+  </div>
+</div>
+
+<!-- POPOVER + MENU + COLOR -->
+<div class="group">
+  <h3>Popover · Menu · Color picker</h3>
+  <div class="row" style="align-items: flex-start;">
+    <div class="label-tag">menu</div>
+    <div class="popover" style="min-width: 220px;">
+      <div class="popover-section-label">Actions</div>
+      <div class="menu-item selected"><span class="ico">✎</span>Edit task<span class="kbd-chip">e</span></div>
+      <div class="menu-item"><span class="ico">✓</span>Mark complete<span class="kbd-chip">c</span></div>
+      <div class="menu-item"><span class="ico">↗</span>Open full page</div>
+      <div class="menu-item"><span class="ico">⎘</span>Duplicate</div>
+      <div class="menu-divider"></div>
+      <div class="menu-item danger"><span class="ico">🗑</span>Delete<span class="kbd-chip">⌫</span></div>
+    </div>
+  </div>
+  <div class="row" style="margin-top: 16px; align-items: flex-start;">
+    <div class="label-tag">color picker</div>
+    <div class="popover" style="min-width: 180px;">
+      <div class="popover-section-label">Color</div>
+      <div class="color-grid" style="padding: 0 8px 8px;">
+        <div class="swatch" style="background: #F87171;"></div>
+        <div class="swatch" style="background: #FB923C;"></div>
+        <div class="swatch" style="background: #FBBF24;"></div>
+        <div class="swatch" style="background: #84CC16;"></div>
+        <div class="swatch" style="background: #34D399;"></div>
+        <div class="swatch" style="background: #2DD4BF;"></div>
+        <div class="swatch" style="background: #67E8F9;"></div>
+        <div class="swatch" style="background: #60A5FA;"></div>
+        <div class="swatch" style="background: #818CF8;"></div>
+        <div class="swatch selected" style="background: #C084FC;"></div>
+        <div class="swatch" style="background: #E879F9;"></div>
+        <div class="swatch" style="background: #F472B6;"></div>
+      </div>
+      <div style="padding: 6px 8px; border-top: 1px solid var(--color-border-subtle); display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--color-text-muted);">
+        <span>Hex</span>
+        <input style="background: var(--color-bg-base); border: 1px solid var(--color-border-subtle); color: var(--color-text-strong); padding: 3px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 11px; width: 70px;" value="#C084FC">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DIALOG -->
+<div class="group">
+  <h3>Dialog / Modal</h3>
+  <div class="row" style="align-items: flex-start;">
+    <div class="dialog">
+      <h3>Delete label "security"?</h3>
+      <p>This will affect <strong style="font-family: 'JetBrains Mono', monospace; color: var(--color-state-danger);">3 tasks</strong>. Tasks themselves are not affected. Choose what happens to the tag on those tasks:</p>
+      <div style="display:flex; flex-direction:column; gap: 8px; margin-bottom: 14px;">
+        <label style="display:flex; align-items:flex-start; gap: 8px; cursor:pointer;">
+          <input type="radio" checked style="margin-top: 2px;">
+          <span style="font-size: 12px; color: var(--color-text);">
+            <span style="font-weight: 600; color: var(--color-text-strong);">Keep · restore later magically</span><br>
+            <span style="color: var(--color-text-muted); font-size: 11px;">Tasks keep the link; if you restore the label, it reappears on them.</span>
+          </span>
+        </label>
+        <label style="display:flex; align-items:flex-start; gap: 8px; cursor:pointer;">
+          <input type="radio" style="margin-top: 2px;">
+          <span style="font-size: 12px; color: var(--color-text);">
+            <span style="font-weight: 600; color: var(--color-text-strong);">Remove from tasks</span><br>
+            <span style="color: var(--color-text-muted); font-size: 11px;">Tasks lose the tag immediately; restoring later won't re-tag them.</span>
+          </span>
+        </label>
+      </div>
+      <div class="footer">
+        <button class="btn md secondary">Cancel</button>
+        <button class="btn md danger-solid">Delete label</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="group">
+  <h3>Toast</h3>
+  <p class="desc">Stack at bottom-right (desktop) / bottom-center (mobile). Default 5s; actionable 8s; errors persistent.</p>
+  <div class="row" style="flex-direction: column; align-items: flex-start;">
+    <div class="toast success"><span class="ico">✓</span><span>Task completed</span><span class="action">Undo</span><span class="x">×</span></div>
+    <div class="toast"><span class="ico">⏰</span><span>Snoozed · until tomorrow 09:00</span><span class="action">Undo</span><span class="x">×</span></div>
+    <div class="toast danger"><span class="ico">⚠</span><span>Couldn't save: network error</span><span class="action">Retry</span><span class="x">×</span></div>
+    <div class="toast loading"><span class="ico"><span class="spinner"></span></span><span>Exporting…</span></div>
+  </div>
+</div>
+
+<!-- TABS + BREADCRUMBS + TOOLTIP -->
+<div class="group">
+  <h3>Tabs · Breadcrumbs · Tooltip</h3>
+  <div class="row"><div class="label-tag">tabs</div>
+    <div class="tabs" style="min-width: 360px;">
+      <span class="tab active">Board <span class="count">11</span></span>
+      <span class="tab">List <span class="count">11</span></span>
+    </div>
+  </div>
+  <div class="row" style="margin-top: 14px;"><div class="label-tag">breadcrumbs</div>
+    <div class="crumbs">
+      <a>Projects</a><span class="sep">›</span><a>Backend</a><span class="sep">›</span><span class="last">TASK-204</span>
+    </div>
+  </div>
+  <div class="row" style="margin-top: 14px;"><div class="label-tag">tooltip</div>
+    <div class="tooltip">Pin sidebar</div>
+    <div class="tooltip">⌘K · open command palette</div>
+  </div>
+</div>
+
+<!-- SKELETON + EMPTY -->
+<div class="group">
+  <h3>Skeleton · Empty state</h3>
+  <div class="row" style="align-items: flex-start; gap: 24px;">
+    <div style="min-width: 320px;">
+      <div class="label-tag" style="margin-bottom: 6px;">skeleton</div>
+      <div class="sk row" style="margin-bottom: 6px;">
+        <div class="sk cb"></div>
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+          <div class="sk title-line"></div>
+          <div class="sk text-line" style="width: 70%;"></div>
+        </div>
+      </div>
+      <div class="sk row">
+        <div class="sk cb"></div>
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+          <div class="sk title-line" style="width: 50%;"></div>
+          <div class="sk text-line" style="width: 40%;"></div>
+        </div>
+      </div>
+    </div>
+    <div style="min-width: 280px; background: var(--color-bg-surface); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-lg);">
+      <div class="empty">
+        <div class="ico">▢</div>
+        <h4>All clear</h4>
+        <p>Nothing waiting for you. Enjoy.</p>
+        <button class="btn md ghost">+ New reminder</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FILTER CHIP -->
+<div class="group">
+  <h3>Filter chip</h3>
+  <p class="desc">Composable predicate chip in filter rows.</p>
+  <div class="row">
+    <span class="filter-chip active">status <span class="op">=</span> open <span class="x">×</span></span>
+    <span class="filter-chip active">project <span class="op">∈</span> Backend, Personal <span class="x">×</span></span>
+    <span class="filter-chip active">priority <span class="op">≥</span> medium <span class="x">×</span></span>
+    <span class="filter-chip">due <span class="op">within</span> 7d</span>
+    <span class="filter-chip dashed">+ Add filter…</span>
+  </div>
+</div>
+
+<!-- KANBAN + REMINDER -->
+<div class="group">
+  <h3>Kanban card · Reminder row</h3>
+  <div class="row" style="align-items: flex-start; gap: 24px;">
+    <div>
+      <div class="label-tag" style="margin-bottom: 6px;">kanban card states</div>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div class="kcard">
+          <div class="ktitle">Refactor auth middleware</div>
+          <div class="kmeta"><span class="badge priority-h">!high</span><span class="badge info"><span class="dot" style="background: var(--color-accent-secondary);"></span>backend</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--color-state-danger);">2d late</span></div>
+        </div>
+        <div class="kcard dragging">
+          <div class="ktitle">Dragging…</div>
+          <div class="kmeta"><span class="badge priority-m">!med</span></div>
+        </div>
+        <div class="kcard" style="opacity: 0.6;">
+          <div class="ktitle" style="text-decoration: line-through;">Doc the zod fix</div>
+          <div class="kmeta"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px;">Mon</span></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="label-tag" style="margin-bottom: 6px;">reminder row</div>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div class="rem-row now">
+          <div class="clock"><div>15:30</div><div style="color: var(--color-text-faint); font-size: 9px;">5m ago</div></div>
+          <div class="body">
+            <div class="rtitle">⏰ Standup prep</div>
+            <div style="color: var(--color-text-muted); font-size: 11px; margin-top: 1px;">→ Refactor auth · Backend</div>
+          </div>
+          <div class="actions">
+            <button class="btn sm" style="background: var(--color-accent-primary-subtle); color: var(--color-accent-primary);">Done</button>
+            <button class="btn sm secondary">Snooze ▾</button>
+            <button class="btn sm secondary">×</button>
+          </div>
+        </div>
+        <div class="rem-row">
+          <div class="clock"><div>tmrw</div><div style="color: var(--color-text-faint); font-size: 9px;">09:30</div></div>
+          <div class="body">
+            <div class="rtitle">Daily standup</div>
+          </div>
+          <div class="actions">
+            <button class="btn sm secondary">Edit</button>
+            <button class="btn sm secondary">×</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p style="color: var(--color-text-muted); font-size: 11px; padding: 16px 0;">
+Iterate on anything that feels off. These will be re-polished during actual implementation — what matters here is establishing the visual recipes.
+</p>
+
+</div>
