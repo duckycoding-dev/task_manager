@@ -1,6 +1,6 @@
 ---
 created: 2026-05-14
-updated: 2026-05-14
+updated: 2026-05-18
 summary: Living glossary of domain terms, entities, concepts, and behaviors used across this codebase + design docs. Single source of truth for terminology. Updated via the Grill-with-me protocol in docs/llm/behavior.md.
 ---
 
@@ -167,6 +167,10 @@ Applies to: [Task](#task), [Reminder](#reminder), [Label](#label).
 
 Counter-pattern: hard delete is reserved for the **permanent delete** action available only from a deleted-items view (currently designed for [Label](#label) only; tasks/reminders may follow).
 
+### Two-mode parent delete (pattern)
+
+Destructive operations on an entity that owns child entities expose two delete modes — **keep children but unlink** (default, safer; DB FK action handles the unlink) and **cascade soft-delete the children** at the service layer (user opts in via query param like `?cascadeTasks=true`). Permanent hard-delete from the deleted-items view is a third tier with its own cascade rules. Currently applies to: [labels](#label) → tasks (via `task_labels`) per [ADR-0007](./adr/0007-two-mode-label-delete.md); [projects](#project) → tasks per [ADR-0017](./adr/0017-project-delete-orphans-tasks.md). See coding-practices [Backend · Two-mode parent delete](../../llm/coding-practices.md#backend-hono--drizzle--zod) for the rule that generalises to any future parent-child relationship.
+
 ### Two-mode delete (labels)
 
 [Label](#label) deletion offers the user a choice:
@@ -175,6 +179,84 @@ Counter-pattern: hard delete is reserved for the **permanent delete** action ava
 2. **Soft-delete · remove from tasks** — same `deletedAt` write + `DELETE FROM task_labels WHERE labelId = :id`. Restoring later returns the label without any tags.
 
 A third tier (permanent delete) lives only on the deleted-labels view; it does a hard `DELETE FROM labels` with FK cascade on `task_labels`.
+
+### Controller (layer)
+
+The HTTP-boundary layer. Per-feature `*.controller.ts`. Consumes already-validated input from the route schema, calls **exactly one** service method per request, formats the response. No business rules, no orchestration across features. See [ADR-0008](./adr/0008-backend-layer-model.md) and the [Backend coding-practices](../../llm/coding-practices.md#backend-hono--drizzle--zod).
+
+Avoid aliases: ~~handler~~ (overloaded — Hono uses "handler" for the route function shape, which is the controller method).
+
+### Service (layer)
+
+The business / domain logic layer. Per-feature `*.service.ts`. Owns: orchestration of repositories and integration clients, fine-grained authorization, transactions, derived data, cross-feature side effects. Aims for **deep modules** — simple interface, non-trivial implementation. Format-agnostic (returns plain values, not HTTP responses). Pass-through service methods are OK *within* a feature (uniform `controller → service → repo` flow); forbidden as the only target for *cross-feature* reads (those go straight to the other feature's repo). See [ADR-0008](./adr/0008-backend-layer-model.md), [ADR-0009](./adr/0009-cross-feature-call-rules.md).
+
+Avoid aliases: ~~manager~~, ~~usecase~~ (use "service" everywhere).
+
+### Repository (layer)
+
+The DB-access layer. Per-feature `*.repository.ts`. Owns access to its feature's primary table; may JOIN related tables when the join produces the entity's **natural hydrated read shape** (e.g. tasks-with-labels-and-reminders). Must NOT write to tables it doesn't own — cross-table writes belong in the service. Validates returned data via Zod at the module boundary — failures throw [`RepositoryValidationError`](./adr/0010-repository-validates-on-exit.md). See [ADR-0008](./adr/0008-backend-layer-model.md), [ADR-0010](./adr/0010-repository-validates-on-exit.md).
+
+Avoid aliases: ~~dao~~, ~~store~~ (use "repository").
+
+### Integration client (layer)
+
+A typed wrapper around a 3rd-party SDK or fetch. Lives under `src/lib/integrations/<service>/`. Exposes a domain-friendly API (not a thin SDK passthrough). Validates inbound data with Zod. Handles retries, backoff, auth-token refresh, translation of vendor errors to domain errors. Services treat clients and repositories as peer **data sources**. No integration clients exist yet — convention captured for when the first lands.
+
+Avoid aliases: ~~SDK wrapper~~, ~~adapter~~, ~~connector~~ — call it "integration client" or just "client" in context.
+
+### Data source
+
+Umbrella term for [repositories](#repository-layer) and [integration clients](#integration-client-layer). A service depends on zero or more data sources injected at construction. Same dependency-injection shape regardless of whether the data lives in our DB or someone else's API. Useful for testing — mock data sources at the service level.
+
+### Deep module
+
+A module with a **simple interface and a complex implementation** (from John Ousterhout's *A Philosophy of Software Design*). Most engineering investment goes behind the interface, where it's reusable. The opposite — shallow modules — expose their internals through the interface and provide no abstraction; they're worse than no module at all because they cost ceremony without hiding complexity. Service methods are the primary deep-module surface in this codebase.
+
+### Action endpoint
+
+A dedicated `POST /:resource/:id/<verb>` route for an operation whose semantics include side effects beyond a single-field flip — cascading state changes, cross-feature writes, derived-data computation, or domain verbs that mean more than "set X = Y". Examples in this codebase: `POST /tasks/:taskId/complete`, `POST /tasks/:taskId/duplicate`. Distinct from the unified `PATCH /tasks/:taskId` which handles arbitrary partial field updates without side effects. See [ADR-0014](./adr/0014-endpoint-shape-rules.md).
+
+Avoid aliases: ~~RPC endpoint~~ (overloaded with Hono RPC client; different concept), ~~command endpoint~~ (CQRS-flavoured; not how we frame it).
+
+### DomainError
+
+Abstract base class for non-HTTP errors thrown by [services](#service-layer) and [repositories](#repository-layer). Subclasses encode business meaning (e.g. `EntityNotFoundError`, `BusinessRuleViolationError`, `RepositoryValidationError`). The global error handler maps each subclass to an HTTP response via a typed registry (`DOMAIN_ERROR_MAP`). Adding a new subclass requires adding a registry entry. See [ADR-0012](./adr/0012-error-propagation-pattern.md).
+
+Avoid aliases: ~~ServiceError~~ (overloaded with class name), ~~BusinessError~~ (use the specific subclass like `BusinessRuleViolationError`), ~~CustomError~~ (uninformative).
+
+### AppError
+
+HTTP-flavored error class — `AppError<TCode>` where `TCode` is a `VerboseStatusCode`. Reserved for layers that are inherently in an HTTP context: middleware (auth, rate-limit, CORS) and the `@hono/zod-openapi` `defaultHook` for route-validation failures. **Service and repository layers must NOT throw `AppError`** — they throw [`DomainError`](#domainerror) subclasses. See [ADR-0012](./adr/0012-error-propagation-pattern.md).
+
+### EndpointError
+
+Generic `EndpointError<TRoute>` — variant of `AppError` whose verbose code is restricted to those declared in the given route's response schemas. Opt-in escape hatch for controllers that need to short-circuit with a purely-HTTP-shaped error not derivable from any `DomainError` subclass (e.g. `304 NOT_MODIFIED` from an `If-None-Match` check). Cannot prevent semantic typos within the declared set — e.g. throwing `'OK'` when meaning `'NOT_FOUND'` on a route that declares both compiles fine. Therefore not a default-use tool; 99% of controllers don't use it.
+
+### showToClient
+
+Boolean flag on `AppError` / `DomainError` / `EndpointError`. Defaults to `false`. Controls whether the custom error message reaches the client in production. With `false` (default), production responses use the generic message from `statusCodeMap` for the verbose code; with `true`, the custom message reaches the client. Development always shows the custom message regardless. Replaces the older `hideToClient` (double-negative; default `true`). See [ADR-0012](./adr/0012-error-propagation-pattern.md).
+
+Avoid aliases: ~~hideToClient~~ (deprecated), ~~clientSafe~~ (considered, rejected), ~~visible~~ (too vague).
+
+### Error registry · `DOMAIN_ERROR_MAP`
+
+Single source of truth mapping [`DomainError`](#domainerror) subclasses to HTTP status + `verboseCode`. Lives next to the error classes in `apps/backend/src/utils/errors/`. Used by the global error handler to translate domain errors to HTTP responses. Must be kept in sync when adding new `DomainError` subclasses — forgetting an entry falls through to a generic 500. See [ADR-0012](./adr/0012-error-propagation-pattern.md).
+
+### requestId
+
+A UUID assigned to every incoming HTTP request — generated by the first middleware in the chain, or honored from an `x-request-id` request header when the client provides one. Echoed back in the response's `x-request-id` header so the client can correlate. Carried in an `AsyncLocalStorage` context throughout the request's async lifespan; every log line emitted during the request automatically includes it without callers threading it through signatures. See [ADR-0015](./adr/0015-request-id-via-asyncLocalStorage.md).
+
+### AsyncLocalStorage request context
+
+The `apps/backend/src/utils/request-context.ts` module exports an `AsyncLocalStorage` instance (`requestContext`) used to carry per-request data ([requestId](#requestid), and in future possibly `userId` for log correlation) accessibly to any code running within the request's async continuation. The first middleware wraps `next()` in `requestContext.run({ requestId }, next)`. Code outside a request scope (CLI / migration / boot) sees `undefined` from the store. See [ADR-0015](./adr/0015-request-id-via-asyncLocalStorage.md).
+
+Avoid aliases: ~~AsyncContext~~ (the upcoming ECMAScript proposal — different API), ~~globalContext~~ (misleading; not global).
+
+### `safe()` utility · `Result<T, E>`
+
+Helper at `apps/backend/src/utils/safe.ts` that wraps a `Promise<T>` and returns a `Promise<Result<T, E>>` discriminated union (`{ ok: true; data: T } | { ok: false; error: E }`). Used opt-in at the rare sites where a layer wants to inspect an error before deciding to recover, transform, or rethrow. The default error pattern remains throw + bubble; `safe()` is for the minority of recovery sites. Always rethrow unknown error classes explicitly. See [ADR-0013](./adr/0013-safe-utility-for-error-inspection.md).
+
+Avoid aliases: ~~tryCatch()~~, ~~attempt()~~, ~~Result helper~~ — use "safe()" everywhere.
 
 ### BetterAuth
 
