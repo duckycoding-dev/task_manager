@@ -2,13 +2,14 @@ import type { Context } from 'hono';
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
 import type { ErrorResponse } from 'src/types/response';
 import env from '../env';
+import { logger } from '../logger';
 import {
   DEFAULT_ERROR_MAPPING,
   statusCodeMap,
   type VerboseStatusCode,
 } from '../status-codes';
 import type { HandlerStatusCode, ZodOpenAPIRoute } from 'types/utility/';
-import { RepositoryValidationError } from './domain-errors';
+import { DomainError, DOMAIN_ERROR_MAP } from './domain-errors';
 
 const DEFAULT_ERROR_RESPONSE = {
   success: false,
@@ -115,25 +116,48 @@ const serializeError = (err: Error) => {
           hideToClient: err.hideToClient,
         }
       : {}),
+    ...(err instanceof DomainError
+      ? {
+          showToClient: err.showToClient,
+        }
+      : {}),
   };
 };
 
-export const errorHandler = (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  err: Error | AppError | EndpointError<any> | RepositoryValidationError,
-  c: Context,
-): Response => {
-  console.error(
-    `[${new Date().toISOString()}] Error:`,
-    JSON.stringify(serializeError(err), null, 2),
-  );
+export const errorHandler = (err: Error, c: Context): Response => {
+  logger.error('error_handler_unhandled', serializeError(err));
 
-  const cause: unknown = env.NODE_ENV === 'development' ? err.cause : undefined;
-  const stack = env.NODE_ENV === 'development' ? err.stack : undefined;
+  const isDev = env.NODE_ENV === 'development';
+  const cause: unknown = isDev ? err.cause : undefined;
+  const stack = isDev ? err.stack : undefined;
+
+  if (err instanceof DomainError) {
+    const mapping = DOMAIN_ERROR_MAP[err.name as keyof typeof DOMAIN_ERROR_MAP];
+
+    if (!mapping) {
+      return c.json(DEFAULT_ERROR_RESPONSE, DEFAULT_ERROR_MAPPING.status);
+    }
+
+    const message =
+      isDev || err.showToClient
+        ? err.message
+        : (statusCodeMap[mapping.verboseCode]?.message ??
+          DEFAULT_ERROR_RESPONSE.error);
+
+    const errorResponse: ErrorResponse = {
+      success: false,
+      error: message,
+      verboseCode: mapping.verboseCode,
+      cause,
+      stack,
+    };
+
+    return c.json(errorResponse, mapping.status);
+  }
 
   if (err instanceof AppError || err instanceof EndpointError) {
     const message: string =
-      env.NODE_ENV === 'development' || !err.hideToClient
+      isDev || !err.hideToClient
         ? err.message
         : (statusCodeMap[err.verboseCode]?.message ?? 'Internal Server Error');
 
@@ -146,20 +170,7 @@ export const errorHandler = (
     };
 
     return c.json(errorResponse, err.status);
-  } else if (err instanceof RepositoryValidationError) {
-    const errorResponse: ErrorResponse = {
-      ...DEFAULT_ERROR_RESPONSE,
-      error:
-        env.NODE_ENV === 'development'
-          ? err.message
-          : DEFAULT_ERROR_RESPONSE.error,
-      cause,
-      stack,
-    };
-
-    return c.json(errorResponse, DEFAULT_ERROR_MAPPING.status);
   }
 
-  // Handle unexpected errors
   return c.json(DEFAULT_ERROR_RESPONSE, DEFAULT_ERROR_MAPPING.status);
 };
