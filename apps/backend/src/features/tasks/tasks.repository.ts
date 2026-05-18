@@ -63,23 +63,17 @@ export const createTasksRepository = (
   return {
     getTasks: async (userId, filters) => {
       const { dueDate, priority, projectId, status } = filters;
-      const query = db.select().from(tasksModel);
-      query.where(eq(tasksModel.userId, userId));
 
-      if (projectId) {
-        query.where(eq(tasksModel.projectId, projectId));
-      }
-      if (dueDate) {
-        query.where(eq(tasksModel.dueDate, dueDate));
-      }
-      if (priority) {
-        query.where(eq(tasksModel.priority, priority));
-      }
-      if (status) {
-        query.where(eq(tasksModel.status, status));
-      }
+      const conditions = [eq(tasksModel.userId, userId)];
+      if (projectId) conditions.push(eq(tasksModel.projectId, projectId));
+      if (dueDate) conditions.push(eq(tasksModel.dueDate, dueDate));
+      if (priority) conditions.push(eq(tasksModel.priority, priority));
+      if (status) conditions.push(eq(tasksModel.status, status));
 
-      const tasks = await query;
+      const tasks = await db
+        .select()
+        .from(tasksModel)
+        .where(and(...conditions));
 
       const parsed = selectTaskSchema.array().safeParse(tasks);
       if (parsed.success) {

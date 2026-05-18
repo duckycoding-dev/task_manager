@@ -58,20 +58,15 @@ export const createLabelsRepository = (
     },
     getLabels: async (userId, filters) => {
       const { name, color } = filters;
-      const query = db.select().from(labels);
-      query.where(eq(labels.userId, userId));
 
-      if (name) {
-        query.where(eq(labels.name, name));
-      }
-      if (color) {
-        query.where(eq(labels.color, color));
-      }
-      if (userId) {
-        query.where(eq(labels.userId, userId));
-      }
+      const conditions = [eq(labels.userId, userId)];
+      if (name) conditions.push(eq(labels.name, name));
+      if (color) conditions.push(eq(labels.color, color));
 
-      const labelsFound = await query;
+      const labelsFound = await db
+        .select()
+        .from(labels)
+        .where(and(...conditions));
 
       const parsed = selectLabelSchema.array().safeParse(labelsFound);
       if (parsed.success) {
