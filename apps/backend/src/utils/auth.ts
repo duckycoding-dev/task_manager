@@ -5,6 +5,7 @@ import { openAPI } from 'better-auth/plugins';
 import * as authSchemas from 'features/auth/auth.db/';
 import type { MiddlewareHandler } from 'hono';
 import { AppError } from './errors/http-errors';
+import { AUTH_CTX_KEYS } from './auth-context';
 import { createMiddleware } from 'hono/factory';
 import type { AppContext } from 'types/app_context/';
 import type { MarkPropertiesRequired } from 'types/utility/';
@@ -37,13 +38,13 @@ export const addAuthMiddleware: MiddlewareHandler = async (c, next) => {
   const session = await auth.api.getSession({ headers: c.req.raw.headers });
 
   if (!session) {
-    c.set('user', null);
-    c.set('session', null);
+    c.set(AUTH_CTX_KEYS.user, null);
+    c.set(AUTH_CTX_KEYS.session, null);
     return await next();
   }
 
-  c.set('user', session.user);
-  c.set('session', session.session);
+  c.set(AUTH_CTX_KEYS.user, session.user);
+  c.set(AUTH_CTX_KEYS.session, session.session);
   return await next();
 };
 
@@ -62,7 +63,7 @@ export const checkAuthMiddleware = createMiddleware<{
       showToClient: true,
     });
   }
-  c.set('user', session.user);
-  c.set('session', session.session);
+  c.set(AUTH_CTX_KEYS.user, session.user);
+  c.set(AUTH_CTX_KEYS.session, session.session);
   await next();
 });

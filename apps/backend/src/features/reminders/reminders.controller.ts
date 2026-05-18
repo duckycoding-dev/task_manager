@@ -2,6 +2,7 @@ import type { RemindersService } from './reminders.service';
 import { remindersRoutes } from './reminders.routes';
 import type { AppRouteHandler } from '../../types/app_context';
 import { EndpointError } from 'utils/errors/http-errors/';
+import { AUTH_CTX_KEYS } from 'utils/auth-context/';
 
 export type RemindersController = {
   getReminders: AppRouteHandler<typeof remindersRoutes.getReminders>;
@@ -17,7 +18,7 @@ export const createRemindersController = (
   return {
     getReminderById: async (c) => {
       const { id } = c.req.valid('param');
-      const { id: userId } = c.get('user');
+      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const reminderFound = await remindersService.getReminderById(userId, id);
       if (!reminderFound) {
         throw new EndpointError<typeof remindersRoutes.getReminderById>(
@@ -35,7 +36,7 @@ export const createRemindersController = (
       );
     },
     getReminders: async (c) => {
-      const { id: userId } = c.get('user');
+      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const reminders = await remindersService.getReminders(userId);
       return c.json(
         {
@@ -49,7 +50,7 @@ export const createRemindersController = (
 
     createReminder: async (c) => {
       const reminder = c.req.valid('json');
-      const { id: userId } = c.get('user');
+      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const reminderCreated = await remindersService.createReminder(
         userId,
         reminder,
@@ -67,7 +68,7 @@ export const createRemindersController = (
     updateReminder: async (c) => {
       const { id } = c.req.valid('param');
       const reminderUpdate = c.req.valid('json');
-      const { id: userId } = c.get('user');
+      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const reminderUpdated = await remindersService.updateReminder(
         userId,
         id,
@@ -90,7 +91,7 @@ export const createRemindersController = (
     },
     deleteReminder: async (c) => {
       const { id } = c.req.valid('param');
-      const { id: userId } = c.get('user');
+      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const reminderDeleted = await remindersService.deleteReminder(userId, id);
       if (!reminderDeleted) {
         throw new EndpointError<typeof remindersRoutes.deleteReminder>(

@@ -2,6 +2,7 @@ import type { LabelsService } from './labels.service';
 import { labelsRoutes } from './labels.routes';
 import type { AppRouteHandler } from '../../types/app_context';
 import { EndpointError } from 'utils/errors/http-errors/';
+import { AUTH_CTX_KEYS } from 'utils/auth-context/';
 
 export type LabelsController = {
   getLabels: AppRouteHandler<typeof labelsRoutes.getLabels>;
@@ -19,7 +20,7 @@ export const createLabelsController = (
   return {
     getLabelById: async (c) => {
       const { id } = c.req.valid('param');
-      const { id: userId } = c.get('user');
+      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const labelFound = await labelsService.getLabelById(userId, id);
       if (!labelFound) {
         throw new EndpointError<typeof labelsRoutes.getLabelById>('NOT_FOUND', {
@@ -37,7 +38,7 @@ export const createLabelsController = (
     },
     getLabels: async (c) => {
       const filters = c.req.valid('query');
-      const { id: userId } = c.get('user');
+      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const labelsFound = await labelsService.getLabels(userId, filters);
       return c.json(
         {
@@ -50,7 +51,7 @@ export const createLabelsController = (
     },
     createLabel: async (c) => {
       const label = c.req.valid('json');
-      const { id: userId } = c.get('user');
+      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const labelCreated = await labelsService.createLabel(userId, label);
       return c.json(
         {
@@ -64,7 +65,7 @@ export const createLabelsController = (
     updateLabel: async (c) => {
       const { labelId } = c.req.valid('param');
       const labelUpdate = c.req.valid('json');
-      const { id: userId } = c.get('user');
+      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const labelUpdated = await labelsService.updateLabel(
         userId,
         labelId,
@@ -86,7 +87,7 @@ export const createLabelsController = (
     },
     deleteLabel: async (c) => {
       const { labelId } = c.req.valid('param');
-      const { id: userId } = c.get('user');
+      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const labelWasDeleted = await labelsService.deleteLabel(userId, labelId);
       if (!labelWasDeleted) {
         throw new EndpointError<typeof labelsRoutes.deleteLabel>('NOT_FOUND', {
@@ -103,7 +104,7 @@ export const createLabelsController = (
     },
     assignLabelToTask: async (c) => {
       const { taskId, labelId } = c.req.valid('json');
-      const { id: userId } = c.get('user');
+      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const labelWasAssigned = await labelsService.assignLabelToTask(
         userId,
         taskId,
@@ -127,7 +128,7 @@ export const createLabelsController = (
     },
     removeLabelFromTask: async (c) => {
       const { taskId, labelId } = c.req.valid('json');
-      const { id: userId } = c.get('user');
+      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const labelWasRemoved = await labelsService.removeLabelFromTask(
         userId,
         taskId,

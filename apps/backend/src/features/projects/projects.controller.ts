@@ -2,6 +2,7 @@ import type { ProjectsService } from './projects.service';
 import { projectsRoutes } from './projects.routes';
 import type { AppRouteHandler } from '../../types/app_context';
 import { EndpointError } from 'utils/errors/http-errors/';
+import { AUTH_CTX_KEYS } from 'utils/auth-context/';
 
 // TODO: implement additional features such as:
 // - inviting adding other users to a project
@@ -22,7 +23,7 @@ export const createProjectsController = (
 ): ProjectsController => {
   return {
     getProjects: async (c) => {
-      const { id: userId } = c.get('user');
+      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const projectsFound = await projectsService.getProjects(userId);
       return c.json(
         {
@@ -36,7 +37,7 @@ export const createProjectsController = (
 
     getProjectById: async (c) => {
       const { projectId } = c.req.valid('param');
-      const { id: userId } = c.get('user');
+      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const projectFound = await projectsService.getProjectById(
         userId,
         projectId,
@@ -58,7 +59,7 @@ export const createProjectsController = (
 
     createProject: async (c) => {
       const project = c.req.valid('json');
-      const { id: userId } = c.get('user');
+      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const createdProject = await projectsService.createProject(
         userId,
         project,
@@ -72,7 +73,7 @@ export const createProjectsController = (
     updateProject: async (c) => {
       const { projectId } = c.req.valid('param');
       const project = c.req.valid('json');
-      const { id: userId } = c.get('user');
+      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const updatedProject = await projectsService.updateProject(
         userId,
         projectId,
@@ -94,7 +95,7 @@ export const createProjectsController = (
 
     deleteProject: async (c) => {
       const { projectId } = c.req.valid('param');
-      const { id: userId } = c.get('user');
+      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const deleted = await projectsService.deleteProject(userId, projectId);
       if (!deleted) {
         throw new EndpointError<typeof projectsRoutes.deleteProject>(
@@ -109,7 +110,7 @@ export const createProjectsController = (
 
     getProjectTasks: async (c) => {
       const { projectId } = c.req.valid('param');
-      const { id: userId } = c.get('user');
+      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const tasksFound = await projectsService.getProjectTasks(
         userId,
         projectId,

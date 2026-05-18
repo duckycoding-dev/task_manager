@@ -2,6 +2,7 @@ import type { TasksService } from './tasks.service';
 import { tasksRoutes } from './tasks.routes';
 import type { AppRouteHandler } from '../../types/app_context';
 import { EndpointError } from 'utils/errors/http-errors/';
+import { AUTH_CTX_KEYS } from 'utils/auth-context/';
 
 export type TasksController = {
   getTasks: AppRouteHandler<typeof tasksRoutes.getTasks>;
@@ -26,7 +27,7 @@ export const createTasksController = (
   return {
     getTasks: async (c) => {
       const filters = c.req.valid('query');
-      const { id: userId } = c.get('user');
+      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const dueDate = filters.dueDate ? new Date(filters.dueDate) : undefined;
       const tasksFound = await tasksService.getTasks(userId, {
         ...filters,
@@ -44,7 +45,7 @@ export const createTasksController = (
     },
     getTaskById: async (c) => {
       const { taskId } = c.req.valid('param');
-      const { id: userId } = c.get('user');
+      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const taskFound = await tasksService.getTasksById(userId, taskId);
 
       if (!taskFound) {
@@ -60,7 +61,7 @@ export const createTasksController = (
 
     createTask: async (c) => {
       const task = c.req.valid('json');
-      const { id: userId } = c.get('user');
+      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const createdTask = await tasksService.createTask(userId, task);
       return c.json(
         { success: true, data: createdTask, message: 'Task created' },
@@ -71,7 +72,7 @@ export const createTasksController = (
     updateTask: async (c) => {
       const { taskId } = c.req.valid('param');
       const task = c.req.valid('json');
-      const { id: userId } = c.get('user');
+      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const updatedTask = await tasksService.updateTask(userId, taskId, task);
       if (!updatedTask) {
         throw new EndpointError<typeof tasksRoutes.updateTask>('NOT_FOUND', {
@@ -86,7 +87,7 @@ export const createTasksController = (
 
     deleteTask: async (c) => {
       const { taskId } = c.req.valid('param');
-      const { id: userId } = c.get('user');
+      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const deleted = await tasksService.deleteTask(userId, taskId);
       if (!deleted) {
         throw new EndpointError<typeof tasksRoutes.deleteTask>('NOT_FOUND', {
@@ -99,7 +100,7 @@ export const createTasksController = (
     updateTaskPriority: async (c) => {
       const { taskId } = c.req.valid('param');
       const priority = c.req.valid('json');
-      const { id: userId } = c.get('user');
+      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const updatedTask = await tasksService.updateTaskPriority(
         userId,
         taskId,
@@ -122,7 +123,7 @@ export const createTasksController = (
     updateTaskRecurringInterval: async (c) => {
       const { taskId } = c.req.valid('param');
       const recurringInterval = c.req.valid('json');
-      const { id: userId } = c.get('user');
+      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const updatedTask = await tasksService.updateTaskRecurringInterval(
         userId,
         taskId,
@@ -145,7 +146,7 @@ export const createTasksController = (
     updateTaskIsRecurring: async (c) => {
       const { taskId } = c.req.valid('param');
       const isRecurring = c.req.valid('json');
-      const { id: userId } = c.get('user');
+      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const updatedTask = await tasksService.updateTaskIsRecurring(
         userId,
         taskId,
@@ -168,7 +169,7 @@ export const createTasksController = (
     updateTaskStatus: async (c) => {
       const { taskId } = c.req.valid('param');
       const status = c.req.valid('json');
-      const { id: userId } = c.get('user');
+      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const updatedTask = await tasksService.updateTaskStatus(
         userId,
         taskId,
@@ -190,7 +191,7 @@ export const createTasksController = (
 
     getTaskReminders: async (c) => {
       const { taskId } = c.req.valid('param');
-      const { id: userId } = c.get('user');
+      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const reminders = await tasksService.getTaskReminders(userId, taskId);
 
       return c.json(
