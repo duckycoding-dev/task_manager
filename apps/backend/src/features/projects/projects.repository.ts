@@ -46,10 +46,10 @@ export const createProjectsRepository = (
       if (parsed.success) {
         return parsed.data;
       }
-      throw new RepositoryValidationError(
-        formatZodError(parsed.error),
-        parsed.data,
-      );
+      throw new RepositoryValidationError(projectsList, parsed.error.issues, {
+        message: formatZodError(parsed.error),
+        cause: parsed.error,
+      });
     },
 
     getProjectById: async (userId, projectId) => {
@@ -66,10 +66,10 @@ export const createProjectsRepository = (
       if (parsed.success) {
         return parsed.data;
       }
-      throw new RepositoryValidationError(
-        formatZodError(parsed.error),
-        parsed.data,
-      );
+      throw new RepositoryValidationError(project[0], parsed.error.issues, {
+        message: formatZodError(parsed.error),
+        cause: parsed.error,
+      });
     },
 
     createProject: async (userId, newProject) => {
@@ -85,8 +85,12 @@ export const createProjectsRepository = (
         return parsed.data;
       }
       throw new RepositoryValidationError(
-        formatZodError(parsed.error),
-        parsed.data,
+        createdProject[0],
+        parsed.error.issues,
+        {
+          message: formatZodError(parsed.error),
+          cause: parsed.error,
+        },
       );
     },
 
@@ -105,8 +109,12 @@ export const createProjectsRepository = (
         return parsed.data;
       }
       throw new RepositoryValidationError(
-        formatZodError(parsed.error),
-        parsed.data,
+        updatedProject[0],
+        parsed.error.issues,
+        {
+          message: formatZodError(parsed.error),
+          cause: parsed.error,
+        },
       );
     },
 
@@ -138,10 +146,10 @@ export const createProjectsRepository = (
       if (parsed.success) {
         return parsed.data;
       }
-      throw new RepositoryValidationError(
-        formatZodError(parsed.error),
-        parsed.data,
-      );
+      throw new RepositoryValidationError(projectTasks, parsed.error.issues, {
+        message: formatZodError(parsed.error),
+        cause: parsed.error,
+      });
     },
   };
 };

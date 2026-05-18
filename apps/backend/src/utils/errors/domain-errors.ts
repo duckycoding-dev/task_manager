@@ -89,12 +89,18 @@ export class AuthenticationError extends DomainError {
   }
 }
 
-// Signature preserved for backwards compat with existing repository call sites.
-// Handoff item #21 (commit B4) will refactor to `(input, issues, options)` and
-// update every call site in one sweep.
 export class RepositoryValidationError extends DomainError {
-  constructor(message?: string, cause?: unknown) {
-    super(message ?? 'Repository validation failed', { cause });
+  readonly input: unknown;
+  readonly issues: unknown;
+
+  constructor(
+    input: unknown,
+    issues: unknown,
+    options: DomainErrorOptions = {},
+  ) {
+    super('Repository validation failed', options);
+    this.input = input;
+    this.issues = issues;
   }
 }
 

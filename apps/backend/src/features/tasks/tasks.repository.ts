@@ -79,10 +79,10 @@ export const createTasksRepository = (
       if (parsed.success) {
         return parsed.data;
       }
-      throw new RepositoryValidationError(
-        formatZodError(parsed.error),
-        parsed.data,
-      );
+      throw new RepositoryValidationError(tasks, parsed.error.issues, {
+        message: formatZodError(parsed.error),
+        cause: parsed.error,
+      });
     },
     getTaskById: async (userId, id) => {
       const task = await db
@@ -98,10 +98,10 @@ export const createTasksRepository = (
       if (parsed.success) {
         return parsed.data;
       }
-      throw new RepositoryValidationError(
-        formatZodError(parsed.error),
-        parsed.data,
-      );
+      throw new RepositoryValidationError(task[0], parsed.error.issues, {
+        message: formatZodError(parsed.error),
+        cause: parsed.error,
+      });
     },
     createTask: async (userId, newTask) => {
       const createdTask = await db
@@ -112,10 +112,10 @@ export const createTasksRepository = (
       if (parsed.success) {
         return parsed.data;
       }
-      throw new RepositoryValidationError(
-        formatZodError(parsed.error),
-        parsed.data,
-      );
+      throw new RepositoryValidationError(createdTask[0], parsed.error.issues, {
+        message: formatZodError(parsed.error),
+        cause: parsed.error,
+      });
     },
 
     updateTask: async (userId, id, task) => {
@@ -132,10 +132,10 @@ export const createTasksRepository = (
       if (parsed.success) {
         return parsed.data;
       }
-      throw new RepositoryValidationError(
-        formatZodError(parsed.error),
-        parsed.data,
-      );
+      throw new RepositoryValidationError(updatedTask[0], parsed.error.issues, {
+        message: formatZodError(parsed.error),
+        cause: parsed.error,
+      });
     },
 
     deleteTask: async (userId, id) => {
@@ -164,10 +164,10 @@ export const createTasksRepository = (
       if (parsed.success) {
         return parsed.data;
       }
-      throw new RepositoryValidationError(
-        formatZodError(parsed.error),
-        parsed.data,
-      );
+      throw new RepositoryValidationError(updatedTask[0], parsed.error.issues, {
+        message: formatZodError(parsed.error),
+        cause: parsed.error,
+      });
     },
 
     updateTaskRecurringInterval: async (userId, id, recurringInterval) => {
@@ -184,10 +184,10 @@ export const createTasksRepository = (
       if (parsed.success) {
         return parsed.data;
       }
-      throw new RepositoryValidationError(
-        formatZodError(parsed.error),
-        parsed.data,
-      );
+      throw new RepositoryValidationError(updatedTask[0], parsed.error.issues, {
+        message: formatZodError(parsed.error),
+        cause: parsed.error,
+      });
     },
 
     updateTaskIsRecurring: async (userId, id, isRecurring) => {
@@ -204,10 +204,10 @@ export const createTasksRepository = (
       if (parsed.success) {
         return parsed.data;
       }
-      throw new RepositoryValidationError(
-        formatZodError(parsed.error),
-        parsed.data,
-      );
+      throw new RepositoryValidationError(updatedTask[0], parsed.error.issues, {
+        message: formatZodError(parsed.error),
+        cause: parsed.error,
+      });
     },
 
     updateTaskStatus: async (userId, id, status) => {
@@ -224,10 +224,10 @@ export const createTasksRepository = (
       if (parsed.success) {
         return parsed.data;
       }
-      throw new RepositoryValidationError(
-        formatZodError(parsed.error),
-        parsed.data,
-      );
+      throw new RepositoryValidationError(updatedTask[0], parsed.error.issues, {
+        message: formatZodError(parsed.error),
+        cause: parsed.error,
+      });
     },
     getTaskReminders: async (userId, taskId) => {
       const taskReminders = await db
@@ -242,10 +242,10 @@ export const createTasksRepository = (
       if (parsed.success) {
         return parsed.data;
       }
-      throw new RepositoryValidationError(
-        formatZodError(parsed.error),
-        parsed.data,
-      );
+      throw new RepositoryValidationError(reminders, parsed.error.issues, {
+        message: formatZodError(parsed.error),
+        cause: parsed.error,
+      });
     },
   };
 };

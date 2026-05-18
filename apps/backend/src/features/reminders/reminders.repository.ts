@@ -48,10 +48,10 @@ export const createRemindersRepository = (
       if (parsed.success) {
         return parsed.data;
       }
-      throw new RepositoryValidationError(
-        formatZodError(parsed.error),
-        parsed.data,
-      );
+      throw new RepositoryValidationError(res[0], parsed.error.issues, {
+        message: formatZodError(parsed.error),
+        cause: parsed.error,
+      });
     },
     getReminders: async (userId) => {
       const res = await db
@@ -62,10 +62,10 @@ export const createRemindersRepository = (
       if (parsed.success) {
         return parsed.data;
       }
-      throw new RepositoryValidationError(
-        formatZodError(parsed.error),
-        parsed.data,
-      );
+      throw new RepositoryValidationError(res, parsed.error.issues, {
+        message: formatZodError(parsed.error),
+        cause: parsed.error,
+      });
     },
     getRemindersByTaskId: async (userId, taskId) => {
       const res = await db
@@ -81,10 +81,10 @@ export const createRemindersRepository = (
       if (parsed.success) {
         return parsed.data;
       }
-      throw new RepositoryValidationError(
-        formatZodError(parsed.error),
-        parsed.data,
-      );
+      throw new RepositoryValidationError(res, parsed.error.issues, {
+        message: formatZodError(parsed.error),
+        cause: parsed.error,
+      });
     },
     createReminder: async (userId, newReminder) => {
       const createdReminder = await db
@@ -97,8 +97,12 @@ export const createRemindersRepository = (
         return parsed.data;
       }
       throw new RepositoryValidationError(
-        formatZodError(parsed.error),
-        parsed.data,
+        createdReminder,
+        parsed.error.issues,
+        {
+          message: formatZodError(parsed.error),
+          cause: parsed.error,
+        },
       );
     },
     updateReminder: async (userId, id, reminder) => {
@@ -114,8 +118,12 @@ export const createRemindersRepository = (
         return parsed.data;
       }
       throw new RepositoryValidationError(
-        formatZodError(parsed.error),
-        parsed.data,
+        updatedReminder[0],
+        parsed.error.issues,
+        {
+          message: formatZodError(parsed.error),
+          cause: parsed.error,
+        },
       );
     },
     deleteReminder: async (userId, id) => {

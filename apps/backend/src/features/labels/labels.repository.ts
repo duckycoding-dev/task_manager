@@ -51,10 +51,10 @@ export const createLabelsRepository = (
       if (parsed.success) {
         return parsed.data;
       }
-      throw new RepositoryValidationError(
-        formatZodError(parsed.error),
-        parsed.data,
-      );
+      throw new RepositoryValidationError(res[0], parsed.error.issues, {
+        message: formatZodError(parsed.error),
+        cause: parsed.error,
+      });
     },
     getLabels: async (userId, filters) => {
       const { name, color } = filters;
@@ -72,10 +72,10 @@ export const createLabelsRepository = (
       if (parsed.success) {
         return parsed.data;
       }
-      throw new RepositoryValidationError(
-        formatZodError(parsed.error),
-        parsed.data,
-      );
+      throw new RepositoryValidationError(labelsFound, parsed.error.issues, {
+        message: formatZodError(parsed.error),
+        cause: parsed.error,
+      });
     },
     createLabel: async (userId, newLabel) => {
       const createdLabel = await db
@@ -87,8 +87,12 @@ export const createLabelsRepository = (
         return parsed.data;
       }
       throw new RepositoryValidationError(
-        formatZodError(parsed.error),
-        parsed.data,
+        createdLabel[0],
+        parsed.error.issues,
+        {
+          message: formatZodError(parsed.error),
+          cause: parsed.error,
+        },
       );
     },
     updateLabel: async (userId, labelId, data) => {
@@ -105,8 +109,12 @@ export const createLabelsRepository = (
         return parsed.data;
       }
       throw new RepositoryValidationError(
-        formatZodError(parsed.error),
-        parsed.data,
+        updatedLabel[0],
+        parsed.error.issues,
+        {
+          message: formatZodError(parsed.error),
+          cause: parsed.error,
+        },
       );
     },
     deleteLabel: async (userId, labelId) => {
