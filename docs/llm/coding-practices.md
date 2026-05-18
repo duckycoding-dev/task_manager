@@ -21,16 +21,29 @@ This doc grows **only** when a real ambiguity surfaces and gets resolved. It is 
 
 ### TypeScript
 
-*Pending grills. Examples of decisions that will land here as they're discussed:*
+#### Arrow functions default for module-level definitions
 
-- Function form: when `function foo()` vs `const foo = () =>`.
+Module-level function definitions use the **arrow form** (`export const foo = (x: number) => …`) as the default. The `function` keyword is reserved for cases where it earns its existence: (1) hoisting is genuinely needed (rare in module-level code — most modules read top-to-bottom), (2) generators and async generators (`function*` / `async function*` — the only available syntax), (3) methods inside classes / object literals (already required there), (4) when self-reference for recursion is clearer with the name binding from the declaration. Rationale: consistency across the codebase, simpler `const` discipline, no temporal-dead-zone confusion from intra-module hoisting. Stack-trace quality is a non-issue with modern V8 — arrow functions assigned to a `const` show the variable name. Inferred return types stay; explicit return types only when the boundary contract warrants them or inference produces something wrong.
+
+#### `type` default, `interface` only when extension is needed
+
+Use `type` aliases as the default for shaping object/value types. `interface` is reserved for the two cases where it does something `type` can't: (1) declaration merging (module augmentation — extending library types, e.g. `declare module 'hono' { interface ContextVariableMap { … } }`), (2) public-API surfaces that downstream consumers are *expected* to extend via `interface X extends Y`. For everything else — domain models, props, function signatures, discriminated unions, mapped/conditional types — `type` is strictly more capable (unions, intersections, primitives, tuples, computed keys all work) and reads uniformly. Don't waver between the two within the same file; if a type starts as `type` and later needs declaration-merging, convert it deliberately rather than mixing styles.
+
+#### Pending grills
+
 - Casing: enforced by linter; rules captured here when they deviate from defaults.
-- Export style: named vs default.
-- `type` vs `interface`.
-- Error pattern: throw vs Result.
+- Export style: named vs default (likely named-only, barrel files likely banned).
+- Error pattern at app boundaries: throw vs `Result` (backend rule already locked — pattern α + `safe()` at recovery sites; TS-general rule TBD).
 - Import order: external / internal / type-only.
 - Async: prefer `async/await` vs `.then` (most likely `async/await`).
 - Nullish handling: `??` vs `||`.
+- `null` vs `undefined` policy.
+- `unknown` vs `any` (assume zero `any`; lock the rule).
+- `const` assertion vs explicit literal type.
+- Discriminated-union discriminator name (`kind` vs `type`).
+- `readonly` defaults on type members.
+- For-of vs `.map(await)` for async iteration.
+- Module-level `const` vs class with static methods.
 
 ### Vue / Nuxt *(populated when frontend implementation starts)*
 
@@ -160,6 +173,10 @@ Columns whose values are an enum (`tasks.status`, `tasks.priority`, `tasks.recur
 #### App feature tables carry `createdAt` + `updatedAt`
 
 Every app-owned feature table has `createdAt` (set on insert, immutable) and `updatedAt` (set on insert, auto-bumped on every UPDATE via Drizzle's `$onUpdate(() => new Date())`). Both are `NOT NULL` with `now()` defaults. Pair with the standard `deletedAt: timestamp NULL` from [ADR-0002](../stable/_shared/adr/0002-soft-delete-via-deletedat.md) for soft-deletable tables. New feature tables get these columns by default — deviations need an ADR. Auth tables (BetterAuth-managed) are exempt. See [ADR-0018](../stable/_shared/adr/0018-createdat-updatedat-on-feature-tables.md).
+
+#### BetterAuth-owned tables are off-limits
+
+The four auth tables — `users`, `sessions`, `accounts`, `verifications` (declared in `apps/backend/src/auth/schema/auth.db.ts`) — are owned by **BetterAuth**, not by this project. Their column shape (including oddities like `verifications.createdAt` / `verifications.updatedAt` being nullable, or auth PKs being `text` instead of `uuid`) is dictated by BetterAuth's library contract. Do NOT migrate these columns to satisfy app-side conventions (e.g. ADR-0016 ID type boundary, ADR-0018 `createdAt`/`updatedAt` uniformity, ADR-0019 enum validation). A schema-cleanup PR that "harmonizes" these tables will break the auth flow at runtime. Only modify them in response to a BetterAuth upgrade or a feature the library itself drives. See [glossary · BetterAuth-owned tables](../stable/_shared/glossary.md#betterauth-owned-tables-off-limits), [ADR-0016](../stable/_shared/adr/0016-id-type-boundary.md), [ADR-0018](../stable/_shared/adr/0018-createdat-updatedat-on-feature-tables.md).
 
 #### Two-mode parent delete
 

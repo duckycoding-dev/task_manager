@@ -30,12 +30,24 @@ Related: [Status](#status), [Priority](#priority), [Recurrence](#recurrence), [P
 
 ### Project
 
-A user-owned grouping of tasks. Backed by `apps/backend/src/features/projects/projects.db.ts`. Single-user in v1 (the `users_projects` table exists but isn't used by UX yet).
+A user-owned grouping of tasks. Backed by `apps/backend/src/features/projects/projects.db.ts`. Single-user in v1; the [`users_projects`](#users_projects-table-future-sharing-scaffold) table is reserved scaffolding for a future multi-user iteration whose first feature is project sharing — see [ADR-0020](./adr/0020-users-projects-table-reserved-for-future-sharing.md).
 
 - `id`, `userId`, `name`, `description?`, `color` *(planned NOT NULL — backend-changes-summary)*, `createdAt`.
 - Each [Task](#task) can reference one project (`projectId`) or none.
 
 Avoid aliases: ~~workspace~~, ~~board~~ (the board is a [View mode](#view-mode), not the project itself), ~~folder~~.
+
+Related: [`users_projects` (future sharing scaffold)](#users_projects-table-future-sharing-scaffold), [Two-mode delete (Project)](#two-mode-delete-project).
+
+### `users_projects` (table — future sharing scaffold)
+
+A junction table on `(userId, projectId)` defined in the schema but **not read or written by any v1 application code**. Reserved as migration scaffolding for a future multi-user iteration whose first feature will be **project sharing** — multiple users attached to the same project, seeing each other's tasks under it. The table must not be dropped during schema cleanup. See [ADR-0020](./adr/0020-users-projects-table-reserved-for-future-sharing.md) for the full preservation rationale and the rough authorization model future contributors will start from.
+
+Not a user-facing concept yet — no UX, no API endpoints, no service methods touch it in v1. Surfaces here only to lock the terminology for the table itself.
+
+Avoid aliases: ~~project members~~, ~~memberships~~, ~~project sharing table~~ (use these terms when discussing the *future* feature; the table itself is called `users_projects`).
+
+Related: [Project](#project).
 
 ### Label
 
@@ -261,6 +273,10 @@ Avoid aliases: ~~tryCatch()~~, ~~attempt()~~, ~~Result helper~~ — use "safe()"
 ### BetterAuth
 
 The authentication library mounted at `/auth/*` on the backend (`apps/backend/src/utils/auth.ts`). Handles sign-in, sign-up, sessions (HTTP-only cookies), password rules (8–30 chars). `autoSignIn: true` configured — signup logs the user in immediately. Email verification stays available in the schema (`verifications` table) but is **disabled by UX** in v1.
+
+### BetterAuth-owned tables (off-limits)
+
+The four tables declared in `apps/backend/src/auth/schema/auth.db.ts` — `users`, `sessions`, `accounts`, `verifications` — are **owned by [BetterAuth](#betterauth)**, not by this project. Their column shape (including oddities like `verifications.createdAt`/`updatedAt` being nullable, or auth PKs being `text` rather than `uuid`) is dictated by what the BetterAuth library expects. App-side conventions ([ADR-0016](./adr/0016-id-type-boundary.md), [ADR-0018](./adr/0018-createdat-updatedat-on-feature-tables.md), [ADR-0019](./adr/0019-enum-validation-at-app-boundary-only.md)) do not apply here, and a "harmonizing" migration will break auth at runtime. Only modify these tables in response to a BetterAuth upgrade or a feature the library itself drives. See [Backend coding-practice · BetterAuth-owned tables are off-limits](../../llm/coding-practices.md#backend-hono--drizzle--zod).
 
 ### Hono RPC
 
