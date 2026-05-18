@@ -59,6 +59,7 @@ export const checkAuthMiddleware = createMiddleware<{
   if (!session) {
     throw new AppError('UNAUTHORIZED', {
       message: 'Authentication required',
+      showToClient: true,
     });
   }
   c.set('user', session.user);

@@ -19,7 +19,7 @@ const DEFAULT_ERROR_RESPONSE = {
 
 type AppErrorOptions = {
   message?: string;
-  hideToClient?: boolean;
+  showToClient?: boolean;
   statusCodeOverride?: ContentfulStatusCode;
   cause?: unknown;
 };
@@ -34,12 +34,12 @@ type AppErrorOptions = {
  * @param options - Additional options for the error.
  * @param options.statusCodeOverride - Override the default status code that is defined by the mapper based on the passed error type.
  * @param options.message - Custom error message to display - if omitted the generic mapped message will be shown instead.
- * @param options.hideToClient - Whether to hide the custom error message from the client and show the generic mapped message instead.
+ * @param options.showToClient - Whether to expose the custom error message to the client in production (default: false → client sees the generic mapped message). Development always shows the custom message regardless.
  * @example
  * ```ts
  * throw new AppError('NOT_FOUND');
  * throw new AppError('BAD_REQUEST', { message: 'Invalid email' });
- * throw new AppError('INTERNAL_SERVER_ERROR', { hideToClient: true });
+ * throw new AppError('INTERNAL_SERVER_ERROR', { showToClient: true });
  * ```
  * @example
  * And advanced use case would be enforcing the available status codes that can be provided based on the API handler response codes defined in the OpenAPI schema.
@@ -53,7 +53,7 @@ export class AppError<
 > extends Error {
   readonly name: 'AppError';
   readonly verboseCode: VerboseStatusCode;
-  readonly hideToClient: boolean;
+  readonly showToClient: boolean;
   readonly status: ContentfulStatusCode;
 
   constructor(verboseCode: T, options: AppErrorOptions = {}) {
@@ -74,7 +74,7 @@ export class AppError<
     this.status = status;
     this.name = 'AppError';
     this.verboseCode = verboseCode;
-    this.hideToClient = options.hideToClient ?? false;
+    this.showToClient = options.showToClient ?? false;
   }
 }
 
@@ -113,7 +113,7 @@ const serializeError = (err: Error) => {
       ? {
           verboseCode: err.verboseCode,
           status: err.status,
-          hideToClient: err.hideToClient,
+          showToClient: err.showToClient,
         }
       : {}),
     ...(err instanceof DomainError
@@ -157,7 +157,7 @@ export const errorHandler = (err: Error, c: Context): Response => {
 
   if (err instanceof AppError || err instanceof EndpointError) {
     const message: string =
-      isDev || !err.hideToClient
+      isDev || err.showToClient
         ? err.message
         : (statusCodeMap[err.verboseCode]?.message ?? 'Internal Server Error');
 

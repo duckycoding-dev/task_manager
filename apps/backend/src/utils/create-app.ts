@@ -21,6 +21,7 @@ export function createRouter() {
         throw new AppError('BAD_REQUEST', {
           cause: result.target,
           message: formatZodError(result.error),
+          showToClient: true,
         });
       }
     },
