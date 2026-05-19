@@ -6,7 +6,7 @@ export function configureOpenAPI(app: AppOpenAPI) {
   app.doc31('/docs', {
     openapi: '3.1.0',
     info: {
-      title: 'Hono API',
+      title: packageJSON.name,
       description: 'Hono API Documentation',
       version: packageJSON.version,
     },

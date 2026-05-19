@@ -11,6 +11,7 @@ import {
 } from 'utils/response/';
 import { statusCodeMap } from 'utils/status-codes/';
 import { taskIdParamSchema } from '../tasks/tasks.types';
+import { reminderIdParamSchema } from './reminders.types';
 import { createRequiredJsonBody } from 'utils/request/body/';
 import { checkAuthMiddleware } from 'utils/auth/';
 
@@ -33,10 +34,10 @@ const getReminders = createRoute({
 });
 
 const getReminderById = createRoute({
-  path: '/:id',
+  path: '/:reminderId',
   method: 'get',
   request: {
-    params: z.object({ id: z.string() }),
+    params: reminderIdParamSchema,
   },
   responses: {
     [statusCodeMap['OK'].status]: createSuccessJsonResponse(
@@ -77,10 +78,10 @@ const createReminder = createRoute({
 });
 
 const deleteReminder = createRoute({
-  path: '/',
+  path: '/:reminderId',
   method: 'delete',
   request: {
-    params: selectReminderSchema.pick({ id: true }),
+    params: reminderIdParamSchema,
   },
   responses: {
     [statusCodeMap['OK'].status]: createSuccessJsonResponse(
@@ -98,10 +99,10 @@ const deleteReminder = createRoute({
 });
 
 const updateReminder = createRoute({
-  path: '/:id',
+  path: '/:reminderId',
   method: 'patch',
   request: {
-    params: selectReminderSchema.pick({ id: true }),
+    params: reminderIdParamSchema,
     body: createRequiredJsonBody(
       updateReminderSchema.extend({
         taskId: z.uuid(),

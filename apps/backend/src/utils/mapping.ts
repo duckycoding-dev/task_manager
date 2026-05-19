@@ -15,7 +15,7 @@ export function nullsToUndefined<T>(
     return undefined;
   }
 
-  if (obj.constructor.name === 'Object' || Array.isArray(obj)) {
+  if (Object.getPrototypeOf(obj) === Object.prototype || Array.isArray(obj)) {
     for (const key in obj) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       obj[key] = nullsToUndefined(obj[key]) as any;

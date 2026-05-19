@@ -1,7 +1,7 @@
 ---
 created: 2026-05-14
-updated: 2026-05-14
-summary: Design phase complete. All 6 v1 design docs landed + glossary + grill-with-me behavior. Captures uncommitted state, open handoffs to clean up, and the open question on ADRs/coding-styles vs backend planning ordering.
+updated: 2026-05-19
+summary: Design phase complete. All 6 v1 design docs landed + glossary + grill-with-me behavior. Captures uncommitted state, open handoffs to clean up, and the open question on ADRs/coding-styles vs backend planning ordering. Note (2026-05-19): the ordering question is settled — backend grilling round 1 + fix phase have since run; see `backend-fix-phase-complete-2026-05-19.md`.
 ---
 
 # Handoff — design phase complete (2026-05-14)
@@ -51,7 +51,7 @@ Full details in [`./phase-1-followup-2026-05-13.md`](./phase-1-followup-2026-05-
 ### Bucket C — Open handoffs to reconcile
 
 - [`./phase-1-followup-2026-05-13.md`](./phase-1-followup-2026-05-13.md) — **still active**. Bucket A above is its uncommitted work.
-- [`./design-system-brainstorm-2026-05-14.md`](./design-system-brainstorm-2026-05-14.md) — **superseded by this handoff**. Its work (specs 01–02 + start of 03) is now covered by the full design landing. **Recommend deleting it** as part of cleanup; surfacing per `behavior.md` rule before doing so.
+- `design-system-brainstorm-2026-05-14.md` — deleted on 2026-05-19 (was superseded by this handoff; its content was fully covered by the full design landing).
 
 ## Suggested commit grouping (you commit)
 
@@ -106,7 +106,7 @@ From design phase (backend planning round):
 2. Decide on the [ADRs vs backend question](#open-question-for-next-session--adrs--coding-styles-vs-backend-ordering).
 3. Add `.superpowers/` to `.gitignore`.
 4. Commit per the suggested grouping (or your own).
-5. Surface for cleanup: [`./design-system-brainstorm-2026-05-14.md`](./design-system-brainstorm-2026-05-14.md) is superseded — delete after confirming.
+5. (Cleanup done 2026-05-19) `design-system-brainstorm-2026-05-14.md` was deleted as superseded.
 6. Begin the chosen next phase. Apply Grill-with-me from the first turn.
 
 ## Open user-context items (session memory, not in repo docs)

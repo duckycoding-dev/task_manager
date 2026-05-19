@@ -13,7 +13,7 @@ export type TasksService = {
     userId: string,
     filters: Omit<GetTasksQuery, 'dueDate'> & { dueDate?: Date },
   ) => Promise<Task[]>;
-  getTasksById: (userId: string, id: string) => Promise<Task | undefined>;
+  getTaskById: (userId: string, id: string) => Promise<Task | undefined>;
   createTask: (userId: string, newTask: InsertTask) => Promise<Task>;
   updateTask: (
     userId: string,
@@ -51,7 +51,7 @@ export const createTasksService = (
     getTasks: async (userId, filters) => {
       return await tasksRepository.getTasks(userId, filters);
     },
-    getTasksById: async (userId, taskId) => {
+    getTaskById: async (userId, taskId) => {
       return await tasksRepository.getTaskById(userId, taskId);
     },
 

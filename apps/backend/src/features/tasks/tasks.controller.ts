@@ -46,7 +46,7 @@ export const createTasksController = (
     getTaskById: async (c) => {
       const { taskId } = c.req.valid('param');
       const { id: userId } = c.get(AUTH_CTX_KEYS.user);
-      const taskFound = await tasksService.getTasksById(userId, taskId);
+      const taskFound = await tasksService.getTaskById(userId, taskId);
 
       if (!taskFound) {
         throw new EndpointError<typeof tasksRoutes.getTaskById>('NOT_FOUND', {

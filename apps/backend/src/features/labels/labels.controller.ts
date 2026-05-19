@@ -19,9 +19,9 @@ export const createLabelsController = (
 ): LabelsController => {
   return {
     getLabelById: async (c) => {
-      const { id } = c.req.valid('param');
+      const { labelId } = c.req.valid('param');
       const { id: userId } = c.get(AUTH_CTX_KEYS.user);
-      const labelFound = await labelsService.getLabelById(userId, id);
+      const labelFound = await labelsService.getLabelById(userId, labelId);
       if (!labelFound) {
         throw new EndpointError<typeof labelsRoutes.getLabelById>('NOT_FOUND', {
           message: 'Label not found',

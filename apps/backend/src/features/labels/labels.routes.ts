@@ -34,10 +34,10 @@ const getLabels = createRoute({
 });
 
 const getLabelById = createRoute({
-  path: '/:id',
+  path: '/:labelId',
   method: 'get',
   request: {
-    params: z.object({ id: z.string() }),
+    params: labelIdParamSchema,
   },
   responses: {
     [statusCodeMap['OK'].status]: createSuccessJsonResponse(
@@ -73,7 +73,7 @@ const createLabel = createRoute({
 });
 
 const updateLabel = createRoute({
-  path: '/:id',
+  path: '/:labelId',
   method: 'patch',
   request: {
     params: labelIdParamSchema,
@@ -95,7 +95,7 @@ const updateLabel = createRoute({
 });
 
 const deleteLabel = createRoute({
-  path: '/:id',
+  path: '/:labelId',
   method: 'delete',
   request: {
     params: labelIdParamSchema,

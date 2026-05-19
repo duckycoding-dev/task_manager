@@ -88,10 +88,10 @@ export class AppError<
  * @param options - Additional options for the error.
  * @example
  * ```ts
- * throw new EndpointError<typeof tasksRoutes.getTaskById>('INTERAL');
+ * throw new EndpointError<typeof tasksRoutes.getTaskById>('INTERNAL_SERVER_ERROR');
  * // Let's say the getTaskById accepts responses with codes 200, 400 and 404
- * // You will be able to only provide the corrisponding verbose status codes "OK" | "INTERNAL" | "NOT_FOUND"
-```
+ * // You will be able to only provide the corresponding verbose status codes "OK" | "INTERNAL_SERVER_ERROR" | "NOT_FOUND"
+ * ```
  */
 export class EndpointError<H extends ZodOpenAPIRoute> extends AppError {
   constructor(

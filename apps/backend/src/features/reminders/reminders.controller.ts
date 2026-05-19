@@ -17,9 +17,12 @@ export const createRemindersController = (
 ): RemindersController => {
   return {
     getReminderById: async (c) => {
-      const { id } = c.req.valid('param');
+      const { reminderId } = c.req.valid('param');
       const { id: userId } = c.get(AUTH_CTX_KEYS.user);
-      const reminderFound = await remindersService.getReminderById(userId, id);
+      const reminderFound = await remindersService.getReminderById(
+        userId,
+        reminderId,
+      );
       if (!reminderFound) {
         throw new EndpointError<typeof remindersRoutes.getReminderById>(
           'NOT_FOUND',
@@ -66,12 +69,12 @@ export const createRemindersController = (
     },
 
     updateReminder: async (c) => {
-      const { id } = c.req.valid('param');
+      const { reminderId } = c.req.valid('param');
       const reminderUpdate = c.req.valid('json');
       const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const reminderUpdated = await remindersService.updateReminder(
         userId,
-        id,
+        reminderId,
         reminderUpdate,
       );
       if (!reminderUpdated) {
@@ -90,9 +93,12 @@ export const createRemindersController = (
       );
     },
     deleteReminder: async (c) => {
-      const { id } = c.req.valid('param');
+      const { reminderId } = c.req.valid('param');
       const { id: userId } = c.get(AUTH_CTX_KEYS.user);
-      const reminderDeleted = await remindersService.deleteReminder(userId, id);
+      const reminderDeleted = await remindersService.deleteReminder(
+        userId,
+        reminderId,
+      );
       if (!reminderDeleted) {
         throw new EndpointError<typeof remindersRoutes.deleteReminder>(
           'NOT_FOUND',
