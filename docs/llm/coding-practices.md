@@ -1,6 +1,6 @@
 ---
 created: 2026-05-14
-updated: 2026-05-18
+updated: 2026-05-19
 summary: Living code-style rules — how code is written in this repo. Populated organically as the Grill-with-me protocol resolves style decisions. Rules describe behavior + intent, not code snippets (those rot).
 ---
 
@@ -29,10 +29,69 @@ Module-level function definitions use the **arrow form** (`export const foo = (x
 
 Use `type` aliases as the default for shaping object/value types. `interface` is reserved for the two cases where it does something `type` can't: (1) declaration merging (module augmentation — extending library types, e.g. `declare module 'hono' { interface ContextVariableMap { … } }`), (2) public-API surfaces that downstream consumers are *expected* to extend via `interface X extends Y`. For everything else — domain models, props, function signatures, discriminated unions, mapped/conditional types — `type` is strictly more capable (unions, intersections, primitives, tuples, computed keys all work) and reads uniformly. Don't waver between the two within the same file; if a type starts as `type` and later needs declaration-merging, convert it deliberately rather than mixing styles.
 
-#### Pending grills
+#### Casing rules
 
-- Casing: enforced by linter; rules captured here when they deviate from defaults.
-- Export style: named vs default (likely named-only, barrel files likely banned).
+Casing is fixed per identifier kind. The picks below are the canonical form; the linter does not currently enforce them (`@typescript-eslint/naming-convention` is not wired) so they live as documented discipline until the ESLint/Prettier/Husky pass adds enforcement.
+
+| Identifier kind | Casing | Example |
+|---|---|---|
+| Variables, function parameters, methods, function-valued module consts (arrow exports), Hono/Drizzle/Zod runtime instances (`app`, `db`, `logger`) | `camelCase` | `getTaskById`, `selectTaskSchema`, `app` |
+| Types, interfaces, classes, type aliases (including those inferred from Zod via `z.infer`) | `PascalCase` | `Task`, `EndpointError`, `DomainError` |
+| Module-level frozen data consts — `as const` arrays / lookup tables, primitive literals, `Object.freeze({...})` maps, `as const satisfies …` registries | `SCREAMING_SNAKE_CASE` | `STATUS_OPTIONS`, `AUTH_CTX_KEYS`, `DOMAIN_ERROR_MAP`, `MAX_RETRIES` |
+| Zod schema module exports | `camelCase` + `Schema` suffix (no PascalCase variant) | `selectTaskSchema`, `labelIdParamSchema`, `taskInsertSchema` |
+| Files (`.ts` / `.tsx`) | `kebab-case` | `create-app.ts`, `auth-context.ts`, `http-errors.ts` |
+| Directories | `kebab-case` (locked even for hypothetical multi-word dirs: `task-labels/`, not `taskLabels/`) | `apps/backend/`, `task-labels/` (when it appears) |
+| Route URL segments (path segments excluding params) | `kebab-case` | `/export/preferences`, `/recurring/toggle` (when retained) |
+| Route path params and query-string keys | `camelCase` | `:taskId`, `:labelId`, `?includeDeleted=true` |
+| DB tables | `snake_case` plural | `tasks`, `task_labels`, `users_projects` |
+| DB columns (Postgres) → Drizzle TS field | `snake_case` → `camelCase` | `recurring_interval` → `recurringInterval`, `user_id` → `userId` |
+| Env vars | `SCREAMING_SNAKE_CASE` | `DATABASE_URL`, `LOG_LEVEL` |
+| Domain enum string literal members (`tasks.status`, `tasks.priority`, `tasks.recurringInterval`, etc.) | `snake_case` by default; single-word lowercase reads as snake_case of length one (`'todo'`, `'done'`); a per-field deviation is allowed only when a different convention is intrinsic to the field's domain (e.g. HTTP verbose codes) **and documented at the field's declaration** | `'in_progress'`, `'todo'`, `'high'`; HTTP-shaped literals stay as their library convention (`'NOT_FOUND'`, `'OK'`) |
+
+Cross-cutting standards that already carry their own well-known convention (HTTP status verbose codes, env vars from third-party services, library types from external packages) keep that convention. Note the carve-outs above: schemas stay camelCase, runtime instances stay camelCase, function-valued module consts stay camelCase (per the arrow-default rule). The SCREAMING_SNAKE_CASE bucket is for *data* consts only, never for callables or stateful instances. Files / directories are kebab-case unconditionally — no `index.ts` exception, no `PascalCase.tsx` exception (component files are still kebab-case; the exported identifier inside is `PascalCase`).
+
+#### Named exports default; `export default` only when an external API mandates it
+
+Module-level exports use the **named form**. `export default` is reserved for cases where a third-party contract requires it: the Bun/Node fetch-server contract (`export default { port, fetch }` in `src/index.ts`) is the canonical example. Stylistic / habitual default exports (e.g. `export default env`, `export default xRouter`) are not allowed — they lose grep-ability of the bound identifier across the codebase, weaken auto-import suggestions (the IDE may import the same value under two different local names at different sites), and force consumers to choose an arbitrary local alias. Named exports keep the identifier identical at the declaration site and at every consuming site. Mechanical renames implied: `src/utils/env.ts` drops `export default env` in favour of `export const env`; each `*.router.ts` switches `export default xRouter` to `export const xRouter` (Hono's `app.route(path, router)` is agnostic to default vs named).
+
+#### `extendZodWithOpenApi(z)` registered once in `createApp()`; `*.types.ts` stays pure Zod
+
+`@hono/zod-openapi`'s `.openapi()` method is grafted onto `ZodObject.prototype` by a one-time call to `extendZodWithOpenApi(z)`. The registration must run before any `.openapi()` chain executes, but because the mutation is retroactive (prototype additions are visible to schema instances already constructed), the call can happen at server boot regardless of when schemas were built. Register once inside `apps/backend/src/utils/create-app.ts`'s `createApp()` factory — that is the single place every running entry (the HTTP server and the `hc.ts` RPC client-type construction) routes through. Mark the line with a brief `// must run before any route's .openapi() chain executes` comment so it isn't deleted as "unused".
+
+`*.types.ts` and `*.db.ts` must **not** import `extendZodWithOpenApi` or `@hono/zod-openapi`. Schemas in those files are constructed with plain `zod/v4`. `.openapi()` chains live only in `*.routes.ts`, where `@hono/zod-openapi` is already imported for `createRoute` / `z`. Consequence: `*.types.ts` becomes part of the FE-safe import graph (no `@hono/zod-openapi` leak through public-API barrels). Whether to actually re-export `*.types.ts` symbols via the barrel is a separate decision — this rule just removes the bundle obstacle.
+
+#### Barrels: public-API only (Pattern B)
+
+A barrel file (re-export-only `index.ts`) is allowed **only** as the cross-package public-API boundary — i.e. when the file is referenced from `package.json` `exports`. Internal-only convenience barrels are forbidden (no `src/utils/index.ts`, no `src/features/index.ts` re-exporting features for backend-internal use). Internal code imports siblings via deep paths.
+
+Rationale: barrels at the package boundary encapsulate the public surface and let internal layout evolve without breaking external imports. Internal barrels add cycle risk, hide module-eval cost, and create IDE auto-import drift (the same symbol imported via deep path from some files and via barrel from others) — costs with no offsetting benefit since the deep path is short anyway.
+
+Allowed re-export sources are restricted to `*.db.ts` and `*.types.ts`. Server-only modules — `*.routes.ts`, `*.controller.ts`, `*.service.ts`, `*.repository.ts` — are forbidden as barrel sources because they pull `@hono/zod-openapi` route runtime, the Drizzle client (and via it the `postgres` driver), service-layer dependencies, or auth runtime, none of which belong in an FE bundle. The `*.types.ts` source is safe **only** because the `extendZodWithOpenApi(z)` registration was moved to `createApp()` (see rule above) — without that move, `*.types.ts` would have leaked `@hono/zod-openapi`. If the feature layout is ever consolidated (e.g. merging `*.db.ts` and `*.types.ts` into a single `*.schemas.ts` file), the rule transfers cleanly: the merged file remains barrel-safe as long as it stays on pure `zod/v4` + drizzle-zod and never imports route/service/controller/repository modules.
+
+Re-export form: **explicit named lists** (`export { a, b, c } from './x'`); `export * from './x'` is banned. The explicit-list cost (every barrel addition is a deliberate edit) is the *feature* — surfacing the public-API decision at the point a symbol crosses the boundary. Star re-exports hide which symbols are exposed, silently propagate future additions of internal helpers, and break grep-by-symbol-name across the barrel layer. Types are re-exported via the dedicated `export type { ... } from './x'` form (required by `verbatimModuleSyntax` / `isolatedModules`); mixing value and type re-exports in a single `export { ... }` statement is not allowed.
+
+Internal-consumer discipline: code inside `apps/backend/src` imports siblings via deep paths (`./tasks.db`, `./tasks.types`), **never** through its own feature barrel (`./`, `./index`, `../tasks`). The barrel exists for cross-package consumers only. Rationale: avoids cycles created when an internal file transitively imports the file that re-exports it; keeps the barrel's role unambiguous as the package boundary; eliminates IDE auto-import drift where the same symbol arrives via two different paths across files. Planned enforcement (deferred to the ESLint/Prettier/Husky pass): an `import/no-restricted-paths` zone targeting `./apps/backend/src` with `from: './apps/backend/src/features/*/index.ts`. The rule matches resolved file paths, not import specifiers, so it catches every form (`./`, `./index`, `../tasks`, etc.) without enumerating specifiers. Carve-outs to consider at wiring time: tests that exercise the public surface (none today), and `hc.ts`-style build-time helpers that may legitimately need the assembled barrel.
+
+External-consumer contract: when *any* package outside `apps/backend` (the FE, a future scripts/CLI package, a second FE) needs a symbol from the backend, it imports via the `package.json` `exports` map only — `@task-manager/backend/<subpath>` resolves to the barrel emitted under `dist/`. Deep-pathing into `apps/backend/dist/**` or `apps/backend/src/**` from outside the package is forbidden. The `exports` map *is* the contract; the barrels behind it are the only public surface. If an external consumer needs a symbol the barrel doesn't currently expose, the fix is a deliberate barrel edit (and possibly a new `exports` subpath), not a deep-path workaround.
+
+#### Side-effect-only imports + boot-time top-level side effects
+
+A **side-effect-only import** is the form `import './foo'` with no specifier list — the module is loaded purely to execute its top-level code. The bundler and reader have no symbol to track, so the dependency is invisible at the call site. Rule:
+
+- **Allowed at app entry** (`apps/backend/src/index.ts`, `apps/react19/src/main.tsx`, future per-app entries): polyfill installs, framework init modules, etc. Entry is the legitimate seam for one-time process setup.
+- **Allowed for bundler-required asset imports** (`import './x.css'`, `import './logo.svg'` in FE code): these have no JS symbol; the import statement is the bundler signal to emit/link the asset. Live wherever the asset is consumed.
+- **Banned everywhere else**: don't sprinkle `import './register-x'` across feature modules; surface the side effect as an exported `initX()` function called explicitly from entry (or from a function that entry transitively calls — e.g. `createApp()`).
+
+A **top-level side-effecting call** is a non-import statement at module scope that mutates global state, performs IO, or registers a prototype extension. Rule:
+
+- **Banned by default in feature/utility modules**. Wrap the effect in an exported function and call it from entry. The `extendZodWithOpenApi(z)` registration is the canonical example: it now lives inside `createApp()` (see the dedicated rule above), not at the top of `*.types.ts`.
+- **Allowed in clearly-marked boot modules** — modules whose entire purpose is process-level boot (e.g. `apps/backend/src/utils/env.ts`, which parses `process.env` at import, exits on failure, and prints a confirmation). Such modules carry a comment at the top identifying them as boot modules and explaining why the top-level form is intentional. Treat the boot-module carve-out as rare: today `env.ts` is the only example, and growing the list should require justification. If a second boot module starts to feel necessary, revisit toward a stricter "no top-level side effects" stance with explicit `loadX()` functions called from entry.
+
+Verified bundle impact in the current setup (build scan of `apps/react19/dist/assets/` on 2026-05-19, recorded before the `extendZodWithOpenApi` move): when the FE value-imports a Zod schema via a public-API barrel (e.g. `import { selectTaskSchema } from '@task-manager/backend/tasks'`), Vite/Rollup tree-shakes `drizzle-orm/pg-core` (the `pgTable` builder) and the `postgres` driver entirely — they don't appear in the emitted bundle. `@hono/zod-openapi` also stayed out at scan time (the barrel re-exported only from `*.db.ts`, never from `*.types.ts`). The `drizzle-zod` runtime does remain because the schema-building factories are referenced by the emitted Zod schemas. Type-only imports (`import type { Task } …`) cost zero — erased by TypeScript before emit. The pending widening to also expose `*.types.ts` is bundle-safe post-move; re-scan the FE bundle once Vue/Nuxt ships to confirm no regression.
+
+**Temporary state**: keeping Pattern B with `drizzle-zod` reaching the FE bundle is acceptable while only one FE site value-imports a schema and the resulting bundle weight is small. The intended longer-term improvement is a codegen step (Option 5 from the source-of-truth analysis): keep Drizzle as the single source of truth, emit pure-Zod schemas (no `drizzle-zod` dependency) into a separate package the FE imports from. Tracked in [`docs/handoffs/_shared/backend-fix-phase-complete-2026-05-19.md`](../handoffs/_shared/backend-fix-phase-complete-2026-05-19.md) §2; trigger when Vue/Nuxt FE adds more value imports, measured bundle exceeds ~50KB of drizzle-zod chain, or dev-mode cold-start becomes noticeable (dev mode does not tree-shake).
+
+#### Pending grills
 - Error pattern at app boundaries: throw vs `Result` (backend rule already locked — pattern α + `safe()` at recovery sites; TS-general rule TBD).
 - Import order: external / internal / type-only.
 - Async: prefer `async/await` vs `.then` (most likely `async/await`).

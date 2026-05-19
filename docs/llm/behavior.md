@@ -1,6 +1,6 @@
 ---
 created: 2026-05-13
-updated: 2026-05-14
+updated: 2026-05-19
 summary: Generic behavior rules for LLM agents working in this repo — communication style, planning/handoff/stable conventions, git/destructive-action policy, frontmatter contract, grill-with-me terminology discipline.
 ---
 
@@ -161,8 +161,8 @@ Edge cases:
 ### Style
 
 - Relentless but cheap on words. Caveman mode applies — fragmented questions are fine. Don't pad.
-- Multiple unclear names in a single message: list them; let the user answer in any order.
-- It's fine to defer one ambiguity if pursuing another first, but never silently drop one.
+- **One question at a time.** When several ambiguities surface together, the agent may list them upfront so the user knows the agenda (`Topics: A · B · C`), but only one is *being grilled at any moment*. Subsequent topics open after the current one is fully resolved (rule recorded). Never ask a multi-question batch and expect the user to answer in any order — depth per question collapses, and partial-answer drift is invisible.
+- It's fine to defer one ambiguity if pursuing another first, but never silently drop one. Defer by name; resume by name.
 - When grilling about a code-level name, prefer offering 2–3 candidate spellings so the user can pick rather than having to invent from scratch.
 
 ### Grilling tactics
