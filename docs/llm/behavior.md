@@ -1,6 +1,6 @@
 ---
 created: 2026-05-13
-updated: 2026-05-19
+updated: 2026-05-24
 summary: Generic behavior rules for LLM agents working in this repo — communication style, planning/handoff/stable conventions, git/destructive-action policy, frontmatter contract, grill-with-me terminology discipline.
 ---
 
@@ -20,6 +20,20 @@ The `docs/llm/` folder is reserved for LLM-meta docs; expect more files here ove
 ## Diagrams
 
 Always use mermaid syntax for graphs. Never use ASCII-art diagrams.
+
+## Never reference session-local thinking artifacts
+
+Stable/final documents and code/config comments must be **readable from any context** — that is, from a cold session with no prior conversation memory. Therefore they MUST NOT reference session-local thinking artifacts: plan files at `~/.claude/plans/**`, grilling-session decision IDs (`D1`, `D5.c`, `Q2.2f`, etc.), session-internal labels (`Phase Z` unless that label is itself defined in a stable doc), or chat-turn shorthand. Future readers won't have the context to resolve such references — they're dangling pointers.
+
+When a code comment or stable-doc passage wants to cross-link the rationale for a decision, it must reference an **existing stable artifact** by a name that future readers can find:
+
+- [`docs/stable/_shared/adr/NNNN-slug.md`](../stable/_shared/adr/README.md) — for hard-to-reverse architectural decisions.
+- [`docs/llm/coding-practices.md`](./coding-practices.md) — by the rule's section heading (e.g. "Barrels: public-API only (Pattern B)", "Casing rules"), NOT by a session-local grilling label.
+- [`docs/stable/_shared/glossary.md`](../stable/_shared/glossary.md) — by the glossary entry's heading.
+
+Handoffs (`docs/handoffs/<feature>/<slug>.md`) span sessions and are meant to be picked up cold by the next agent. The same discipline applies inside them: when summarizing what was decided, reference the stable doc that records the decision, not the grilling label that produced it. The grilling label is fine inside the plan file (which is itself a session-local artifact), but not anywhere it might be read out of plan-file context.
+
+If you find a code comment or stable doc that violates this rule, fix it: locate the corresponding stable artifact, link by section heading, and remove the session-local reference.
 
 ## Clarifying questions
 

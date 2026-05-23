@@ -91,7 +91,7 @@ Verified bundle impact in the current setup (build scan of `apps/react19/dist/as
 
 **Temporary state**: keeping Pattern B with `drizzle-zod` reaching the FE bundle is acceptable while only one FE site value-imports a schema and the resulting bundle weight is small. The intended longer-term improvement is a codegen step (Option 5 from the source-of-truth analysis): keep Drizzle as the single source of truth, emit pure-Zod schemas (no `drizzle-zod` dependency) into a separate package the FE imports from. Tracked in [`docs/handoffs/_shared/backend-fix-phase-complete-2026-05-19.md`](../handoffs/_shared/backend-fix-phase-complete-2026-05-19.md) §2; trigger when Vue/Nuxt FE adds more value imports, measured bundle exceeds ~50KB of drizzle-zod chain, or dev-mode cold-start becomes noticeable (dev mode does not tree-shake).
 
-#### Import order — auto-sorted into seven groups (Phase Z Topic 3)
+#### Import order — auto-sorted into seven groups
 
 Imports are auto-ordered by `simple-import-sort` (enforced via `simple-import-sort/imports` in `eslint.config.mjs`). The groups, in order:
 

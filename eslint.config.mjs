@@ -96,7 +96,8 @@ export default defineConfig(
     },
   },
 
-  // 2c. Import sorting (autofixable ordering — Phase Z Topic 3)
+  // 2c. Import sorting (autofixable ordering — see docs/llm/coding-practices.md
+  //     §"Import order" for the canonical group definitions this rule encodes).
   {
     plugins: { 'simple-import-sort': simpleImportSort },
     rules: {
@@ -147,8 +148,10 @@ export default defineConfig(
     rules: {
       // Disabled — handled by unused-imports above.
       '@typescript-eslint/no-unused-vars': 'off',
-      // Strict-preset rules downgraded to `warn` per D1 (config-merge plan).
-      // Tighten to `error` after Phase Z mechanical-renames + Topic-6 cleanup PR.
+      // Strict-preset rules downgraded to `warn` so they surface drift without
+      // blocking commits while the codebase is cleaned up incrementally.
+      // Tighten to `error` after a dedicated cleanup pass clears existing
+      // call sites (`any` usages, non-null assertions).
       // Note: `no-misused-promises` is type-aware and requires `strictTypeChecked` +
       // projectService on every file; not enabled here. Revisit when adopting full
       // type-aware linting.
@@ -163,13 +166,19 @@ export default defineConfig(
   },
 
   // ============================================================
-  // SECTION 3: PHASE Z RULES — encode locked decisions from
-  //            docs/llm/coding-practices.md (Topic 2)
+  // SECTION 3: REPO-SPECIFIC RULES — encode rules from
+  //            docs/llm/coding-practices.md:
+  //              · §"Barrels: public-API only (Pattern B)"
+  //              · §"Side-effect-only imports + boot-time top-level side effects"
+  //            The comments below cite the rule section those entries
+  //            originate from so the rationale stays findable.
   // ============================================================
 
-  // 3a. Barrel discipline (Q2.2f): internal backend code must not import
-  //     feature barrels. Barrels are the cross-package public-API boundary;
-  //     sibling code uses deep paths (./tasks.db, ./tasks.types).
+  // 3a. Barrel discipline — internal backend code must not import feature
+  //     barrels. Barrels are the cross-package public-API boundary; sibling
+  //     code uses deep paths (./tasks.db, ./tasks.types).
+  //     See coding-practices.md §"Barrels: public-API only (Pattern B)"
+  //     → "Internal-consumer discipline" paragraph.
   {
     rules: {
       'import-x/no-restricted-paths': [
@@ -188,10 +197,14 @@ export default defineConfig(
     },
   },
 
-  // 3b. Ban `export *` (Q2.2c) and side-effect-only imports outside
-  //     entries (Q2.5/A2). Combined in a single rule entry because
-  //     ESLint coalesces selectors of the same rule.
-  //     The side-effect selector exempts CSS/asset specifiers via regex.
+  // 3b. Ban `export *` and side-effect-only imports outside entries.
+  //     Combined in a single rule entry because ESLint coalesces selectors
+  //     of the same rule. The side-effect selector exempts CSS/asset
+  //     specifiers via regex.
+  //     See coding-practices.md §"Barrels: public-API only (Pattern B)"
+  //     → "Re-export form" paragraph (the `export *` ban), and
+  //     §"Side-effect-only imports + boot-time top-level side effects"
+  //     (the side-effect-import ban + carve-outs).
   {
     rules: {
       'no-restricted-syntax': [
