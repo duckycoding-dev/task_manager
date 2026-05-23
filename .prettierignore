@@ -1,1 +1,16 @@
-*.md
+**/node_modules
+**/dist
+**/build
+**/coverage
+**/*.tsbuildinfo
+.claude
+.superpowers
+.husky
+.vscode
+docs
+bun.lock
+apps/backend/src/db/migrations/
+apps/react19/src/routeTree.gen.ts
+
+**/*.md
+**/*.mdx

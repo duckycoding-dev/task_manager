@@ -1,12 +1,13 @@
-import type { AppType } from './app';
 import { hc } from 'hono/client';
+
 import env from './utils/env';
+import type { AppType } from './app';
 
 // https://hono.dev/docs/guides/rpc#compile-your-code-before-using-it-recommended
 
 // this is a trick to calculate the type when compiling
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const client = hc<AppType>(`http://localhost:${env.PORT}`, {
+
+const _client = hc<AppType>(`http://localhost:${env.PORT}`, {
   fetch: (
     input: Parameters<typeof fetch>[0],
     init: Parameters<typeof fetch>[1],
@@ -18,7 +19,7 @@ const client = hc<AppType>(`http://localhost:${env.PORT}`, {
   }, // satisfies typeof fetch, // explained here: https://www.better-auth.com/docs/integrations/hono#client-side-configuration
 });
 
-export type Client = typeof client;
+export type Client = typeof _client;
 
 // import type { AppType } from './app';
 // import { hc } from 'hono/client';

@@ -1,10 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router';
+
 import { TaskList } from '../../features/tasks/components/task-list/TaskList';
-import { PageTitle } from '../../features/ui/titles/PageTitle';
-import { useAuthSession } from '../../lib/auth-client';
+import { useTasksQuery } from '../../features/tasks/tasks.query';
 import { StyledLink } from '../../features/ui/link/Link';
 import { PageSubtitle } from '../../features/ui/titles/PageSubtitle';
-import { useTasksQuery } from '../../features/tasks/tasks.query';
+import { PageTitle } from '../../features/ui/titles/PageTitle';
+import { useAuthSession } from '../../lib/auth-client';
 
 export const Route = createFileRoute('/tasks/')({
   component: TasksRoute,

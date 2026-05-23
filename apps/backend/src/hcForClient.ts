@@ -1,5 +1,6 @@
-import type { AppType } from './app';
 import { hc } from 'hono/client';
+
+import type { AppType } from './app';
 import type { Client } from './hc';
 
 // separate file to avoid importing code that uses process.env in the client side code

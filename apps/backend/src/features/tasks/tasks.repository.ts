@@ -1,25 +1,28 @@
-import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { and, eq } from 'drizzle-orm';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+
+import { RepositoryValidationError } from 'utils/errors/domain-errors/';
+import { formatZodError } from 'utils/mapping/';
+
+import type { Reminder } from '../reminders';
+import {
+  remindersModel,
+  selectReminderSchema,
+} from '../reminders/reminders.db';
+
 import {
   type InsertTask,
-  type Task,
-  type UpdateTask,
   selectTaskSchema,
+  type Task,
   tasks as tasksModel,
+  type UpdateTask,
 } from './tasks.db';
-import { formatZodError } from 'utils/mapping/';
 import type {
   GetTasksQuery,
   TaskPriorityOption,
   TaskRecurringOption,
   TaskStatusOption,
 } from './tasks.types';
-import { RepositoryValidationError } from 'utils/errors/domain-errors/';
-import type { Reminder } from '../reminders';
-import {
-  remindersModel,
-  selectReminderSchema,
-} from '../reminders/reminders.db';
 
 export type TasksRepository = {
   getTasks: (

@@ -1,14 +1,21 @@
 import { createRoute, z } from '@hono/zod-openapi';
+
+import { checkAuthMiddleware } from 'utils/auth/';
+import { createRequiredJsonBody } from 'utils/request/body/';
+import {
+  createErrorResponse,
+  createSuccessJsonResponse,
+} from 'utils/response/';
+import { statusCodeMap } from 'utils/status-codes/';
+
 import type { AppRoutes } from '../../types/app_context';
+import { selectReminderSchema } from '../reminders';
+
 import {
   insertTaskSchema,
   selectTaskSchema,
   updateTaskSchema,
 } from './tasks.db';
-import {
-  createErrorResponse,
-  createSuccessJsonResponse,
-} from 'utils/response/';
 import {
   getTasksQuerySchema,
   taskIdParamSchema,
@@ -16,10 +23,6 @@ import {
   taskRecurringSchema,
   taskStatusSchema,
 } from './tasks.types';
-import { statusCodeMap } from 'utils/status-codes/';
-import { createRequiredJsonBody } from 'utils/request/body/';
-import { checkAuthMiddleware } from 'utils/auth/';
-import { selectReminderSchema } from '../reminders';
 
 const getTasks = createRoute({
   path: '/',

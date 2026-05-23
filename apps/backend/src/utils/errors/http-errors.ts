@@ -1,6 +1,9 @@
 import type { Context } from 'hono';
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
+
 import type { ErrorResponse } from 'src/types/response';
+import type { HandlerStatusCode, ZodOpenAPIRoute } from 'types/utility/';
+
 import env from '../env';
 import { logger } from '../logger';
 import {
@@ -8,8 +11,8 @@ import {
   statusCodeMap,
   type VerboseStatusCode,
 } from '../status-codes';
-import type { HandlerStatusCode, ZodOpenAPIRoute } from 'types/utility/';
-import { DomainError, DOMAIN_ERROR_MAP } from './domain-errors';
+
+import { DOMAIN_ERROR_MAP, DomainError } from './domain-errors';
 
 const DEFAULT_ERROR_RESPONSE = {
   success: false,

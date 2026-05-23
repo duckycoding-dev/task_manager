@@ -1,7 +1,7 @@
-import {} from './projects.db';
+import { extendZodWithOpenApi } from '@hono/zod-openapi';
 import { z } from 'zod/v4';
-// import { extendZodWithOpenApi } from '@hono/zod-openapi';
-// extendZodWithOpenApi(z);
+
+extendZodWithOpenApi(z);
 
 // 📌 Query Params Schemas
 export const getProjectsQuerySchema = z.object({

@@ -1,12 +1,13 @@
-import { pgTable, uuid, text, timestamp, boolean } from 'drizzle-orm/pg-core';
-import { projects } from '../projects/projects.db';
+import { boolean, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { type z } from 'zod/v4';
+
 import {
   createInsertSchema,
   createSelectSchema,
   createUpdateSchema,
 } from '../../utils/drizzle-zod';
 import { users } from '../auth/auth.db';
-import { z } from 'zod/v4';
+import { projects } from '../projects/projects.db';
 
 // 🔹 Define Enums as `const` arrays
 export const statusOptions = ['todo', 'in_progress', 'done'] as const;

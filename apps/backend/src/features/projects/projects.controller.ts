@@ -1,8 +1,10 @@
-import type { ProjectsService } from './projects.service';
-import { projectsRoutes } from './projects.routes';
-import type { AppRouteHandler } from '../../types/app_context';
-import { EndpointError } from 'utils/errors/http-errors/';
 import { AUTH_CTX_KEYS } from 'utils/auth-context/';
+import { EndpointError } from 'utils/errors/http-errors/';
+
+import type { AppRouteHandler } from '../../types/app_context';
+
+import { type projectsRoutes } from './projects.routes';
+import type { ProjectsService } from './projects.service';
 
 // TODO: implement additional features such as:
 // - inviting adding other users to a project

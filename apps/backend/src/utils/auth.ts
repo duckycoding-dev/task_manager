@@ -1,14 +1,17 @@
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { db } from '../db';
 import { openAPI } from 'better-auth/plugins';
 import * as authSchemas from 'features/auth/auth.db/';
 import type { MiddlewareHandler } from 'hono';
-import { AppError } from './errors/http-errors';
-import { AUTH_CTX_KEYS } from './auth-context';
 import { createMiddleware } from 'hono/factory';
+
 import type { AppContext } from 'types/app_context/';
 import type { MarkPropertiesRequired } from 'types/utility/';
+
+import { db } from '../db';
+
+import { AppError } from './errors/http-errors';
+import { AUTH_CTX_KEYS } from './auth-context';
 import env from './env';
 
 export const auth = betterAuth({

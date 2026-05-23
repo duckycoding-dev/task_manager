@@ -1,6 +1,7 @@
-import type { ProjectsRepository } from './projects.repository';
-import type { InsertProject, Project, UpdateProject } from './projects.db';
 import type { Task } from '../tasks/tasks.db';
+
+import type { InsertProject, Project, UpdateProject } from './projects.db';
+import type { ProjectsRepository } from './projects.repository';
 
 export type ProjectsService = {
   getProjects: (userId: string) => Promise<Project[]>;

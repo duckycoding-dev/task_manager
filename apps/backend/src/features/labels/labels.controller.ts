@@ -1,8 +1,10 @@
-import type { LabelsService } from './labels.service';
-import { labelsRoutes } from './labels.routes';
-import type { AppRouteHandler } from '../../types/app_context';
-import { EndpointError } from 'utils/errors/http-errors/';
 import { AUTH_CTX_KEYS } from 'utils/auth-context/';
+import { EndpointError } from 'utils/errors/http-errors/';
+
+import type { AppRouteHandler } from '../../types/app_context';
+
+import { type labelsRoutes } from './labels.routes';
+import type { LabelsService } from './labels.service';
 
 export type LabelsController = {
   getLabels: AppRouteHandler<typeof labelsRoutes.getLabels>;

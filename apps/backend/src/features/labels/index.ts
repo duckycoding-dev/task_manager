@@ -2,18 +2,17 @@
 
 export type {
   InsertLabel,
-  Label,
-  UpdateLabel,
   InsertTaskLabel,
+  Label,
   TaskLabel,
+  UpdateLabel,
   UpdateTaskLabel,
 } from './labels.db';
-
 export {
   insertLabelSchema,
   insertTaskLabelsSchema,
-  updateLabelSchema,
-  updateTaskLabelsSchema,
   selectLabelSchema,
   selectTaskLabelsSchema,
+  updateLabelSchema,
+  updateTaskLabelsSchema,
 } from './labels.db';

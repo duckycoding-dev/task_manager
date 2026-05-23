@@ -1,12 +1,13 @@
-import { pgTable, uuid, text, timestamp } from 'drizzle-orm/pg-core';
-import { tasks } from '../tasks/tasks.db';
-import { users } from '../auth/auth.db';
+import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { type z } from 'zod/v4';
+
 import {
   createInsertSchema,
   createSelectSchema,
   createUpdateSchema,
 } from '../../utils/drizzle-zod';
-import { z } from 'zod/v4';
+import { users } from '../auth/auth.db';
+import { tasks } from '../tasks/tasks.db';
 
 // 🚀 Reminders Table (Task Notifications)
 export const remindersModel = pgTable('reminders', {

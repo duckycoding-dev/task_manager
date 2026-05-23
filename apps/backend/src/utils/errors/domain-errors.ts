@@ -1,4 +1,5 @@
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
+
 import type { VerboseStatusCode } from '../status-codes';
 
 export type DomainErrorOptions = {

@@ -1,4 +1,5 @@
 import { Fragment } from 'react/jsx-runtime';
+
 import { Navbar } from '../features/navigation/navbar/Navbar';
 import { Header } from '../features/ui/header/Header';
 
@@ -11,7 +12,7 @@ export function HolyGrailLayout(props: HolyGrailLayoutProps) {
         <Navbar />
       </Header>
       <main
-        className={'[grid-area:main-content] overflow-auto px-4 py-8 md:px-8'}
+        className={'overflow-auto px-4 py-8 [grid-area:main-content] md:px-8'}
       >
         {props.children}
       </main>

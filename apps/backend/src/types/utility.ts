@@ -1,4 +1,5 @@
 import type { createRoute } from '@hono/zod-openapi';
+
 import type { StatusCodeToVerboseCode } from 'utils/status-codes/';
 
 /**

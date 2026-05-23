@@ -1,17 +1,20 @@
+import type { QueryClient } from '@tanstack/react-query';
 import {
   createRootRouteWithContext,
-  Outlet,
   type ErrorComponentProps,
+  Outlet,
 } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
-import type { useAuthSession } from '../lib/auth-client';
-import { HolyGrailLayout } from '../layouts/HolyGrailLayout';
-import { Button } from '../features/ui/button/Button';
 import { useState } from 'react';
+
+import { Button } from '../features/ui/button/Button';
 import { StyledLink } from '../features/ui/link/Link';
+import { HolyGrailLayout } from '../layouts/HolyGrailLayout';
+import type { useAuthSession } from '../lib/auth-client';
+
 export interface MyRouterContext {
   auth: ReturnType<typeof useAuthSession>;
-  queryClient?: import('@tanstack/react-query').QueryClient;
+  queryClient?: QueryClient;
 }
 
 function MyCustomErrorComponent({ error }: ErrorComponentProps) {
@@ -22,7 +25,7 @@ function MyCustomErrorComponent({ error }: ErrorComponentProps) {
   return (
     <div
       className={
-        '[grid-area:main-content] p-5 bg-accent border border-error flex flex-col gap-4'
+        'bg-accent border-error flex flex-col gap-4 border p-5 [grid-area:main-content]'
       }
     >
       <h1 className='p-6'>Oops! Something went wrong.</h1>
@@ -30,7 +33,7 @@ function MyCustomErrorComponent({ error }: ErrorComponentProps) {
       {import.meta.env.DEV ? (
         <>
           <h2>Error:</h2>
-          <pre className='whitespace-pre-wrap break-all bg-accent border-2 py-4 px-2 rounded-md flex flex-col gap-2'>
+          <pre className='bg-accent flex flex-col gap-2 rounded-md border-2 px-2 py-4 break-all whitespace-pre-wrap'>
             {error.message || 'No error message provided.'}
             <br />
             {showTrace ? <span>{error.stack}</span> : ''}

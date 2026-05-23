@@ -91,9 +91,22 @@ Verified bundle impact in the current setup (build scan of `apps/react19/dist/as
 
 **Temporary state**: keeping Pattern B with `drizzle-zod` reaching the FE bundle is acceptable while only one FE site value-imports a schema and the resulting bundle weight is small. The intended longer-term improvement is a codegen step (Option 5 from the source-of-truth analysis): keep Drizzle as the single source of truth, emit pure-Zod schemas (no `drizzle-zod` dependency) into a separate package the FE imports from. Tracked in [`docs/handoffs/_shared/backend-fix-phase-complete-2026-05-19.md`](../handoffs/_shared/backend-fix-phase-complete-2026-05-19.md) §2; trigger when Vue/Nuxt FE adds more value imports, measured bundle exceeds ~50KB of drizzle-zod chain, or dev-mode cold-start becomes noticeable (dev mode does not tree-shake).
 
+#### Import order — auto-sorted into seven groups (Phase Z Topic 3)
+
+Imports are auto-ordered by `simple-import-sort` (enforced via `simple-import-sort/imports` in `eslint.config.mjs`). The groups, in order:
+
+1. Side-effect imports (`import './polyfill'`, init modules). Non-CSS only — CSS side-effect imports sort to group 7.
+2. External packages — Node built-ins (`node:*`) first, then everything else; pure alphabetical with no anchor list.
+3. Monorepo workspace packages (`@task-manager/*`).
+4. Path aliases — react19 `@/` and backend bare-name aliases (`utils/`, `types/`, `src/`) sort together in one bucket (the two never co-occur per file).
+5. Relative parent (`../...`).
+6. Relative sibling (`./...`) — non-CSS.
+7. CSS tail bucket — two subgroups: plain / side-effect CSS first (`*.css`, `*.scss` not preceded by `.module`); CSS Modules second (`*.module.css`, `*.module.scss`).
+
+`simple-import-sort` alphabetizes within each group/subgroup. CSS cascade control belongs in CSS-land (CSS Layers or single-root-CSS with `@import` chain), NOT in JS-import ordering — relying on JS-side import order for CSS cascade is fragile because the linter will alphabetize. Reach for the `// eslint-disable-next-line simple-import-sort/imports` escape hatch only when neither CSS Layers nor single-root-CSS pattern is viable, and document the WHY at the disable site.
+
 #### Pending grills
 - Error pattern at app boundaries: throw vs `Result` (backend rule already locked — pattern α + `safe()` at recovery sites; TS-general rule TBD).
-- Import order: external / internal / type-only.
 - Async: prefer `async/await` vs `.then` (most likely `async/await`).
 - Nullish handling: `??` vs `||`.
 - `null` vs `undefined` policy.

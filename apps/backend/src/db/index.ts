@@ -1,6 +1,7 @@
 // Make sure to install the 'postgres' package
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
+
 import env from '../utils/env';
 
 const postgresClient = postgres({

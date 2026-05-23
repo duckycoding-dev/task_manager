@@ -1,7 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
 import type { InsertTask, Task } from '@task-manager/backend/tasks';
-import { addTask, fetchTasks } from './tasks.service';
+
 import type { AuthData } from '../../lib/auth-client';
+
+import { addTask, fetchTasks } from './tasks.service';
 
 export const useTasksQuery = (authData: AuthData) => {
   return useQuery({

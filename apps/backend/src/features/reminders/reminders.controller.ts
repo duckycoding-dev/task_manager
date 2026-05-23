@@ -1,8 +1,10 @@
-import type { RemindersService } from './reminders.service';
-import { remindersRoutes } from './reminders.routes';
-import type { AppRouteHandler } from '../../types/app_context';
-import { EndpointError } from 'utils/errors/http-errors/';
 import { AUTH_CTX_KEYS } from 'utils/auth-context/';
+import { EndpointError } from 'utils/errors/http-errors/';
+
+import type { AppRouteHandler } from '../../types/app_context';
+
+import { type remindersRoutes } from './reminders.routes';
+import type { RemindersService } from './reminders.service';
 
 export type RemindersController = {
   getReminders: AppRouteHandler<typeof remindersRoutes.getReminders>;

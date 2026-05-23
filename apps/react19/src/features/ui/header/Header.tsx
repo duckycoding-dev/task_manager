@@ -1,4 +1,5 @@
 import type React from 'react';
+
 import { cn } from '@task-manager/utils';
 
 export function Header({
@@ -8,7 +9,7 @@ export function Header({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <header
-      className={cn('py-4 border-b border-b-secondary', className)}
+      className={cn('border-b-secondary border-b py-4', className)}
       {...props}
     >
       {children}

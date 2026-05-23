@@ -1,12 +1,14 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
-import { AppError, errorHandler } from './errors/http-errors';
-import type { AppContext, AppOpenAPI } from '../types/app_context';
-import { configureOpenAPI } from './configure-open-api';
-import { formatZodError } from './mapping';
-import { addAuthMiddleware, auth } from './auth';
 import { cors } from 'hono/cors';
+
+import type { AppContext, AppOpenAPI } from '../types/app_context';
+
+import { AppError, errorHandler } from './errors/http-errors';
+import { addAuthMiddleware, auth } from './auth';
+import { configureOpenAPI } from './configure-open-api';
 import env from './env';
 import { logRequestsMiddleware } from './logger';
+import { formatZodError } from './mapping';
 
 export function createRouter() {
   const router = new OpenAPIHono<AppContext>({

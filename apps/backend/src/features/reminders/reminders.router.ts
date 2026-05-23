@@ -1,10 +1,10 @@
-import { createRemindersController } from './reminders.controller';
-import { createRemindersService } from './reminders.service';
-import { createRemindersRepository } from './reminders.repository';
+import { db } from '../../db';
 import { createRouter } from '../../utils/create-app';
 
+import { createRemindersController } from './reminders.controller';
+import { createRemindersRepository } from './reminders.repository';
 import { remindersRoutes } from './reminders.routes';
-import { db } from '../../db';
+import { createRemindersService } from './reminders.service';
 // Setup dependencies
 const remindersRepo = createRemindersRepository(db);
 const remindersService = createRemindersService(remindersRepo);

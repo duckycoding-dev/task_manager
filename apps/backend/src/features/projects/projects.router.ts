@@ -1,10 +1,10 @@
-import { createProjectsController } from './projects.controller';
-import { createProjectsService } from './projects.service';
-import { createProjectsRepository } from './projects.repository';
+import { db } from '../../db';
 import { createRouter } from '../../utils/create-app';
 
+import { createProjectsController } from './projects.controller';
+import { createProjectsRepository } from './projects.repository';
 import { projectsRoutes } from './projects.routes';
-import { db } from '../../db';
+import { createProjectsService } from './projects.service';
 // Setup dependencies
 const projectsRepo = createProjectsRepository(db);
 const projectsService = createProjectsService(projectsRepo);

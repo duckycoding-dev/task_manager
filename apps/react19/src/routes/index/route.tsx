@@ -1,7 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { useAuthSession } from '../../lib/auth-client';
+
 import { StyledLink } from '../../features/ui/link/Link';
 import { PageTitle } from '../../features/ui/titles/PageTitle';
+import { useAuthSession } from '../../lib/auth-client';
 
 export const Route = createFileRoute('/')({
   component: Index,
@@ -43,7 +44,7 @@ function Index() {
   return (
     <>
       <PageTitle className={'text-center'}>Welcome to Task Manager</PageTitle>
-      <StyledLink className={'w-full mt-4'} to='/tasks'>
+      <StyledLink className={'mt-4 w-full'} to='/tasks'>
         Browse tasks
       </StyledLink>
     </>

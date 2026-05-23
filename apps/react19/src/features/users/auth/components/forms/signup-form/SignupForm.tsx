@@ -1,9 +1,11 @@
+import { useMutation } from '@tanstack/react-query';
+
 import { cn } from '@task-manager/utils';
+
 import { authClient } from '../../../../../../lib/auth-client';
 import { Button } from '../../../../../ui/button/Button';
-import { InputWithLabel } from '../../../../../ui/form/input-with-label/InputWithLabel';
-import { useMutation } from '@tanstack/react-query';
 import { FormError } from '../../../../../ui/form/form-error/FormError';
+import { InputWithLabel } from '../../../../../ui/form/input-with-label/InputWithLabel';
 import { StyledLink } from '../../../../../ui/link/Link';
 
 const handleSignup = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -59,7 +61,7 @@ export const SignupForm = ({
     <form
       onSubmit={signup}
       className={cn(
-        'max-w-[400px] mx-auto flex flex-col gap-4 w-full',
+        'mx-auto flex w-full max-w-[400px] flex-col gap-4',
         className,
       )}
       {...props}

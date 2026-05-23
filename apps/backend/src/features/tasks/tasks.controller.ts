@@ -1,8 +1,10 @@
-import type { TasksService } from './tasks.service';
-import { tasksRoutes } from './tasks.routes';
-import type { AppRouteHandler } from '../../types/app_context';
-import { EndpointError } from 'utils/errors/http-errors/';
 import { AUTH_CTX_KEYS } from 'utils/auth-context/';
+import { EndpointError } from 'utils/errors/http-errors/';
+
+import type { AppRouteHandler } from '../../types/app_context';
+
+import { type tasksRoutes } from './tasks.routes';
+import type { TasksService } from './tasks.service';
 
 export type TasksController = {
   getTasks: AppRouteHandler<typeof tasksRoutes.getTasks>;

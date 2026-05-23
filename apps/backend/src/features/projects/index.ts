@@ -2,16 +2,15 @@
 
 export type {
   InsertProject,
+  InsertUserProject,
   Project,
   UpdateProject,
   UserProject,
-  InsertUserProject,
 } from './projects.db';
-
 export {
   insertProjectSchema,
-  selectProjectSchema,
-  updateProjectSchema,
   insertUserProjectSchema,
+  selectProjectSchema,
   selectUserProjectSchema,
+  updateProjectSchema,
 } from './projects.db';

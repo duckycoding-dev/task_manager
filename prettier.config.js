@@ -12,6 +12,7 @@ const config = {
   quoteProps: 'as-needed',
   trailingComma: 'all',
   singleAttributePerLine: false,
+  plugins: ['prettier-plugin-tailwindcss'],
   bracketSameLine: false,
 };
 

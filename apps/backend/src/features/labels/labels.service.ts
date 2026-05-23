@@ -1,5 +1,5 @@
-import type { LabelsRepository } from './labels.repository';
 import type { InsertLabel, Label, UpdateLabel } from './labels.db';
+import type { LabelsRepository } from './labels.repository';
 import type { GetLabelsQuery } from './labels.types';
 
 export type LabelsService = {

@@ -1,4 +1,5 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
+
 import { PageTitle } from '../../features/ui/titles/PageTitle';
 
 export const Route = createFileRoute('/profile')({

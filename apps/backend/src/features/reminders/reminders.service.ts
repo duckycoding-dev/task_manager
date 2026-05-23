@@ -1,5 +1,5 @@
-import type { RemindersRepository } from './reminders.repository';
 import type { InsertReminder, Reminder, UpdateReminder } from './reminders.db';
+import type { RemindersRepository } from './reminders.repository';
 
 export type RemindersService = {
   getReminders: (userId: string) => Promise<Reminder[]>;

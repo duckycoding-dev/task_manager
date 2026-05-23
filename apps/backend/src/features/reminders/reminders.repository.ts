@@ -1,14 +1,16 @@
-import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { and, eq } from 'drizzle-orm';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+
+import { RepositoryValidationError } from 'utils/errors/domain-errors/';
+import { formatZodError } from 'utils/mapping/';
+
 import {
-  selectReminderSchema,
-  remindersModel,
-  type Reminder,
   type InsertReminder,
+  type Reminder,
+  remindersModel,
+  selectReminderSchema,
   type UpdateReminder,
 } from './reminders.db';
-import { formatZodError } from 'utils/mapping/';
-import { RepositoryValidationError } from 'utils/errors/domain-errors/';
 
 export type RemindersRepository = {
   getReminders: (userId: string) => Promise<Reminder[]>;

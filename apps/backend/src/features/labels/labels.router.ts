@@ -1,10 +1,10 @@
-import { createLabelsController } from './labels.controller';
-import { createLabelsService } from './labels.service';
-import { createLabelsRepository } from './labels.repository';
+import { db } from '../../db';
 import { createRouter } from '../../utils/create-app';
 
+import { createLabelsController } from './labels.controller';
+import { createLabelsRepository } from './labels.repository';
 import { labelsRoutes } from './labels.routes';
-import { db } from '../../db';
+import { createLabelsService } from './labels.service';
 // Setup dependencies
 const labelsRepo = createLabelsRepository(db);
 const labelsService = createLabelsService(labelsRepo);

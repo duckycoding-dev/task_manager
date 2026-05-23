@@ -1,4 +1,5 @@
-import { selectTaskSchema, type InsertTask } from '@task-manager/backend/tasks';
+import { type InsertTask, selectTaskSchema } from '@task-manager/backend/tasks';
+
 import { HonoClient } from '../../lib/backend';
 
 export async function fetchTasks() {

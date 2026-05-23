@@ -1,19 +1,22 @@
 import { createRoute, z } from '@hono/zod-openapi';
+
+import { checkAuthMiddleware } from 'utils/auth/';
+import { createRequiredJsonBody } from 'utils/request/body/';
+import {
+  createErrorResponse,
+  createSuccessJsonResponse,
+} from 'utils/response/';
+import { statusCodeMap } from 'utils/status-codes/';
+
 import type { AppRoutes } from '../../types/app_context';
+
 import {
   insertLabelSchema,
   insertTaskLabelsSchema,
   selectLabelSchema,
   updateLabelSchema,
 } from './labels.db';
-import { statusCodeMap } from 'utils/status-codes/';
-import {
-  createErrorResponse,
-  createSuccessJsonResponse,
-} from 'utils/response/';
-import { createRequiredJsonBody } from 'utils/request/body/';
 import { getLabelsQuerySchema, labelIdParamSchema } from './labels.types';
-import { checkAuthMiddleware } from 'utils/auth/';
 
 const getLabels = createRoute({
   path: '/',

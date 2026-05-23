@@ -1,10 +1,12 @@
 import { useNavigate } from '@tanstack/react-router';
+import { useState } from 'react';
+
 import { cn } from '@task-manager/utils';
+
 import { authClient } from '../../../../../../lib/auth-client';
 import { Button } from '../../../../../ui/button/Button';
 import { InputWithLabel } from '../../../../../ui/form/input-with-label/InputWithLabel';
 import { StyledLink } from '../../../../../ui/link/Link';
-import { useState } from 'react';
 
 interface LoginFormProps extends React.HTMLAttributes<HTMLFormElement> {
   redirectTo?: string;
@@ -42,7 +44,7 @@ export const LoginForm = ({
     <form
       onSubmit={handleSubmit}
       className={cn(
-        'max-w-[400px] mx-auto flex flex-col gap-4 w-full',
+        'mx-auto flex w-full max-w-[400px] flex-col gap-4',
         className,
       )}
       {...props}
@@ -72,7 +74,7 @@ export const LoginForm = ({
         />
         <label
           htmlFor='show-password'
-          className='text-sm text-muted-foreground'
+          className='text-muted-foreground text-sm'
         >
           Show Password
         </label>

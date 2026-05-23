@@ -1,6 +1,8 @@
-import { statusOptions, priorityOptions, recurringOptions } from './tasks.db';
-import { z } from 'zod/v4';
 import { extendZodWithOpenApi } from '@hono/zod-openapi';
+import { z } from 'zod/v4';
+
+import { priorityOptions, recurringOptions, statusOptions } from './tasks.db';
+
 extendZodWithOpenApi(z);
 
 // 📌 Query Params Schemas

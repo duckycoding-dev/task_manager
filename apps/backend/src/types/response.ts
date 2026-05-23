@@ -1,8 +1,9 @@
-import {
-  verboseStatusCodes,
-  type VerboseStatusCode,
-} from 'utils/status-codes/';
 import { z } from 'zod/v4';
+
+import {
+  type VerboseStatusCode,
+  verboseStatusCodes,
+} from 'utils/status-codes/';
 
 // Metadata schema
 export const ResponseMetaSchema = z.object({
@@ -56,8 +57,8 @@ export type SuccessResponse<T> = {
 };
 
 // I had to explicitly omit code from ErrorResponseSchema and redefine its type: without this it is not inferring the type correctly when using " | (string & {}})"
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const ErrorResponseSchemaWithoutVerboseCode = ErrorResponseSchema.omit({
+
+export const ErrorResponseSchemaWithoutVerboseCode = ErrorResponseSchema.omit({
   verboseCode: true,
 });
 export type ErrorResponse = z.infer<

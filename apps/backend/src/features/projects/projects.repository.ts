@@ -1,17 +1,20 @@
-import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { and, eq } from 'drizzle-orm';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+
+import { RepositoryValidationError } from 'utils/errors/domain-errors/';
+import { formatZodError } from 'utils/mapping/';
+
+import type { Task } from '../tasks/tasks.db';
+import { selectTaskSchema, tasks } from '../tasks/tasks.db';
+
 import {
-  type Project,
-  selectProjectSchema,
-  projects,
   type InsertProject,
+  type Project,
+  projects,
+  selectProjectSchema,
   type UpdateProject,
   usersProjects,
 } from './projects.db';
-import { formatZodError } from 'utils/mapping/';
-import type { Task } from '../tasks/tasks.db';
-import { RepositoryValidationError } from 'utils/errors/domain-errors/';
-import { selectTaskSchema, tasks } from '../tasks/tasks.db';
 
 export type ProjectsRepository = {
   getProjects: (userId: string) => Promise<Project[]>;

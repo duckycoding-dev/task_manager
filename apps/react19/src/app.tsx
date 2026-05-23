@@ -1,15 +1,17 @@
-import { StrictMode, useEffect } from 'react';
-import ReactDOM from 'react-dom/client';
-import { RouterProvider, createRouter } from '@tanstack/react-router';
-import './styles/style.css';
-// Import the generated route tree
-import { routeTree } from './routeTree.gen';
-import { useAuthSession } from './lib/auth-client';
 import {
   QueryClient,
   QueryClientProvider,
   useQueryClient,
 } from '@tanstack/react-query';
+import { createRouter, RouterProvider } from '@tanstack/react-router';
+import { StrictMode, useEffect } from 'react';
+import ReactDOM from 'react-dom/client';
+
+import { useAuthSession } from './lib/auth-client';
+// Import the generated route tree
+import { routeTree } from './routeTree.gen';
+
+import './styles/style.css';
 
 // Create a new router instance
 const router = createRouter({
@@ -18,6 +20,7 @@ const router = createRouter({
     auth: {
       data: null,
       error: null,
+      isRefetching: false, // not sure what this does, but was required
       isPending: true,
       refetch: () => Promise.resolve(),
     },
@@ -49,8 +52,8 @@ export function App() {
 }
 
 // Render the app
-const rootElement = document.getElementById('root')!;
-if (!rootElement.innerHTML) {
+const rootElement = document?.getElementById('root');
+if (rootElement && !rootElement?.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
 
   root.render(

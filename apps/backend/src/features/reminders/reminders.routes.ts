@@ -1,19 +1,22 @@
 import { createRoute, z } from '@hono/zod-openapi';
-import type { AppRoutes } from '../../types/app_context';
-import {
-  insertReminderSchema,
-  selectReminderSchema,
-  updateReminderSchema,
-} from './reminders.db';
+
+import { checkAuthMiddleware } from 'utils/auth/';
+import { createRequiredJsonBody } from 'utils/request/body/';
 import {
   createErrorResponse,
   createSuccessJsonResponse,
 } from 'utils/response/';
 import { statusCodeMap } from 'utils/status-codes/';
+
+import type { AppRoutes } from '../../types/app_context';
 import { taskIdParamSchema } from '../tasks/tasks.types';
+
+import {
+  insertReminderSchema,
+  selectReminderSchema,
+  updateReminderSchema,
+} from './reminders.db';
 import { reminderIdParamSchema } from './reminders.types';
-import { createRequiredJsonBody } from 'utils/request/body/';
-import { checkAuthMiddleware } from 'utils/auth/';
 
 const getReminders = createRoute({
   path: '/',

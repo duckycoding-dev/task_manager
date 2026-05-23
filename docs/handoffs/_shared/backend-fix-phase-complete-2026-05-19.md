@@ -1,14 +1,14 @@
 ---
 created: 2026-05-19
 updated: 2026-05-19
-summary: Backend fix phase (round-1 grilling + Cluster A security + Cluster B ADR-mandated wiring + Cluster C mechanical cleanups) fully complete and committed. Phase Z (TS style grill round) is in progress — Topics 1 (casing) and 2 (export style + barrels + side-effect imports + extendZodWithOpenApi relocation) locked into coding-practices in commit `08a7b30 continue grilling session`. Topic 3 (import-order) deferred pending ESLint/Prettier/Husky config import (§1.5). This doc is the cold-boot brief — it lists the remaining backlog (Phase Z 4–11, phase-1 carry-forwards, controller error-throwing restructure, library-API drift audit, backend v1 design changes, Vue/Nuxt FE).
+summary: Backend fix phase (round-1 grilling + Cluster A security + Cluster B ADR-mandated wiring + Cluster C mechanical cleanups) fully complete and committed. Phase Z (TS style grill round) in progress — Topics 1+2 locked + committed in `08a7b30`; Topic 3 (import-order) locked + enforced via the §1.5 ESLint/Prettier/Husky/Commitlint config-merge work (uncommitted in working tree alongside ~93 autofix-reformatted files). Topics 4–11 still queued. This doc is the cold-boot brief — it lists the remaining backlog (Phase Z 4–11, phase-1 carry-forwards, controller error-throwing restructure, library-API drift audit, backend v1 design changes, Vue/Nuxt FE).
 ---
 
 # Handoff — backend fix phase complete + Phase Z in progress (2026-05-19)
 
-**Status**: backend fix phase fully complete *and committed* (Cluster A + Cluster B1–B7 + Cluster C, all merged on main via `7a4ea02` and predecessors). **Phase Z (TS style grill round) is in progress**: Topics 1 (casing) and 2 (export style — including barrels, side-effect imports, and the `extendZodWithOpenApi` relocation) are fully grilled and locked into [`docs/llm/coding-practices.md`](../../llm/coding-practices.md); the doc edits were committed mid-session as `08a7b30 continue grilling session`. This handoff's own final edits (recording the pause + the new §1.5 ESLint-config-first ordering) sit uncommitted in the working tree — user commits manually per `feedback_pause_workflow`.
+**Status**: backend fix phase fully complete *and committed* (Cluster A + Cluster B1–B7 + Cluster C, all merged on main via `7a4ea02` and predecessors). **Phase Z (TS style grill round) is in progress**: Topics 1 (casing), 2 (export style — including barrels, side-effect imports, `extendZodWithOpenApi` relocation), and 3 (import-order grouping) are all fully grilled and locked into [`docs/llm/coding-practices.md`](../../llm/coding-practices.md). Topics 1+2 were committed mid-session as `08a7b30 continue grilling session`; Topic 3 landed via the §1.5 config-merge work (uncommitted — see "What's uncommitted" below).
 
-Phase Z Topic 3 (import-order grouping) is **deferred** until the ESLint/Prettier/Husky configs are brought in from the user's main project — see §1.5. The Topic-1+2 decisions imply ~6 mechanical renames + the `extendZodWithOpenApi` move; queued for execution, not done yet. After §1.5 lands, Topic 3 grill resumes; Topics 4–11 can be grilled in any order (no config dependency).
+The Topic-1+2 decisions still imply ~5–6 mechanical renames + the multi-file `extendZodWithOpenApi` move (queued in §1, not done yet). Topics 4–11 can be grilled in any order (no config dependency).
 
 ## How to resume cold
 
@@ -19,7 +19,7 @@ Phase Z Topic 3 (import-order grouping) is **deferred** until the ESLint/Prettie
 5. (Optional, if you're about to touch phase-1 leftovers) read [`./phase-1-followup-2026-05-13.md`](./phase-1-followup-2026-05-13.md).
 6. (Optional, if you're starting frontend work) read [`./design-phase-complete-2026-05-14.md`](./design-phase-complete-2026-05-14.md).
 7. Verify git state: `git log --oneline | head -10` should show `08a7b30 continue grilling session` as HEAD on `main`. `git status` should show only this handoff file modified (or be clean if user has since committed this handoff edit).
-8. Pick the next chunk from §Backlog — most likely §1.5 (ESLint/Prettier/Husky import) followed by Phase Z Topic 3.
+8. Pick the next chunk from §Backlog — §1.5 (config-merge) is complete; most likely next is one of: (a) commit the §1.5 changes per the suggested grouping in "What's uncommitted"; (b) fix the pre-existing react19 build error (`src/app.tsx:16` missing `isRefetching` field); (c) execute the §1 mechanical renames; (d) start Phase Z Topics 4–11 in any order.
 
 ## What's done (in repo, committed)
 
@@ -33,15 +33,38 @@ Per-commit detail and the "locked decisions" table previously lived in the now-d
 
 ## What's uncommitted (this session)
 
-Only this handoff file (`docs/handoffs/_shared/backend-fix-phase-complete-2026-05-19.md`). Edits since the `08a7b30` commit: rewrote Status, How-to-resume, What's done, What's uncommitted, and §1 / §1.5 of the backlog to reflect Phase Z progress and the new ESLint-config-first ordering of remaining work. No code touched. `bun --cwd apps/backend run build` was not re-run (nothing to verify).
+Large delta — ~99 files modified + several added/deleted — almost entirely the §1.5 config-merge work plus `eslint --fix` reformatting the codebase to `printWidth: 120` + the new `simple-import-sort` grouping. Net diff ≈ +1104 / −1319 lines (line consolidations dominate due to the printWidth bump).
 
-No suggested commit message — small documentation-only delta; commit at user's discretion alongside any further notes.
+Touched / added / deleted files at a glance:
+
+- **Tooling configs (added/modified)**: `eslint.config.mjs` (full rewrite), `prettier.config.js` (printWidth 120, dropped astro override), `.prettierignore` (consolidated, glob fixes), `commitlint.config.js` (new file: type-enum trimmed + `perf` + `test`), `.lintstagedrc.json` (imported, now active), `scripts/prepare-commit-msg.ts` (new file: comment template), `.husky/commit-msg`, `.husky/prepare-commit-msg`, `.husky/pre-commit`, `package.json` (devDependencies for the new plugins), `bun.lock` (lockfile updated by `bun install`).
+- **Deleted**: `lint-staged.config.js` (superseded by `.lintstagedrc.json` per D7-reconciliation call), `apps/react19/.prettierignore` (consolidated into root).
+- **Kept for manual user comparison** (in ignores so it doesn't lint): `other_project_eslint.config.js`.
+- **Code reformatted by autofix only**: every `.ts` / `.tsx` file in `apps/backend/src`, `apps/react19/src`, `packages/utils`, `scripts/`, plus `apps/backend/drizzle.config.ts` and `apps/react19/vite.config.ts`. Purely whitespace + import-order rewrites — no semantic changes.
+- **Two real edits (Phase Z byproduct cleanups)**:
+  - `apps/backend/src/features/projects/projects.types.ts` — orphan `import {} from './projects.db'` and the commented-out `extendZodWithOpenApi(z)` lines deleted. File is now pure-Zod.
+  - `apps/react19/src/routes/__root.tsx` — inline `import('@tanstack/react-query').QueryClient` annotation hoisted to a proper `import type { QueryClient } from '@tanstack/react-query'`.
+- **Docs**: `docs/llm/coding-practices.md` (Topic 3 import-order rule added), this handoff file.
+
+Verification at session end:
+
+- `bunx eslint .` — **0 errors, 10 warnings** (pre-existing FE drift, same as §2 phase-1 carry-forward).
+- `bun --cwd apps/backend run build` — clean.
+- `bun --cwd apps/react19 run build` — fails with a **pre-existing TS error** (`src/app.tsx:16` missing `isRefetching` field in initial auth-context literal — BetterAuth API surface expanded after this code was authored). Verified pre-existing via `git stash` round-trip. Not caused by this PR. Fix: add `isRefetching: false` to the literal at `src/app.tsx:16-21`. Tracked as a separate cleanup item.
+
+Suggested commit grouping (user's call):
+
+- **Commit 1**: tooling configs only (`eslint.config.mjs`, `prettier.config.js`, `.prettierignore`, `commitlint.config.js`, `.lintstagedrc.json`, `scripts/prepare-commit-msg.ts`, husky hooks, `package.json`, `bun.lock`, deleted `lint-staged.config.js` + `apps/react19/.prettierignore`, kept `other_project_eslint.config.js`, docs).
+- **Commit 2**: the 93-file lint-fix reformatting (purely whitespace + import-sort). Separate commit keeps history clean and reviewable.
+- **Commit 3** (optional, can fold into 1): the two byproduct edits in `projects.types.ts` + `__root.tsx`.
+
+Suggested commit message types: `chore` for #1, `style` for #2 (purely formatting), `refactor` for #3.
 
 ## Backlog (priority order)
 
 ### 1 · Phase Z · TS style grill round (in progress)
 
-**Status**: Topics 1 and 2 fully grilled + locked into [`docs/llm/coding-practices.md`](../../llm/coding-practices.md) (`updated: 2026-05-19`). Topic 3 (import order) deferred pending the ESLint/Prettier/Husky config import — see §1.5 below. Topics 4–11 still queued.
+**Status**: Topics 1, 2, and 3 fully grilled + locked into [`docs/llm/coding-practices.md`](../../llm/coding-practices.md). Topics 1+2 committed in `08a7b30`; Topic 3 (import-order) landed via the §1.5 config-merge work along with the ESLint config that enforces it. Topics 4–11 still queued.
 
 **Locked this session (2026-05-19)**:
 
@@ -63,10 +86,11 @@ No suggested commit message — small documentation-only delta; commit at user's
 3. 4 router files (`labels.router.ts`, `projects.router.ts`, `reminders.router.ts`, `tasks.router.ts`): `export default xRouter` → `export const xRouter`; update `apps/backend/src/app.ts` imports accordingly.
 4. `apps/backend/src/features/tasks/tasks.db.ts`: rename `statusOptions` / `priorityOptions` / `recurringOptions` → `STATUS_OPTIONS` / `PRIORITY_OPTIONS` / `RECURRING_OPTIONS` per the SCREAMING-SNAKE-for-frozen-data-consts rule. Update the consuming `tasks.types.ts`, `tasks.db.ts` column-`enum` references, and `apps/backend/src/features/tasks/index.ts` barrel re-export list.
 5. `apps/backend/src/utils/status-codes.ts`: rename `verboseStatusCodes` → `VERBOSE_STATUS_CODES`. Update all consumers.
-6. `extendZodWithOpenApi(z)` relocation: delete the call + the `@hono/zod-openapi` import from the 4 `*.types.ts` files (`labels.types.ts` / `reminders.types.ts` / `tasks.types.ts` still have the live calls; `projects.types.ts` already has them *commented out* in commit `08a7b30` — delete the commented lines entirely rather than leaving them as dead comments, and also drop the orphan `import {} from './projects.db'` line at the top of `projects.types.ts` since it imports no symbols). Add a single `extendZodWithOpenApi(z)` call inside `createApp()` (in `utils/create-app.ts`) with a `// must run before any route's .openapi() chain executes` comment.
+6. `extendZodWithOpenApi(z)` relocation: delete the call + the `@hono/zod-openapi` import from the 3 still-live `*.types.ts` files (`labels.types.ts` / `reminders.types.ts` / `tasks.types.ts`). `projects.types.ts` is already fully cleaned (the orphan `import {}` line + commented-out lines were deleted during the §1.5 lint-fix pass). Add a single `extendZodWithOpenApi(z)` call inside `createApp()` (in `utils/create-app.ts`) with a `// must run before any route's .openapi() chain executes` comment.
 7. Audit feature barrel re-exports for any newly-mismatched names after the SCREAMING-SNAKE renames; `apps/backend/src/features/tasks/index.ts` is the only barrel that re-exports option arrays today.
+8. Wire `@typescript-eslint/naming-convention` + `import-x/no-default-export` per the deferred D8/D9 picks from the §1.5 config-merge plan ([`/home/ducky/.claude/plans/we-are-back-by-mossy-stallman.md`](../../../) – Phase Z rule wiring §A and §B sections capture the drafts). Both rules are easier to land *after* the mechanical renames in items 1–6 above clear the codebase of known drift.
 
-These can land *before* the ESLint/Prettier import — they don't depend on lint to be correct. They could also land *after*, which would let the new lint rules catch any missed sites.
+These can land in any order; item 8 specifically wants items 1–6 done first.
 
 **Topics still queued (4–11)**:
 
@@ -81,22 +105,36 @@ These can land *before* the ESLint/Prettier import — they don't depend on lint
 
 These don't depend on the ESLint config import — they can be grilled in any order. Topic 3 (import-order grouping) is the only one explicitly deferred pending §1.5.
 
-### 1.5 · Bring in ESLint / Prettier / Husky configs from user's main project (do BEFORE Topic 3)
+### 1.5 · ESLint / Prettier / Husky / Commitlint config merge — **complete**
 
-User has an existing ESLint + Prettier + Husky setup in another personal project and wants to import it here as the baseline before locking Topic 3 (import-order grouping). Reason: Topic 3 directly modifies the ESLint config (`import/order` rule), so iterating on import-order picks before the base config lands would force two passes.
+Imported user's main-project tooling and merged it with the existing react19-specific block. Plan + execution log lives at [`/home/ducky/.claude/plans/we-are-back-by-mossy-stallman.md`](../../../) (outside repo — harness-managed plan file; full grill of 9 decisions + execution detail).
 
-Concrete next steps when work resumes:
+Landed:
 
-1. User pastes / commits the base configs from the other project.
-2. Reconcile with the existing root `eslint.config.mjs` (currently has the backend block + react19 block + tseslint-recommended + prettier).
-3. Wire the rules already promised by locked Phase Z decisions:
-   - `@typescript-eslint/naming-convention` — encode the casing table from Topic 1.
-   - `import/no-restricted-paths` — backend zone forbidding `from: './apps/backend/src/features/*/index.ts` (see Q2.2f).
-   - `no-restricted-imports` or equivalent — block `export *` re-exports (Q2.2c).
-4. Run lint across the repo; surface drift; clean up.
-5. *Then* grill Topic 3 with the live config visible.
+- **`eslint.config.mjs`** rewritten. `tseslint.configs.strict` baseline (D1) with `no-explicit-any` + `no-non-null-assertion` downgraded to `warn`; `eslint-plugin-prettier/recommended` integrated so `eslint --fix` formats (D2); `simple-import-sort` configured with the 7-group Topic 3 ordering (D5); `unused-imports` plugin for autofixable removal; `consistent-type-imports` with inline-type-imports fix style; Phase Z rules wired (`import-x/no-restricted-paths` for barrel discipline, `no-restricted-syntax` for ban-on-`export *` + side-effect-only imports with CSS/asset carve-out + per-app-entry override block). Backend + react19 per-app blocks preserve `projectService: true`, per-block globals, and react19's `react-hooks` / `react-refresh` / `@eslint-react` / `@tanstack/query` rules. `react-refresh/only-export-components` extended with `allowExportNames: ['Route']` for tanstack-router files. `other_project_eslint.config.js` kept (per user — manual comparison) but added to ignores.
+- **`prettier.config.js`** — `printWidth: 80` → `120` (D4); astro override dropped.
+- **`max-len: 120`** ESLint rule mirrors Prettier (D4).
+- **`.prettierignore`** consolidated to single root file with glob fixes + new entries (D7); workspace-local `apps/react19/.prettierignore` deleted.
+- **`commitlint.config.js`** — type-enum: `[feat, fix, chore, docs, style, refactor, revert, perf, test]` (D6, dropped `content`, added `perf` + `test`).
+- **`scripts/prepare-commit-msg.ts`** — comment template + examples mirror the new type set.
+- **`lint-staged.config.js`** (legacy custom file) deleted; `.lintstagedrc.json` (imported clean version) wins.
+- **`docs/llm/coding-practices.md`** — Topic 3 (import order) rule entry added.
 
-Husky hooks: pick policy at import time (pre-commit lint, pre-push typecheck, etc.). No current expectations recorded.
+Deferred from this PR (intentional — D8/D9):
+
+- `@typescript-eslint/naming-convention` (Topic 1 enforcement) — wired after the §1 mechanical renames so the codebase already matches the target shape before the rule turns on.
+- `import-x/no-default-export` (Q2.1 enforcement) — wired alongside the §1 mechanical renames (env.ts + 4 routers + tanstack-router route file decisions).
+
+Lint state after the PR: **0 errors, 10 warnings**. The 10 warnings are pre-existing FE drift on tanstack-router route files (`react-refresh/only-export-components`) + 1 type-only var bound as a value (`unused-imports/no-unused-vars`) — all match the existing §2 phase-1 carry-forward "ESLint warnings" entry. Resolution is a separate FE-discipline PR.
+
+Auto-fix scope on first `bunx eslint . --fix` run: ~93 files reformatted (printWidth: 80 → 120 + simple-import-sort grouping). Net diff ≈ +1104 / −1319 lines.
+
+Pre-existing TS build issue discovered (NOT caused by this PR, verified via `git stash` round-trip): `apps/react19/src/app.tsx:16` — initial `auth` context literal missing the `isRefetching` field that `useAuthSession`'s return type now requires (BetterAuth API surface expanded). Tracked as a separate cleanup item — recommended fix: add `isRefetching: false` to the literal at `src/app.tsx:16-21`.
+
+Two byproduct Phase Z cleanups that landed incidentally during the lint-fix pass:
+
+- `apps/backend/src/features/projects/projects.types.ts` — the orphan `import {} from './projects.db'` + the commented-out `extendZodWithOpenApi(z)` lines (left behind in commit `08a7b30`) were deleted. Side benefit: this is one of the 4 files slated for the `extendZodWithOpenApi` relocation; `projects.types.ts` is now fully done. Three sibling `*.types.ts` files (`labels`, `reminders`, `tasks`) still have the live calls and remain in the §1 mechanical-renames list.
+- `apps/react19/src/routes/__root.tsx:12` — inline `import('@tanstack/react-query').QueryClient` type annotation hoisted to a proper `import type { QueryClient } from '@tanstack/react-query'` (fixes the `@typescript-eslint/consistent-type-imports` rule which forbids `import()` type annotations).
 
 ### 2 · Phase-1 carry-forwards (verified pending against current code)
 

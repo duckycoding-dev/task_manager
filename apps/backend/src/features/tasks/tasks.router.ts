@@ -1,10 +1,10 @@
-import { createTasksController } from './tasks.controller';
-import { createTasksService } from './tasks.service';
-import { createTasksRepository } from './tasks.repository';
+import { db } from '../../db';
 import { createRouter } from '../../utils/create-app';
 
+import { createTasksController } from './tasks.controller';
+import { createTasksRepository } from './tasks.repository';
 import { tasksRoutes } from './tasks.routes';
-import { db } from '../../db';
+import { createTasksService } from './tasks.service';
 // Setup dependencies
 const tasksRepo = createTasksRepository(db);
 const tasksService = createTasksService(tasksRepo);

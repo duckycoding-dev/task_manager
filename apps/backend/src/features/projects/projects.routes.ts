@@ -1,19 +1,22 @@
 import { createRoute, z } from '@hono/zod-openapi';
-import type { AppRoutes } from '../../types/app_context';
-import {
-  insertProjectSchema,
-  selectProjectSchema,
-  updateProjectSchema,
-} from './projects.db';
+
+import { checkAuthMiddleware } from 'utils/auth/';
+import { createRequiredJsonBody } from 'utils/request/body/';
 import {
   createErrorResponse,
   createSuccessJsonResponse,
 } from 'utils/response/';
 import { statusCodeMap } from 'utils/status-codes/';
-import { createRequiredJsonBody } from 'utils/request/body/';
-import { projectIdParamSchema } from './projects.types';
+
+import type { AppRoutes } from '../../types/app_context';
 import { selectTaskSchema } from '../tasks/tasks.db';
-import { checkAuthMiddleware } from 'utils/auth/';
+
+import {
+  insertProjectSchema,
+  selectProjectSchema,
+  updateProjectSchema,
+} from './projects.db';
+import { projectIdParamSchema } from './projects.types';
 
 const getProjects = createRoute({
   path: '/',

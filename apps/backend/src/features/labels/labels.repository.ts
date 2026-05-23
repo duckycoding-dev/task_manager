@@ -1,16 +1,18 @@
-import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { and, eq } from 'drizzle-orm';
-import {
-  type Label,
-  selectLabelSchema,
-  labels,
-  type InsertLabel,
-  type UpdateLabel,
-  taskLabels,
-} from './labels.db';
-import { formatZodError } from 'utils/mapping/';
-import type { GetLabelsQuery } from './labels.types';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+
 import { RepositoryValidationError } from 'utils/errors/domain-errors/';
+import { formatZodError } from 'utils/mapping/';
+
+import {
+  type InsertLabel,
+  type Label,
+  labels,
+  selectLabelSchema,
+  taskLabels,
+  type UpdateLabel,
+} from './labels.db';
+import type { GetLabelsQuery } from './labels.types';
 
 export type LabelsRepository = {
   getLabels: (userId: string, filters: GetLabelsQuery) => Promise<Label[]>;

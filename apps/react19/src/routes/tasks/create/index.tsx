@@ -1,10 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router';
+
+import { useAddTaskMutation } from '../../../features/tasks/tasks.query';
 import { Button } from '../../../features/ui/button/Button';
-import { PageTitle } from '../../../features/ui/titles/PageTitle';
-import { useAuthSession } from '../../../lib/auth-client';
 import { StyledLink } from '../../../features/ui/link/Link';
 import { PageSubtitle } from '../../../features/ui/titles/PageSubtitle';
-import { useAddTaskMutation } from '../../../features/tasks/tasks.query';
+import { PageTitle } from '../../../features/ui/titles/PageTitle';
+import { useAuthSession } from '../../../lib/auth-client';
 
 export const Route = createFileRoute('/tasks/create/')({
   component: CreateTaskRoute,
@@ -46,7 +47,7 @@ function CreateTaskRoute() {
       <PageTitle className={'text-center'}>Add new Task</PageTitle>
       FORM
       <Button
-        className={'w-full mt-4'}
+        className={'mt-4 w-full'}
         onClick={() =>
           addTaskMutation.mutate(
             {

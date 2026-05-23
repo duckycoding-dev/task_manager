@@ -1,7 +1,7 @@
-/* eslint-disable max-classes-per-file */
 import chalk from 'chalk';
-import env, { logLevels, type LogLevel } from './env';
 import type { MiddlewareHandler } from 'hono';
+
+import env, { type LogLevel, logLevels } from './env';
 
 interface ServerLoggerConfig {
   showTimestamp: boolean;
@@ -136,7 +136,6 @@ class ServerImpl implements ServerLogger {
       }
     }
 
-    // eslint-disable-next-line no-console
     console[level](logParts.join(' '), coloredMessage, ...args);
   }
 

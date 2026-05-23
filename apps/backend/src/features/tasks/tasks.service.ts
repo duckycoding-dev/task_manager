@@ -1,12 +1,13 @@
-import type { TasksRepository } from './tasks.repository';
+import type { Reminder } from '../reminders';
+
 import type { InsertTask, Task, UpdateTask } from './tasks.db';
+import type { TasksRepository } from './tasks.repository';
 import type {
   GetTasksQuery,
   TaskPriorityOption,
   TaskRecurringOption,
   TaskStatusOption,
 } from './tasks.types';
-import type { Reminder } from '../reminders';
 
 export type TasksService = {
   getTasks: (

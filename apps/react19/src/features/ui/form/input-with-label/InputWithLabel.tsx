@@ -1,6 +1,8 @@
 import type React from 'react';
-import { Input } from '../../input/text/Input';
+
 import { cn } from '@task-manager/utils';
+
+import { Input } from '../../input/text/Input';
 
 interface InputWithLabelProps extends React.ComponentProps<typeof Input> {
   label: React.ReactNode;

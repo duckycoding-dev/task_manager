@@ -1,5 +1,6 @@
-import { cn } from '@task-manager/utils';
 import { createLink, type LinkComponent } from '@tanstack/react-router';
+
+import { cn } from '@task-manager/utils';
 
 // followed the example from https://tanstack.com/router/latest/docs/framework/react/guide/custom-link
 
