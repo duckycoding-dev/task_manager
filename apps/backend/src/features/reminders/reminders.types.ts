@@ -1,9 +1,7 @@
-import { extendZodWithOpenApi } from '@hono/zod-openapi';
 import { z } from 'zod/v4';
 
 import { selectReminderSchema } from './reminders.db';
 
-extendZodWithOpenApi(z);
 // 📌 Query Params Schemas
 export const getRemindersQuerySchema = selectReminderSchema
   .omit({

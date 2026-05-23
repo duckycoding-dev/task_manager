@@ -242,6 +242,73 @@ export default defineConfig(
     },
   },
 
+  // 3d. Ban `export default` repo-wide — only allowed where an external
+  //     contract mandates it (Bun fetch contract, drizzle-kit config, vite
+  //     config, tanstack-router file-based routing for HMR-component-export).
+  //     See coding-practices.md §"Named exports default;
+  //     `export default` only when an external API mandates it".
+  {
+    rules: {
+      'import-x/no-default-export': 'error',
+    },
+  },
+
+  // 3e. Casing rules — encodes coding-practices.md §"Casing rules".
+  //     Set at `'warn'` initially; tighten to `'error'` after observing
+  //     drift on real code. Selectors are permissive on purpose to avoid
+  //     fighting React/component naming and JSON-shaped property names
+  //     (drizzle table columns, BetterAuth fields, etc.).
+  {
+    rules: {
+      '@typescript-eslint/naming-convention': [
+        'warn',
+        // Module-level frozen data consts: SCREAMING_SNAKE_CASE allowed
+        // alongside camelCase + PascalCase (the latter two cover Zod schemas,
+        // arrow function exports, and React component consts).
+        {
+          selector: 'variable',
+          modifiers: ['const'],
+          format: ['camelCase', 'UPPER_CASE', 'PascalCase'],
+          leadingUnderscore: 'allow',
+        },
+        // Other variables / parameters / methods: camelCase
+        {
+          selector: ['variable', 'parameter', 'classMethod'],
+          format: ['camelCase'],
+          leadingUnderscore: 'allow',
+        },
+        // Functions can also be PascalCase (React components).
+        { selector: 'function', format: ['camelCase', 'PascalCase'] },
+        // Types, interfaces, classes, enums: PascalCase
+        { selector: 'typeLike', format: ['PascalCase'] },
+        // Type parameters: PascalCase (T, K, V conventions allowed)
+        { selector: 'typeParameter', format: ['PascalCase'] },
+        // Imports: free-form (library decides their names)
+        { selector: 'import', format: null },
+        // Object / type property names: free-form. Covers drizzle table
+        // column keys, BetterAuth field names, OpenAPI metadata, HTTP
+        // verbose status codes, env-var-shaped keys, etc.
+        {
+          selector: ['objectLiteralProperty', 'typeProperty'],
+          format: null,
+        },
+        // Enum members: free-form (route segment names, status verbose codes).
+        { selector: 'enumMember', format: null },
+      ],
+    },
+  },
+  {
+    files: [
+      'apps/backend/src/index.ts',
+      'apps/backend/drizzle.config.ts',
+      '**/*.config.{ts,js,mjs,cjs}',
+      'apps/react19/src/routes/**/*.{ts,tsx}',
+    ],
+    rules: {
+      'import-x/no-default-export': 'off',
+    },
+  },
+
   // ============================================================
   // SECTION 4: PER-APP BLOCKS
   // ============================================================

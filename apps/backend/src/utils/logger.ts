@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import type { MiddlewareHandler } from 'hono';
 
-import env, { type LogLevel, logLevels } from './env';
+import { env, type LogLevel, logLevels } from './env';
 
 interface ServerLoggerConfig {
   showTimestamp: boolean;

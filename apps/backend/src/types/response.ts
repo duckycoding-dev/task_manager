@@ -1,8 +1,8 @@
 import { z } from 'zod/v4';
 
 import {
+  VERBOSE_STATUS_CODES,
   type VerboseStatusCode,
-  verboseStatusCodes,
 } from 'utils/status-codes/';
 
 // Metadata schema
@@ -36,7 +36,7 @@ export const SuccessResponseSchema = <T extends z.ZodType>(dataSchema: T) =>
 export const ErrorResponseSchema = z.object({
   success: z.literal(false),
   error: z.string(),
-  verboseCode: z.enum(verboseStatusCodes),
+  verboseCode: z.enum(VERBOSE_STATUS_CODES),
   cause: z.any().optional(),
   stack: z.string().optional(),
 });

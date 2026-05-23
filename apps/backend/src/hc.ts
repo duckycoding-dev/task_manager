@@ -1,6 +1,6 @@
 import { hc } from 'hono/client';
 
-import env from './utils/env';
+import { env } from './utils/env';
 import type { AppType } from './app';
 
 // https://hono.dev/docs/guides/rpc#compile-your-code-before-using-it-recommended
@@ -23,7 +23,7 @@ export type Client = typeof _client;
 
 // import type { AppType } from './app';
 // import { hc } from 'hono/client';
-// import env from './utils/env';
+// import { env } from './utils/env';
 
 // // https://hono.dev/docs/guides/rpc#compile-your-code-before-using-it-recommended
 

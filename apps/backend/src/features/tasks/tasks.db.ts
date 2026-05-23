@@ -10,9 +10,14 @@ import { users } from '../auth/auth.db';
 import { projects } from '../projects/projects.db';
 
 // 🔹 Define Enums as `const` arrays
-export const statusOptions = ['todo', 'in_progress', 'done'] as const;
-export const priorityOptions = ['low', 'medium', 'high'] as const;
-export const recurringOptions = ['daily', 'weekly', 'monthly', 'none'] as const;
+export const STATUS_OPTIONS = ['todo', 'in_progress', 'done'] as const;
+export const PRIORITY_OPTIONS = ['low', 'medium', 'high'] as const;
+export const RECURRING_OPTIONS = [
+  'daily',
+  'weekly',
+  'monthly',
+  'none',
+] as const;
 
 // 🔹 Drizzle Schema Definition
 export const tasks = pgTable('tasks', {
@@ -25,13 +30,13 @@ export const tasks = pgTable('tasks', {
   }),
   title: text('title').notNull(),
   description: text('description'),
-  status: text('status', { enum: statusOptions }).default('todo').notNull(),
-  priority: text('priority', { enum: priorityOptions })
+  status: text('status', { enum: STATUS_OPTIONS }).default('todo').notNull(),
+  priority: text('priority', { enum: PRIORITY_OPTIONS })
     .default('medium')
     .notNull(),
   dueDate: timestamp('due_date'),
   isRecurring: boolean('is_recurring').default(false),
-  recurringInterval: text('recurring_interval', { enum: recurringOptions })
+  recurringInterval: text('recurring_interval', { enum: RECURRING_OPTIONS })
     .default('none')
     .notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),

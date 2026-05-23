@@ -2,7 +2,7 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 
-import env from '../utils/env';
+import { env } from '../utils/env';
 
 const postgresClient = postgres({
   max: env.DB_MIGRATING || env.DB_SEEDING ? 1 : undefined,

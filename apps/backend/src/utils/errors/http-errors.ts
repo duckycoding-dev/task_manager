@@ -4,7 +4,7 @@ import type { ContentfulStatusCode } from 'hono/utils/http-status';
 import type { ErrorResponse } from 'src/types/response';
 import type { HandlerStatusCode, ZodOpenAPIRoute } from 'types/utility/';
 
-import env from '../env';
+import { env } from '../env';
 import { logger } from '../logger';
 import {
   DEFAULT_ERROR_MAPPING,

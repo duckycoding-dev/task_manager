@@ -12,7 +12,7 @@ import { db } from '../db';
 
 import { AppError } from './errors/http-errors';
 import { AUTH_CTX_KEYS } from './auth-context';
-import env from './env';
+import { env } from './env';
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {

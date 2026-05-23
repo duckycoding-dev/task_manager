@@ -11,7 +11,7 @@ const projectsService = createProjectsService(projectsRepo);
 const projectsController = createProjectsController(projectsService);
 
 // Create a typed router
-const projectsRouter = createRouter()
+export const projectsRouter = createRouter()
   .basePath('/projects')
   .openapi(projectsRoutes.getProjects, projectsController.getProjects)
   .openapi(projectsRoutes.getProjectById, projectsController.getProjectById)
@@ -19,5 +19,3 @@ const projectsRouter = createRouter()
   .openapi(projectsRoutes.updateProject, projectsController.updateProject)
   .openapi(projectsRoutes.deleteProject, projectsController.deleteProject)
   .openapi(projectsRoutes.getProjectTasks, projectsController.getProjectTasks);
-
-export default projectsRouter;

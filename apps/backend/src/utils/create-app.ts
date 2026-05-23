@@ -6,7 +6,7 @@ import type { AppContext, AppOpenAPI } from '../types/app_context';
 import { AppError, errorHandler } from './errors/http-errors';
 import { addAuthMiddleware, auth } from './auth';
 import { configureOpenAPI } from './configure-open-api';
-import env from './env';
+import { env } from './env';
 import { logRequestsMiddleware } from './logger';
 import { formatZodError } from './mapping';
 

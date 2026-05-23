@@ -11,7 +11,7 @@ const tasksService = createTasksService(tasksRepo);
 const tasksController = createTasksController(tasksService);
 
 // Create a typed router
-const tasksRouter = createRouter()
+export const tasksRouter = createRouter()
   .basePath('/tasks')
   .openapi(tasksRoutes.getTasks, tasksController.getTasks)
   .openapi(tasksRoutes.createTask, tasksController.createTask)
@@ -29,5 +29,3 @@ const tasksRouter = createRouter()
   )
   .openapi(tasksRoutes.updateTaskStatus, tasksController.updateTaskStatus)
   .openapi(tasksRoutes.getTaskReminders, tasksController.getTaskReminders);
-
-export default tasksRouter;

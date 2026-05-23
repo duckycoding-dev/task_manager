@@ -1,15 +1,16 @@
-import { extendZodWithOpenApi } from '@hono/zod-openapi';
 import { z } from 'zod/v4';
 
-import { priorityOptions, recurringOptions, statusOptions } from './tasks.db';
-
-extendZodWithOpenApi(z);
+import {
+  PRIORITY_OPTIONS,
+  RECURRING_OPTIONS,
+  STATUS_OPTIONS,
+} from './tasks.db';
 
 // 📌 Query Params Schemas
 export const getTasksQuerySchema = z.object({
   projectId: z.string().uuid().optional(),
-  status: z.enum(statusOptions).optional(),
-  priority: z.enum(priorityOptions).optional(),
+  status: z.enum(STATUS_OPTIONS).optional(),
+  priority: z.enum(PRIORITY_OPTIONS).optional(),
   dueDate: z.string().datetime().optional(),
 });
 
@@ -22,9 +23,9 @@ export const getProjectTasksParamsSchema = z.object({
   projectId: z.string().uuid(),
 });
 
-export const taskStatusSchema = z.enum(statusOptions);
-export const taskPrioritySchema = z.enum(priorityOptions);
-export const taskRecurringSchema = z.enum(recurringOptions);
+export const taskStatusSchema = z.enum(STATUS_OPTIONS);
+export const taskPrioritySchema = z.enum(PRIORITY_OPTIONS);
+export const taskRecurringSchema = z.enum(RECURRING_OPTIONS);
 
 // 📌 Types
 export type GetTasksQuery = z.infer<typeof getTasksQuerySchema>;

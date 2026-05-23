@@ -6,7 +6,7 @@ export const DEFAULT_ERROR_MAPPING = {
   verboseCode: 'INTERNAL_SERVER_ERROR',
 } as const satisfies StatusCodeMapping;
 
-export const verboseStatusCodes = [
+export const VERBOSE_STATUS_CODES = [
   'CONTINUE',
   // 'SWITCHING_PROTOCOLS',
   'PROCESSING',
@@ -70,7 +70,7 @@ export const verboseStatusCodes = [
   'NETWORK_AUTHENTICATION_REQUIRED',
 ] as const;
 
-export type VerboseStatusCode = (typeof verboseStatusCodes)[number];
+export type VerboseStatusCode = (typeof VERBOSE_STATUS_CODES)[number];
 
 export type StatusCodeMapping = {
   status: ContentfulStatusCode;

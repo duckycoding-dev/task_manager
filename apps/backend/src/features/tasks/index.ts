@@ -3,9 +3,9 @@
 export type { InsertTask, Task, UpdateTask } from './tasks.db';
 export {
   insertTaskSchema,
-  priorityOptions,
-  recurringOptions,
+  PRIORITY_OPTIONS,
+  RECURRING_OPTIONS,
   selectTaskSchema,
-  statusOptions,
+  STATUS_OPTIONS,
   updateTaskSchema,
 } from './tasks.db';

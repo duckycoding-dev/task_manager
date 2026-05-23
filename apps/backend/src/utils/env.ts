@@ -1,3 +1,9 @@
+// BOOT MODULE: top-level side effects are intentional. This file parses
+// process.env at import, exits the process on failure, and prints a
+// confirmation. Loaded once per process by the entrypoint chain. See
+// docs/llm/coding-practices.md
+// §"Side-effect-only imports + boot-time top-level side effects".
+
 import { z } from 'zod/v4';
 
 export const logLevels = ['debug', 'log', 'info', 'warn', 'error'] as const;
@@ -37,5 +43,3 @@ if (env.NODE_ENV === 'development') {
   console.log('Backend envs:');
   console.table(env);
 }
-
-export default env;

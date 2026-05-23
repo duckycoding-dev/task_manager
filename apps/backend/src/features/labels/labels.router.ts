@@ -11,7 +11,7 @@ const labelsService = createLabelsService(labelsRepo);
 const labelsController = createLabelsController(labelsService);
 
 // Create a typed router
-const labelsRouter = createRouter()
+export const labelsRouter = createRouter()
   .basePath('/labels')
   .openapi(labelsRoutes.getLabels, labelsController.getLabels)
   .openapi(labelsRoutes.getLabelById, labelsController.getLabelById)
@@ -23,4 +23,3 @@ const labelsRouter = createRouter()
     labelsRoutes.removeLabelFromTask,
     labelsController.removeLabelFromTask,
   );
-export default labelsRouter;
