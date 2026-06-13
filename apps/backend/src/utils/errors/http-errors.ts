@@ -67,7 +67,7 @@ export class AppError<
       DEFAULT_ERROR_MAPPING.status;
 
     const finalMessage =
-      options.message || mappedError?.message || DEFAULT_ERROR_MAPPING.message;
+      options.message ?? mappedError?.message ?? DEFAULT_ERROR_MAPPING.message;
     super(finalMessage, {
       cause: options.cause,
     });

@@ -109,10 +109,98 @@ Imports are auto-ordered by `simple-import-sort` (enforced via `simple-import-so
 
 `simple-import-sort` alphabetizes within each group/subgroup. CSS cascade control belongs in CSS-land (CSS Layers or single-root-CSS with `@import` chain), NOT in JS-import ordering — relying on JS-side import order for CSS cascade is fragile because the linter will alphabetize. Reach for the `// eslint-disable-next-line simple-import-sort/imports` escape hatch only when neither CSS Layers nor single-root-CSS pattern is viable, and document the WHY at the disable site.
 
+#### Nullish fallback uses `??`, never `||`
+
+Use the nullish coalescing operator `??` for "fallback when value is `null` or `undefined`". The logical OR `||` falls back on **any falsy value** — `0`, `''`, `false`, `NaN` — which is almost never the intended semantics for "missing". The classic footgun is `count || 10` returning `10` when `count` is `0`; `count ?? 10` returns `0` correctly.
+
+`||` remains correct for genuine boolean conditionals (`a === null || b === undefined`, `isAdmin || isOwner`). The rule is about *fallback semantics* (left side is a value, right side is its default), not about boolean composition.
+
+Enforced via `@typescript-eslint/prefer-nullish-coalescing` (type-aware rule — wired in the per-app blocks where `projectService` is enabled). The rule fires on fallback `||` whose left operand can be nullish AND falsy-non-nullish (e.g. `number`, `string`, `boolean`); pure-boolean `||` is left alone.
+
+#### `null` at external boundaries, `undefined` internally
+
+Use `undefined` for "missing" / "absent" / "optional" everywhere inside application code. Use `null` only at boundaries where an external contract demands it: Postgres rows (drizzle returns `null` for nullable columns + missed JOINs), BetterAuth's session surface (`Session.user | null` when unauthenticated), and JSON-response shapes where the wire contract explicitly carries `null` (e.g. the empty-payload `data: null` per [`docs/stable/backend/responses.md`](../stable/backend/responses.md)).
+
+The conversion happens at the seam. `nullsToUndefined()` at `apps/backend/src/utils/mapping.ts` recursively replaces `null` → `undefined` on the way out of the repository. New repos and integration clients should invoke it (or an equivalent) at exit so service / controller / FE code never sees `null` from internal layers.
+
+Type-level: prefer the optional sugar `field?: T` (which is `T | undefined`) over explicit `field: T | null`. Use `T | null` only when the value actually arrives as `null` from a boundary (i.e. before `nullsToUndefined()` runs, or in BetterAuth/Hono-context-shaped types that the boundary contract demands).
+
+No ESLint rule cleanly enforces "no `null` outside boundaries" (the AST-level options can't distinguish boundary code from internal code). Rule lives as documented discipline + review.
+
+#### Zero `any` — use `unknown` and narrow
+
+`any` is banned. Default to `unknown` for values whose shape isn't yet narrowed, then refine with type guards / Zod parses / `instanceof` / `in` checks before use. `unknown` forces narrowing at the consumer site, which is the whole point — `any` silently propagates through expressions, losing every downstream type check.
+
+Rare legitimate exceptions:
+- Deeply recursive generic gymnastics where TS can't infer the recursion (e.g. the `nullsToUndefined` utility in `apps/backend/src/utils/mapping.ts`).
+- Third-party APIs that themselves type a parameter as `any` and we have no narrower contract.
+
+At those sites, use `// eslint-disable-next-line @typescript-eslint/no-explicit-any` with a one-line WHY comment explaining why `unknown` can't express the constraint. The comment makes every exception visible at the site + demands justification.
+
+Note: this rule covers the TypeScript *type* `any`. The runtime Zod expression `z.any()` is unrelated — it's a Zod schema for "any value" and is the right primitive when the schema deliberately doesn't constrain (e.g. error `cause` field). `z.any()` does not trigger the rule.
+
+Enforced via `@typescript-eslint/no-explicit-any: 'error'` (was `warn` during the config-merge transition; tightened with this rule).
+
+#### `as const` for literal narrowing; combine with `satisfies` for shape checks
+
+Use `as const` to narrow a value to its literal type — both for object literals (lookup tables, registries) and tuples (option arrays). Do NOT write the equivalent explicit literal annotation (`const X: { readonly a: 1 } = { a: 1 }`); it says the same thing as `as const` with twice the keystrokes and worse inference on nested members.
+
+When the value must conform to a wider shape contract (the keys are constrained to a known type, the entries follow a registry schema), combine with `satisfies`: `const DOMAIN_ERROR_MAP = { ... } as const satisfies Record<string, DomainErrorRegistryEntry>`. The `satisfies` clause verifies the wider shape at the declaration site without widening the inferred type — readers see the narrow literal type AND get a compile error if a member drifts from the contract.
+
+Established sites: `STATUS_OPTIONS` / `PRIORITY_OPTIONS` / `RECURRING_OPTIONS` (tuple-literal `as const`), `AUTH_CTX_KEYS` (object-literal `as const`), `DOMAIN_ERROR_MAP` (`as const satisfies …`).
+
+No ESLint rule cleanly enforces this preference (the AST options for it are noisy on legitimate non-literal `const` bindings). Lives as documented discipline + review.
+
+#### Discriminator name: `kind` by default; domain-specific name when it reads naturally
+
+When a new discriminated union needs an explicit discriminator field, name it `kind` by default. `kind` is the TypeScript-handbook-canonical name and avoids the IDE / search noise that `type` causes (`type` is a TS keyword, a React JSX prop, and a common variable name).
+
+Override `kind` with a domain-specific name when the field's *meaning* names it better:
+- `Result<T, E>` at `apps/backend/src/utils/safe.ts` uses `ok: boolean` — the boolean directly carries the success/failure semantics, no separate `kind` needed.
+- Finite state machines can use `state: 'idle' | 'loading' | 'ready' | 'error'`.
+- Domain events can use `event: '...'`.
+
+The rule: domain-specific is allowed when it improves readability at the consumer site; `kind` is the fallback when no domain term is obvious.
+
+No ESLint rule enforces this (purely a naming convention). Lives as documented discipline + review.
+
+#### `readonly` selectively — class fields enforced, `as const` for literals, params at author's judgment
+
+`readonly` is a compile-time-only marker (no runtime guarantee). Use it where it expresses real intent + catches accidental mutation, NOT as a blanket policy. Three categories:
+
+- **Class instance fields set once in the constructor, never reassigned by any method** → `readonly` is the default. Enforced by `@typescript-eslint/prefer-readonly` (type-aware rule, wired in the per-app blocks). Auto-applies to private/protected fields that are only assigned in the constructor. The existing error classes (`AppError`, `DomainError` subclasses at `apps/backend/src/utils/errors/{http,domain}-errors.ts`) already follow this.
+- **`as const` literal data** → implicitly deep-readonly via the `as const` assertion. No additional `readonly` annotations needed (`STATUS_OPTIONS`, `AUTH_CTX_KEYS`, `DOMAIN_ERROR_MAP` are deep-readonly already).
+- **Function parameters of object/array type** → opt-in `readonly` on a per-function basis. Mark when at least one is true: (1) the parameter accepts an `as const` literal from a caller and TS would otherwise reject it; (2) the function is pure-utility and the readonly annotation documents the no-mutation contract; (3) the function distinguishes a "sort in place" vs "return a sorted copy" pair. Don't blanket-apply — Zod-inferred / Drizzle-inferred types arrive mutable, and forcing readonly params forces friction at every callsite.
+
+Domain types inferred from Zod (`z.infer<typeof selectTaskSchema>` → `Task`, etc.) and Drizzle row types stay mutable. The ecosystem produces mutable inference; adding `DeepReadonly<>` wrappers gives no real correctness benefit (TypeScript's structural typing lets a non-readonly alias mutate through the back door anyway) and costs ergonomics everywhere.
+
+No general "readonly-everywhere" rule. `prefer-readonly` catches the cheap-win class-field case; everything else is documented discipline + review.
+
+#### Async iteration — parallel by default, `for…of` only when dependencies / ordering / rate limits require it
+
+For N async operations on a list, the default is `await Promise.all(items.map(item => asyncFn(item)))` — operations start together, the function awaits all of them, errors bubble. Use `for…of` only when:
+
+1. Each operation depends on the prior result (sequential by necessity).
+2. Ordering of side effects matters (writes that must serialize).
+3. Concurrency must be limited (rate-limited third-party API, DB pool exhaustion, etc.). For bounded concurrency use a chunked-`Promise.all` over batches of N, or a queue helper — not naive `for…of` which serializes to concurrency 1.
+
+`.forEach(async ...)` is banned everywhere. The callback returns a `Promise` that `Array.prototype.forEach` discards: outer code doesn't wait, errors are swallowed, async sequencing breaks silently. Use `for…of` (sequential) or `Promise.all(items.map(...))` (parallel) instead.
+
+Enforced via type-aware rules: `@typescript-eslint/no-floating-promises` catches unawaited promises in general; `@typescript-eslint/no-misused-promises` catches `.forEach(async ...)` (mismatched promise-returning callback passed to a void-callback API) plus `if (asyncFn())`, `[].filter(async x => …)`, and similar shape errors. Both rules go in the per-app blocks where `projectService` is enabled.
+
+#### Module-level `const`/`function` for utilities; classes only when actually instantiating
+
+Group related stateless helpers as module-level `export const` arrow functions (or `export function` per the cases earlier in this doc — see §"Arrow functions default for module-level definitions"). Classes are reserved for the cases where they earn their existence: instance state, `instanceof`-checked types (error subclasses), subclassing, prototype-based polymorphism.
+
+Banned: the "namespace class" pattern (`class Utils { static foo() {} static bar() {} }`). It adds zero runtime value over `export const foo = …`, breaks tree-shaking (bundlers can't drop unused static methods from a class), forces consumers to write `Utils.foo()` instead of importing `foo` directly, and creates a meaningless instance type that can't be instantiated meaningfully.
+
+Established sites: error classes (`AppError`, `DomainError` + 7 subclasses at `apps/backend/src/utils/errors/`) — all instance-state classes used for `instanceof` checks in the error handler. Everything else — `formatZodError`, `nullsToUndefined`, `safe`, `cn`, etc. — is module-level `const` / `function`.
+
+No ESLint rule cleanly enforces this (the only proxy is `@typescript-eslint/no-extraneous-class` which catches the most-egregious case — a class with only `static` members and no constructor — and is currently not wired). Lives as documented discipline + review.
+
 #### Pending grills
 - Error pattern at app boundaries: throw vs `Result` (backend rule already locked — pattern α + `safe()` at recovery sites; TS-general rule TBD).
 - Async: prefer `async/await` vs `.then` (most likely `async/await`).
-- Nullish handling: `??` vs `||`.
 - `null` vs `undefined` policy.
 - `unknown` vs `any` (assume zero `any`; lock the rule).
 - `const` assertion vs explicit literal type.

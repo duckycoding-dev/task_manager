@@ -155,7 +155,11 @@ export default defineConfig(
       // Note: `no-misused-promises` is type-aware and requires `strictTypeChecked` +
       // projectService on every file; not enabled here. Revisit when adopting full
       // type-aware linting.
-      '@typescript-eslint/no-explicit-any': 'warn',
+      // Zero-`any` rule per coding-practices §"Zero `any` — use `unknown`
+      // and narrow". Rare legitimate exceptions opt out with
+      // `// eslint-disable-next-line @typescript-eslint/no-explicit-any` +
+      // a one-line WHY comment at the site.
+      '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-non-null-assertion': 'warn',
       '@typescript-eslint/no-empty-object-type': 'off',
       '@typescript-eslint/consistent-type-imports': [
@@ -315,7 +319,7 @@ export default defineConfig(
 
   // 4a. Backend block — Node globals, type-aware parser via projectService,
   //     console allowed (logger-singleton coding-practice; console.* is for
-  //     pre-env boot only).
+  //     pre-env boot only). Type-aware rules requiring projectService go here.
   {
     files: ['apps/backend/src/**/*.{js,mjs,cjs,ts}'],
     languageOptions: {
@@ -326,7 +330,45 @@ export default defineConfig(
       },
     },
     rules: {
+      // Type-aware: fallback `||` → `??` per coding-practices
+      // §"Nullish fallback uses `??`, never `||`".
+      '@typescript-eslint/prefer-nullish-coalescing': 'error',
+      // Type-aware: auto-applies `readonly` to class fields set only in
+      // the constructor. Per coding-practices §"`readonly` selectively —
+      // class fields enforced, …".
+      '@typescript-eslint/prefer-readonly': 'error',
+      // Type-aware: catches unawaited promises (the classic async footgun).
+      // Per coding-practices §"Async iteration — parallel by default, …".
+      '@typescript-eslint/no-floating-promises': 'error',
+      // Type-aware: catches `.forEach(async ...)`, `if (asyncFn())`, and
+      // similar promise-shape mismatches. Same rule section.
+      '@typescript-eslint/no-misused-promises': 'error',
+      // Bans the "namespace class" pattern (class with only static members)
+      // per coding-practices §"Module-level `const`/`function` for utilities;
+      // classes only when actually instantiating".
+      '@typescript-eslint/no-extraneous-class': 'error',
       'no-console': 'off',
+    },
+  },
+
+  // 4a-i. React19-specific override for `no-misused-promises`: relax the
+  //       `checksVoidReturn.attributes` sub-rule because JSX event handlers
+  //       (`onSubmit`, `onClick`, etc.) commonly accept async callbacks and
+  //       the underlying React API correctly handles the returned Promise
+  //       (it just doesn't await). The rest of the rule stays active —
+  //       `.forEach(async)`, `if (asyncFn())`, and mismatched-shape callsites
+  //       still error.
+  {
+    files: ['apps/react19/src/**/*.{ts,tsx}'],
+    rules: {
+      '@typescript-eslint/no-misused-promises': [
+        'error',
+        {
+          checksVoidReturn: {
+            attributes: false,
+          },
+        },
+      ],
     },
   },
 
@@ -366,6 +408,23 @@ export default defineConfig(
       '@tanstack/query/exhaustive-deps': 'error',
       'react-hooks/exhaustive-deps': 'error',
       'react-hooks/rules-of-hooks': 'error',
+      // Type-aware: fallback `||` → `??` per coding-practices
+      // §"Nullish fallback uses `??`, never `||`".
+      '@typescript-eslint/prefer-nullish-coalescing': 'error',
+      // Type-aware: auto-applies `readonly` to class fields set only in
+      // the constructor. Per coding-practices §"`readonly` selectively —
+      // class fields enforced, …".
+      '@typescript-eslint/prefer-readonly': 'error',
+      // Type-aware: catches unawaited promises (the classic async footgun).
+      // Per coding-practices §"Async iteration — parallel by default, …".
+      '@typescript-eslint/no-floating-promises': 'error',
+      // Type-aware: catches `.forEach(async ...)`, `if (asyncFn())`, and
+      // similar promise-shape mismatches. Same rule section.
+      '@typescript-eslint/no-misused-promises': 'error',
+      // Bans the "namespace class" pattern (class with only static members)
+      // per coding-practices §"Module-level `const`/`function` for utilities;
+      // classes only when actually instantiating".
+      '@typescript-eslint/no-extraneous-class': 'error',
       'no-console': 'off',
     },
   },

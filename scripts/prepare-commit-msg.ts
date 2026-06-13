@@ -1,6 +1,6 @@
 import { appendFileSync } from 'fs';
 
-const [_, __, commitMsgFile, source] = process.argv;
+const [, , commitMsgFile, source] = process.argv;
 
 // Only inject hints when the editor opens for a new message.
 // Skip when -m is used (source === 'message'), during merges

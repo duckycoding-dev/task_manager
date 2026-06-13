@@ -9,7 +9,7 @@ export function NavigationProfileDropdownMenu() {
     await authClient.signOut({
       fetchOptions: {
         onSuccess: () => {
-          navigate({ to: '/auth/login' });
+          void navigate({ to: '/auth/login' });
         },
       },
     });

@@ -11,11 +11,11 @@ const spawnOptions: SpawnOptions.OptionsObject<
   stderr: 'inherit',
 };
 
-const run = async () => {
+const run = () => {
   Bun.spawn(['bun', 'run', 'bun:dev'], spawnOptions);
   Bun.spawn(['bun', 'run', 'tsc:dev'], spawnOptions);
 
-  process.on('SIGINT', async () => {
+  process.on('SIGINT', () => {
     console.log('Cleaning up...');
   });
 };

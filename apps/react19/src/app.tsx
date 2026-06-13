@@ -44,7 +44,7 @@ export function App() {
     return () => {
       // on unmount, invalidate the router if auth is pending (pending = the auth session is being fetched so we want to ensure the latest auth state is reflected)
       if (auth.isPending) {
-        router.invalidate();
+        void router.invalidate();
       }
     };
   }, [auth.isPending]);

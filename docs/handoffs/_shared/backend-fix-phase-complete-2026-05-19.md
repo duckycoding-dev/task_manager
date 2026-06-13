@@ -62,9 +62,9 @@ Suggested commit message types: `chore` for #1, `style` for #2 (purely formattin
 
 ## Backlog (priority order)
 
-### 1 · TS style grill round (in progress)
+### 1 · TS style grill round — **COMPLETE** (uncommitted)
 
-**Status**: casing rules, export-style rules, and import-order grouping are all fully grilled and locked into [`docs/llm/coding-practices.md`](../../llm/coding-practices.md). Casing + export-style rules committed in `08a7b30`; import-order rule landed via the §1.5 config-merge work along with the ESLint config that enforces it. Remaining topics (nullish coalescing, `null`/`undefined`, etc. — full list below) still queued.
+**Status**: all 11 TS style topics grilled, locked into [`docs/llm/coding-practices.md`](../../llm/coding-practices.md), and ESLint-enforced where a type-aware rule fits. Earlier batches: casing + export-style committed in `08a7b30`; import-order landed via the §1.5 config-merge in `32ddff0`+`a138b16`+`800f9a5`. Final batch this session (the 8 remaining topics: nullish coalescing, `null`/`undefined`, `unknown`/`any`, const-assertion, discriminator name, `readonly`, async iteration, module-`const` vs static-method class) is uncommitted in the working tree along with 3 codebase fixes (`http-errors.ts` `||`→`??`, `scripts/dev.ts` async handler cleanup, `app.tsx` + `NavigationProfileDropdownMenu.tsx` `void` on unawaited router/navigate promises) and 2 `eslint-disable` annotations with WHY comments in `mapping.ts` for the legitimate recursive-generic `any` casts.
 
 **Locked this session (2026-05-19)** — refer to the matching section heading in [`docs/llm/coding-practices.md`](../../llm/coding-practices.md) for the canonical rule text:
 
@@ -96,18 +96,18 @@ Suggested commit message types: `chore` for #1, `style` for #2 (purely formattin
 
 **Verification**: `bunx eslint .` → 0 errors, 7 warnings (all pre-existing FE drift on tanstack-router files, unchanged from before). `bun --cwd apps/backend run build` → clean. `bun --cwd apps/react19 run build` → clean (the pre-existing `app.tsx` `isRefetching` issue from §1.5 no longer fires; either the BetterAuth client types shifted or the issue was incidentally resolved — not investigated further this session).
 
-**Remaining TS style topics still to grill**:
+**Remaining TS style topics — DONE this session (2026-05-24)**. All eight topics grilled, locked into [`docs/llm/coding-practices.md`](../../llm/coding-practices.md), and enforced by ESLint where a type-aware rule fits.
 
-- `??` vs `||` policy.
-- `null` vs `undefined` policy.
-- `unknown` vs `any` (assume zero-`any`; lock the rule).
-- `const` assertion vs explicit literal type.
-- Discriminated-union discriminator name (`kind` vs `type`).
-- `readonly` defaults on type members.
-- Async iteration — `for...of` vs `.map(await)`.
-- Module-level `const` vs class with static methods.
+- ✅ `??` vs `||` → §"Nullish fallback uses `??`, never `||`". `@typescript-eslint/prefer-nullish-coalescing: 'error'`. Fixed 1 pre-existing `||` site in `http-errors.ts:70`.
+- ✅ `null` vs `undefined` → §"`null` at external boundaries, `undefined` internally". `nullsToUndefined()` at the seam. No clean ESLint rule; documented discipline.
+- ✅ `unknown` vs `any` → §"Zero `any` — use `unknown` and narrow". `@typescript-eslint/no-explicit-any: 'error'` (was `warn`). Escape hatch: `// eslint-disable-next-line @typescript-eslint/no-explicit-any` + WHY comment. Annotated the 2 legitimate sites in `mapping.ts`.
+- ✅ `const` assertion vs explicit literal → §"`as const` for literal narrowing; combine with `satisfies` for shape checks". Documented discipline.
+- ✅ Discriminator name → §"Discriminator name: `kind` by default; domain-specific name when it reads naturally". Documented discipline.
+- ✅ `readonly` defaults → §"`readonly` selectively — class fields enforced, `as const` for literals, params at author's judgment". `@typescript-eslint/prefer-readonly: 'error'` for class-field cheap-win.
+- ✅ Async iteration → §"Async iteration — parallel by default, `for…of` only when dependencies / ordering / rate limits require it". `@typescript-eslint/no-floating-promises: 'error'` + `@typescript-eslint/no-misused-promises: 'error'` (with `checksVoidReturn.attributes: false` override for the react19 block to accept async JSX handlers). Fixed 4 pre-existing async footguns: `process.on(...async...)` + unawaited `run()` in `scripts/dev.ts`; `router.invalidate()` in `app.tsx`; `navigate()` in `NavigationProfileDropdownMenu.tsx`.
+- ✅ Module-`const` vs static-method class → §"Module-level `const`/`function` for utilities; classes only when actually instantiating". `@typescript-eslint/no-extraneous-class: 'error'` as the safety net against the banned "namespace class" pattern.
 
-These don't depend on the ESLint config — they can be grilled in any order.
+Final lint state: **0 errors, 7 warnings** (the same pre-existing FE drift on tanstack-router route files; unchanged across the session). Backend + react19 builds pass.
 
 ### 1.5 · ESLint / Prettier / Husky / Commitlint config merge — **complete**
 
