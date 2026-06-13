@@ -16,6 +16,7 @@ export const projects = pgTable('projects', {
     .references(() => users.id, { onDelete: 'cascade' }), // From BetterAuth
   name: text('name').notNull(),
   description: text('description'),
+  color: text('color').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
@@ -36,11 +37,16 @@ export const selectProjectSchema = createSelectSchema(projects);
 export const selectUserProjectSchema = createSelectSchema(usersProjects);
 
 // 📌 Insert Schema (for creating projects)
-export const insertProjectSchema = createInsertSchema(projects).omit({
-  id: true, // ID is auto-generated
-  userId: true, // User ID is set from the session
-  createdAt: true,
-});
+// `color` is technically NOT NULL at the DB level, but the service applies
+// a deterministic default via `colorFromName(name)` when the client omits
+// it, so we mark it optional in the public schema.
+export const insertProjectSchema = createInsertSchema(projects)
+  .omit({
+    id: true, // ID is auto-generated
+    userId: true, // User ID is set from the session
+    createdAt: true,
+  })
+  .partial({ color: true });
 
 // 📌 Insert Schema (for creating user-project relationships)
 export const insertUserProjectSchema = createInsertSchema(usersProjects).omit({

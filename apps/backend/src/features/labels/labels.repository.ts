@@ -1,6 +1,7 @@
 import { and, eq, isNull } from 'drizzle-orm';
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 
+import { colorFromName } from 'utils/color/';
 import { RepositoryValidationError } from 'utils/errors/domain-errors/';
 import { formatZodError } from 'utils/mapping/';
 
@@ -89,7 +90,11 @@ export const createLabelsRepository = (
     createLabel: async (userId, newLabel) => {
       const createdLabel = await db
         .insert(labels)
-        .values({ ...newLabel, userId })
+        .values({
+          ...newLabel,
+          userId,
+          color: newLabel.color ?? colorFromName(newLabel.name),
+        })
         .returning();
       const parsed = selectLabelSchema.safeParse(createdLabel[0]);
       if (parsed.success) {

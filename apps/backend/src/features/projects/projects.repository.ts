@@ -1,6 +1,7 @@
 import { and, eq, isNull } from 'drizzle-orm';
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 
+import { colorFromName } from 'utils/color/';
 import { RepositoryValidationError } from 'utils/errors/domain-errors/';
 import { formatZodError } from 'utils/mapping/';
 
@@ -78,7 +79,11 @@ export const createProjectsRepository = (
     createProject: async (userId, newProject) => {
       const createdProject = await db
         .insert(projects)
-        .values({ ...newProject, userId })
+        .values({
+          ...newProject,
+          userId,
+          color: newProject.color ?? colorFromName(newProject.name),
+        })
         .returning();
       const parsed = selectProjectSchema.safeParse(createdProject[0]);
       if (parsed.success) {
