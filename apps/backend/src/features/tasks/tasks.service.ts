@@ -30,11 +30,6 @@ export type TasksService = {
     id: string,
     recurringInterval: TaskRecurringOption,
   ) => Promise<Task>;
-  updateTaskIsRecurring: (
-    userId: string,
-    id: string,
-    recurringInterval: boolean,
-  ) => Promise<Task>;
   updateTaskStatus: (
     userId: string,
     id: string,
@@ -86,16 +81,6 @@ export const createTasksService = (
         userId,
         taskId,
         recurringInterval,
-      );
-      if (!updated) throw new EntityNotFoundError('Task', taskId);
-      return updated;
-    },
-
-    updateTaskIsRecurring: async (userId, taskId, isRecurring) => {
-      const updated = await tasksRepository.updateTaskIsRecurring(
-        userId,
-        taskId,
-        isRecurring,
       );
       if (!updated) throw new EntityNotFoundError('Task', taskId);
       return updated;

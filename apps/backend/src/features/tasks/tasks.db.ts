@@ -1,12 +1,5 @@
 import { sql } from 'drizzle-orm';
-import {
-  boolean,
-  index,
-  pgTable,
-  text,
-  timestamp,
-  uuid,
-} from 'drizzle-orm/pg-core';
+import { index, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { type z } from 'zod/v4';
 
 import {
@@ -45,7 +38,6 @@ export const tasks = pgTable(
       .default('medium')
       .notNull(),
     dueDate: timestamp('due_date'),
-    isRecurring: boolean('is_recurring').default(false),
     recurringInterval: text('recurring_interval', { enum: RECURRING_OPTIONS })
       .default('none')
       .notNull(),

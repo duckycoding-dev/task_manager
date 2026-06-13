@@ -205,33 +205,6 @@ const updateTaskRecurringInterval = createRoute({
   middleware: checkAuthMiddleware,
 });
 
-const updateTaskIsRecurring = createRoute({
-  path: '/:taskId/recurring/toggle',
-  method: 'patch',
-  request: {
-    params: taskIdParamSchema,
-    body: createRequiredJsonBody(
-      z.boolean(),
-      'The task recurring interval to patch',
-    ),
-  },
-  responses: {
-    [statusCodeMap['OK'].status]: createSuccessJsonResponse(
-      selectTaskSchema,
-
-      'Task recurring interval updated',
-    ),
-    [statusCodeMap['NOT_FOUND'].status]: createErrorResponse(
-      'The task to be patched was not found',
-    ),
-    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]: createErrorResponse(
-      statusCodeMap['INTERNAL_SERVER_ERROR'].message,
-    ),
-  },
-  description: 'Set or update recurring interval',
-  middleware: checkAuthMiddleware,
-});
-
 const getTaskReminders = createRoute({
   path: '/:taskId/reminders',
   method: 'get',
@@ -259,6 +232,5 @@ export const tasksRoutes = {
   updateTaskStatus,
   updateTaskPriority,
   updateTaskRecurringInterval,
-  updateTaskIsRecurring,
   getTaskReminders,
 } as const satisfies AppRoutes;

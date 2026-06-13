@@ -15,9 +15,6 @@ export type TasksController = {
   updateTaskRecurringInterval: AppRouteHandler<
     typeof tasksRoutes.updateTaskRecurringInterval
   >;
-  updateTaskIsRecurring: AppRouteHandler<
-    typeof tasksRoutes.updateTaskIsRecurring
-  >;
   updateTaskStatus: AppRouteHandler<typeof tasksRoutes.updateTaskStatus>;
   getTaskReminders: AppRouteHandler<typeof tasksRoutes.getTaskReminders>;
 };
@@ -105,21 +102,6 @@ export const createTasksController = (
         userId,
         taskId,
         recurringInterval,
-      );
-      return c.json(
-        { success: true, data: updatedTask, message: 'Task updated' },
-        200,
-      );
-    },
-
-    updateTaskIsRecurring: async (c) => {
-      const { taskId } = c.req.valid('param');
-      const isRecurring = c.req.valid('json');
-      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
-      const updatedTask = await tasksService.updateTaskIsRecurring(
-        userId,
-        taskId,
-        isRecurring,
       );
       return c.json(
         { success: true, data: updatedTask, message: 'Task updated' },

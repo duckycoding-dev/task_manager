@@ -47,11 +47,6 @@ export type TasksRepository = {
     id: string,
     recurringInterval: TaskRecurringOption,
   ) => Promise<Task | undefined>;
-  updateTaskIsRecurring: (
-    userId: string,
-    id: string,
-    recurringInterval: boolean,
-  ) => Promise<Task | undefined>;
   updateTaskStatus: (
     userId: string,
     id: string,
@@ -186,26 +181,6 @@ export const createTasksRepository = (
       const updatedTask = await db
         .update(tasksModel)
         .set({ recurringInterval: recurringInterval })
-        .where(activeTaskWhere(userId, id))
-        .returning();
-
-      if (updatedTask.length === 0) {
-        return undefined;
-      }
-      const parsed = selectTaskSchema.safeParse(updatedTask[0]);
-      if (parsed.success) {
-        return parsed.data;
-      }
-      throw new RepositoryValidationError(updatedTask[0], parsed.error.issues, {
-        message: formatZodError(parsed.error),
-        cause: parsed.error,
-      });
-    },
-
-    updateTaskIsRecurring: async (userId, id, isRecurring) => {
-      const updatedTask = await db
-        .update(tasksModel)
-        .set({ isRecurring })
         .where(activeTaskWhere(userId, id))
         .returning();
 

@@ -53,7 +53,6 @@ function CreateTaskRoute() {
             {
               title: `New Task ${Date.now()}`,
               description: 'This is a new task created from the index page.',
-              isRecurring: false,
               dueDate: null,
               priority: 'medium',
               status: 'todo',
