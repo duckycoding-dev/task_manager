@@ -16,13 +16,16 @@ import {
   selectReminderSchema,
   updateReminderSchema,
 } from './reminders.db';
-import { reminderIdParamSchema } from './reminders.types';
+import {
+  getRemindersQuerySchema,
+  reminderIdParamSchema,
+} from './reminders.types';
 
 const getReminders = createRoute({
   path: '/',
   method: 'get',
   request: {
-    query: z.object({ id: z.string() }),
+    query: getRemindersQuerySchema,
   },
   responses: {
     [statusCodeMap['OK'].status]: createSuccessJsonResponse(

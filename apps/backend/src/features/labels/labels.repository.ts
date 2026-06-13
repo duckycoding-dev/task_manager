@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm';
+import { and, eq, isNull } from 'drizzle-orm';
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 
 import { RepositoryValidationError } from 'utils/errors/domain-errors/';
@@ -44,7 +44,13 @@ export const createLabelsRepository = (
       const res = await db
         .select()
         .from(labels)
-        .where(and(eq(labels.userId, userId), eq(labels.id, labelId)));
+        .where(
+          and(
+            eq(labels.userId, userId),
+            eq(labels.id, labelId),
+            isNull(labels.deletedAt),
+          ),
+        );
       if (res.length === 0) {
         return undefined;
       }
@@ -59,11 +65,12 @@ export const createLabelsRepository = (
       });
     },
     getLabels: async (userId, filters) => {
-      const { name, color } = filters;
+      const { name, color, includeDeleted } = filters;
 
       const conditions = [eq(labels.userId, userId)];
       if (name) conditions.push(eq(labels.name, name));
       if (color) conditions.push(eq(labels.color, color));
+      if (!includeDeleted) conditions.push(isNull(labels.deletedAt));
 
       const labelsFound = await db
         .select()
@@ -101,7 +108,13 @@ export const createLabelsRepository = (
       const updatedLabel = await db
         .update(labels)
         .set(data)
-        .where(and(eq(labels.userId, userId), eq(labels.id, labelId)))
+        .where(
+          and(
+            eq(labels.userId, userId),
+            eq(labels.id, labelId),
+            isNull(labels.deletedAt),
+          ),
+        )
         .returning();
       if (updatedLabel.length === 0) {
         return undefined;
@@ -120,25 +133,38 @@ export const createLabelsRepository = (
       );
     },
     deleteLabel: async (userId, labelId) => {
-      const deletedLabel = await db
-        .delete(labels)
-        .where(and(eq(labels.userId, userId), eq(labels.id, labelId)))
-        .returning();
-      if (deletedLabel.length === 0) {
-        return false;
-      }
-      return true;
+      // Soft delete: stamp `deleted_at`. Per ADR-0002, hard-delete is a
+      // separate permanent-delete endpoint exposed only from the deleted-items
+      // view (not in v1).
+      const updated = await db
+        .update(labels)
+        .set({ deletedAt: new Date() })
+        .where(
+          and(
+            eq(labels.userId, userId),
+            eq(labels.id, labelId),
+            isNull(labels.deletedAt),
+          ),
+        )
+        .returning({ id: labels.id });
+      return updated.length > 0;
     },
     assignLabelToTask: async (userId, taskId, labelId) => {
-      // First check if the label belongs to the user
+      // First check if the label belongs to the user (and isn't soft-deleted)
       const userLabel = await db
         .select()
         .from(labels)
-        .where(and(eq(labels.id, labelId), eq(labels.userId, userId)))
+        .where(
+          and(
+            eq(labels.id, labelId),
+            eq(labels.userId, userId),
+            isNull(labels.deletedAt),
+          ),
+        )
         .limit(1);
 
       if (userLabel.length === 0) {
-        return false; // Label doesn't belong to this user
+        return false; // Label doesn't belong to this user (or is soft-deleted)
       }
 
       const assignedLabel = await db
@@ -151,15 +177,21 @@ export const createLabelsRepository = (
       return true;
     },
     removeLabelFromTask: async (userId, taskId, labelId) => {
-      // First check if the label belongs to the user
+      // First check if the label belongs to the user (and isn't soft-deleted)
       const userLabel = await db
         .select()
         .from(labels)
-        .where(and(eq(labels.id, labelId), eq(labels.userId, userId)))
+        .where(
+          and(
+            eq(labels.id, labelId),
+            eq(labels.userId, userId),
+            isNull(labels.deletedAt),
+          ),
+        )
         .limit(1);
 
       if (userLabel.length === 0) {
-        return false; // Label doesn't belong to this user
+        return false; // Label doesn't belong to this user (or is soft-deleted)
       }
       const removedLabel = await db
         .delete(taskLabels)

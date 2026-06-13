@@ -9,12 +9,18 @@ export const getRemindersQuerySchema = selectReminderSchema
     userId: true,
     title: true,
     content: true,
+    deletedAt: true,
   })
   .extend({
     expired: z.boolean(),
     beforeOf: selectReminderSchema.shape.remindAt,
   })
-  .partial();
+  .partial()
+  .extend({
+    // When `true`, soft-deleted rows are included. Default `false` filters
+    // `deleted_at IS NULL`. See ADR-0002.
+    includeDeleted: z.stringbool().default(false),
+  });
 
 // 📌 Path Params Schemas
 export const reminderIdParamSchema = z.object({

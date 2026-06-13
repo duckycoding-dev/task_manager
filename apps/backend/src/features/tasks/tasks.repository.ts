@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm';
+import { and, eq, isNull } from 'drizzle-orm';
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 
 import { RepositoryValidationError } from 'utils/errors/domain-errors/';
@@ -63,15 +63,26 @@ export type TasksRepository = {
 export const createTasksRepository = (
   db: PostgresJsDatabase,
 ): TasksRepository => {
+  // Per ADR-0002, soft-deleted rows are filtered out by default on every
+  // single-row lookup + write target; only `getTasks` opts callers in via
+  // `filters.includeDeleted`.
+  const activeTaskWhere = (userId: string, id: string) =>
+    and(
+      eq(tasksModel.userId, userId),
+      eq(tasksModel.id, id),
+      isNull(tasksModel.deletedAt),
+    );
+
   return {
     getTasks: async (userId, filters) => {
-      const { dueDate, priority, projectId, status } = filters;
+      const { dueDate, priority, projectId, status, includeDeleted } = filters;
 
       const conditions = [eq(tasksModel.userId, userId)];
       if (projectId) conditions.push(eq(tasksModel.projectId, projectId));
       if (dueDate) conditions.push(eq(tasksModel.dueDate, dueDate));
       if (priority) conditions.push(eq(tasksModel.priority, priority));
       if (status) conditions.push(eq(tasksModel.status, status));
+      if (!includeDeleted) conditions.push(isNull(tasksModel.deletedAt));
 
       const tasks = await db
         .select()
@@ -91,7 +102,7 @@ export const createTasksRepository = (
       const task = await db
         .select()
         .from(tasksModel)
-        .where(and(eq(tasksModel.id, id), eq(tasksModel.userId, userId)))
+        .where(activeTaskWhere(userId, id))
         .limit(1);
 
       if (task.length === 0) {
@@ -125,7 +136,7 @@ export const createTasksRepository = (
       const updatedTask = await db
         .update(tasksModel)
         .set(task)
-        .where(and(eq(tasksModel.userId, userId), eq(tasksModel.id, id)))
+        .where(activeTaskWhere(userId, id))
         .returning();
 
       if (updatedTask.length === 0) {
@@ -142,22 +153,20 @@ export const createTasksRepository = (
     },
 
     deleteTask: async (userId, id) => {
-      const deleted = await db
-        .delete(tasksModel)
-        .where(and(eq(tasksModel.userId, userId), eq(tasksModel.id, id)))
-        .returning();
-
-      if (deleted.length === 0) {
-        return false;
-      }
-      return true;
+      // Soft delete: stamp `deleted_at`. Per ADR-0002.
+      const updated = await db
+        .update(tasksModel)
+        .set({ deletedAt: new Date() })
+        .where(activeTaskWhere(userId, id))
+        .returning({ id: tasksModel.id });
+      return updated.length > 0;
     },
 
     updateTaskPriority: async (userId, id, priority) => {
       const updatedTask = await db
         .update(tasksModel)
         .set({ priority })
-        .where(and(eq(tasksModel.userId, userId), eq(tasksModel.id, id)))
+        .where(activeTaskWhere(userId, id))
         .returning();
 
       if (updatedTask.length === 0) {
@@ -177,7 +186,7 @@ export const createTasksRepository = (
       const updatedTask = await db
         .update(tasksModel)
         .set({ recurringInterval: recurringInterval })
-        .where(and(eq(tasksModel.userId, userId), eq(tasksModel.id, id)))
+        .where(activeTaskWhere(userId, id))
         .returning();
 
       if (updatedTask.length === 0) {
@@ -197,7 +206,7 @@ export const createTasksRepository = (
       const updatedTask = await db
         .update(tasksModel)
         .set({ isRecurring })
-        .where(and(eq(tasksModel.userId, userId), eq(tasksModel.id, id)))
+        .where(activeTaskWhere(userId, id))
         .returning();
 
       if (updatedTask.length === 0) {
@@ -217,7 +226,7 @@ export const createTasksRepository = (
       const updatedTask = await db
         .update(tasksModel)
         .set({ status })
-        .where(and(eq(tasksModel.userId, userId), eq(tasksModel.id, id)))
+        .where(activeTaskWhere(userId, id))
         .returning();
 
       if (updatedTask.length === 0) {
@@ -233,11 +242,19 @@ export const createTasksRepository = (
       });
     },
     getTaskReminders: async (userId, taskId) => {
+      // Filter out soft-deleted reminders AND soft-deleted parent tasks.
       const taskReminders = await db
         .select()
         .from(remindersModel)
         .leftJoin(tasksModel, eq(tasksModel.id, remindersModel.taskId))
-        .where(and(eq(tasksModel.userId, userId), eq(tasksModel.id, taskId)));
+        .where(
+          and(
+            eq(tasksModel.userId, userId),
+            eq(tasksModel.id, taskId),
+            isNull(tasksModel.deletedAt),
+            isNull(remindersModel.deletedAt),
+          ),
+        );
 
       const reminders = taskReminders.map(({ reminders }) => reminders);
 

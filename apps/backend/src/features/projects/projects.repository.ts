@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm';
+import { and, eq, isNull } from 'drizzle-orm';
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 
 import { RepositoryValidationError } from 'utils/errors/domain-errors/';
@@ -138,11 +138,18 @@ export const createProjectsRepository = (
     },
 
     getProjectTasks: async (userId, projectId) => {
+      // Filter out soft-deleted tasks. Per ADR-0002, project-task listing
+      // never surfaces soft-deleted rows; restoring a task is a tasks-level
+      // concern, not a per-project one.
       const projectTasks = await db
         .select()
         .from(tasks)
         .where(
-          and(eq(projects.userId, userId), eq(tasks.projectId, projectId)),
+          and(
+            eq(projects.userId, userId),
+            eq(tasks.projectId, projectId),
+            isNull(tasks.deletedAt),
+          ),
         );
 
       const parsed = selectTaskSchema.array().safeParse(projectTasks);

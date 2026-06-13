@@ -15,6 +15,13 @@
       "when": 1765896581738,
       "tag": "0001_typical_rhodey",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1781388109458,
+      "tag": "0002_clever_prism",
+      "breakpoints": true
     }
   ]
 }

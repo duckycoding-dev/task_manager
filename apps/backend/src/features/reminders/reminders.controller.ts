@@ -34,8 +34,9 @@ export const createRemindersController = (
       );
     },
     getReminders: async (c) => {
+      const filters = c.req.valid('query');
       const { id: userId } = c.get(AUTH_CTX_KEYS.user);
-      const reminders = await remindersService.getReminders(userId);
+      const reminders = await remindersService.getReminders(userId, filters);
       return c.json(
         {
           success: true,

@@ -12,6 +12,9 @@ export const getTasksQuerySchema = z.object({
   status: z.enum(STATUS_OPTIONS).optional(),
   priority: z.enum(PRIORITY_OPTIONS).optional(),
   dueDate: z.string().datetime().optional(),
+  // When `true`, soft-deleted rows are included. Default `false` filters
+  // `deleted_at IS NULL`. See ADR-0002.
+  includeDeleted: z.stringbool().default(false),
 });
 
 // 📌 Path Params Schemas

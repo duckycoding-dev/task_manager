@@ -2,9 +2,13 @@ import { EntityNotFoundError } from 'utils/errors/domain-errors/';
 
 import type { InsertReminder, Reminder, UpdateReminder } from './reminders.db';
 import type { RemindersRepository } from './reminders.repository';
+import type { GetRemindersQuery } from './reminders.types';
 
 export type RemindersService = {
-  getReminders: (userId: string) => Promise<Reminder[]>;
+  getReminders: (
+    userId: string,
+    filters: GetRemindersQuery,
+  ) => Promise<Reminder[]>;
   getReminderById: (userId: string, id: string) => Promise<Reminder>;
   getRemindersByTaskId: (userId: string, taskId: string) => Promise<Reminder[]>;
   createReminder: (
@@ -28,8 +32,8 @@ export const createRemindersService = (
       if (!reminder) throw new EntityNotFoundError('Reminder', id);
       return reminder;
     },
-    getReminders: async (userId) => {
-      return await remindersRepository.getReminders(userId);
+    getReminders: async (userId, filters) => {
+      return await remindersRepository.getReminders(userId, filters);
     },
     getRemindersByTaskId: async (userId, taskId) => {
       return await remindersRepository.getRemindersByTaskId(userId, taskId);
