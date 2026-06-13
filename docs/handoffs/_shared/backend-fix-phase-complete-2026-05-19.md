@@ -150,18 +150,15 @@ From [`./phase-1-followup-2026-05-13.md`](./phase-1-followup-2026-05-13.md) — 
 - **`apps/react19` + `packages/utils` deps** — runtime deps still on phase-1 versions. Low priority (Vue/Nuxt is the planned next FE).
 - **ESLint warnings** — 2 backend unused `eslint-disable` directives (auto-fixable) + 8 react19 `react-refresh/only-export-components` on tanstack-router files (likely an override or config tweak).
 
-### 3 · Controller error-throwing restructure (ADR-0012)
+### 3 · Controller error-throwing restructure (ADR-0012) — **DONE** (uncommitted)
 
-Bigger round. Touches every controller's `*ById` / `update*` / `delete*` method plus every service method that currently returns `undefined` on miss. Per [ADR-0012](../../stable/_shared/adr/0012-error-propagation-pattern.md): the service should throw `EntityNotFoundError` (or other `DomainError` subclass); the controller should not catch / not re-throw HTTP errors. End state: `EndpointError` import drops out of all 4 feature controllers.
+All 4 features × {service, controller}.ts restructured per [ADR-0012](../../stable/_shared/adr/0012-error-propagation-pattern.md):
 
-Files in scope:
+- **Services** throw `EntityNotFoundError('<Entity>', id)` instead of returning `undefined`/`false` on miss. Signatures changed from `Promise<X | undefined>` → `Promise<X>` (and from `Promise<boolean>` → `Promise<void>` for delete / assign / remove style methods).
+- **Controllers** dropped `EndpointError` import + all `if (!result) throw new EndpointError(...)` blocks (~16 sites). Each handler now: call service → format response. Service throws if missing; global `errorHandler` converts `EntityNotFoundError` → 404 via `DOMAIN_ERROR_MAP['EntityNotFoundError'] = { status: 404, verboseCode: 'NOT_FOUND' }`.
+- **Repositories** kept their existing `Promise<X | undefined>` / `Promise<boolean>` shape — they're data-layer; finding nothing is data, not an error. One pre-existing repo bug fixed along the way: `reminders.repository.updateReminder` was typed `Promise<Reminder>` but didn't handle the empty-result case (would have thrown `RepositoryValidationError` on miss → 500). Now correctly returns `Promise<Reminder | undefined>` with an explicit empty-result check, matching the labels / projects / tasks pattern.
 
-- `apps/backend/src/features/tasks/{service,controller}.ts`
-- `apps/backend/src/features/projects/{service,controller}.ts`
-- `apps/backend/src/features/labels/{service,controller}.ts`
-- `apps/backend/src/features/reminders/{service,controller}.ts`
-
-The global `errorHandler` in `apps/backend/src/utils/errors/http-errors.ts` already dispatches `DomainError` correctly via `DOMAIN_ERROR_MAP` — restructure work shouldn't need to touch the handler.
+Lint state after the restructure: **0 errors, 7 warnings** (unchanged pre-existing FE drift). Backend + react19 builds clean.
 
 ### 4 · Library-API drift audit (Drizzle / Zod / errors)
 

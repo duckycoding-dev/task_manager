@@ -1,12 +1,11 @@
+import { EntityNotFoundError } from 'utils/errors/domain-errors/';
+
 import type { InsertReminder, Reminder, UpdateReminder } from './reminders.db';
 import type { RemindersRepository } from './reminders.repository';
 
 export type RemindersService = {
   getReminders: (userId: string) => Promise<Reminder[]>;
-  getReminderById: (
-    userId: string,
-    id: string,
-  ) => Promise<Reminder | undefined>;
+  getReminderById: (userId: string, id: string) => Promise<Reminder>;
   getRemindersByTaskId: (userId: string, taskId: string) => Promise<Reminder[]>;
   createReminder: (
     userId: string,
@@ -17,7 +16,7 @@ export type RemindersService = {
     id: string,
     reminder: UpdateReminder,
   ) => Promise<Reminder>;
-  deleteReminder: (userId: string, id: string) => Promise<boolean>;
+  deleteReminder: (userId: string, id: string) => Promise<void>;
 };
 
 export const createRemindersService = (
@@ -25,7 +24,9 @@ export const createRemindersService = (
 ): RemindersService => {
   return {
     getReminderById: async (userId, id) => {
-      return await remindersRepository.getReminderById(userId, id);
+      const reminder = await remindersRepository.getReminderById(userId, id);
+      if (!reminder) throw new EntityNotFoundError('Reminder', id);
+      return reminder;
     },
     getReminders: async (userId) => {
       return await remindersRepository.getReminders(userId);
@@ -37,10 +38,17 @@ export const createRemindersService = (
       return await remindersRepository.createReminder(userId, newReminder);
     },
     updateReminder: async (userId, id, reminder) => {
-      return await remindersRepository.updateReminder(userId, id, reminder);
+      const updated = await remindersRepository.updateReminder(
+        userId,
+        id,
+        reminder,
+      );
+      if (!updated) throw new EntityNotFoundError('Reminder', id);
+      return updated;
     },
     deleteReminder: async (userId, id) => {
-      return await remindersRepository.deleteReminder(userId, id);
+      const deleted = await remindersRepository.deleteReminder(userId, id);
+      if (!deleted) throw new EntityNotFoundError('Reminder', id);
     },
   };
 };

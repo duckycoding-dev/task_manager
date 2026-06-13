@@ -1,5 +1,4 @@
 import { AUTH_CTX_KEYS } from 'utils/auth-context/';
-import { EndpointError } from 'utils/errors/http-errors/';
 
 import type { AppRouteHandler } from '../../types/app_context';
 
@@ -23,16 +22,11 @@ export const createLabelsController = (
     getLabelById: async (c) => {
       const { labelId } = c.req.valid('param');
       const { id: userId } = c.get(AUTH_CTX_KEYS.user);
-      const labelFound = await labelsService.getLabelById(userId, labelId);
-      if (!labelFound) {
-        throw new EndpointError<typeof labelsRoutes.getLabelById>('NOT_FOUND', {
-          message: 'Label not found',
-        });
-      }
+      const label = await labelsService.getLabelById(userId, labelId);
       return c.json(
         {
           success: true,
-          data: labelFound,
+          data: label,
           message: 'Label fetched',
         },
         200,
@@ -73,11 +67,6 @@ export const createLabelsController = (
         labelId,
         labelUpdate,
       );
-      if (!labelUpdated) {
-        throw new EndpointError<typeof labelsRoutes.updateLabel>('NOT_FOUND', {
-          message: 'Label not found',
-        });
-      }
       return c.json(
         {
           success: true,
@@ -90,12 +79,7 @@ export const createLabelsController = (
     deleteLabel: async (c) => {
       const { labelId } = c.req.valid('param');
       const { id: userId } = c.get(AUTH_CTX_KEYS.user);
-      const labelWasDeleted = await labelsService.deleteLabel(userId, labelId);
-      if (!labelWasDeleted) {
-        throw new EndpointError<typeof labelsRoutes.deleteLabel>('NOT_FOUND', {
-          message: 'Label not found',
-        });
-      }
+      await labelsService.deleteLabel(userId, labelId);
       return c.json(
         {
           success: true,
@@ -107,19 +91,7 @@ export const createLabelsController = (
     assignLabelToTask: async (c) => {
       const { taskId, labelId } = c.req.valid('json');
       const { id: userId } = c.get(AUTH_CTX_KEYS.user);
-      const labelWasAssigned = await labelsService.assignLabelToTask(
-        userId,
-        taskId,
-        labelId,
-      );
-      if (!labelWasAssigned) {
-        throw new EndpointError<typeof labelsRoutes.assignLabelToTask>(
-          'NOT_FOUND',
-          {
-            message: 'Label not found',
-          },
-        );
-      }
+      await labelsService.assignLabelToTask(userId, taskId, labelId);
       return c.json(
         {
           success: true,
@@ -131,19 +103,7 @@ export const createLabelsController = (
     removeLabelFromTask: async (c) => {
       const { taskId, labelId } = c.req.valid('json');
       const { id: userId } = c.get(AUTH_CTX_KEYS.user);
-      const labelWasRemoved = await labelsService.removeLabelFromTask(
-        userId,
-        taskId,
-        labelId,
-      );
-      if (!labelWasRemoved) {
-        throw new EndpointError<typeof labelsRoutes.removeLabelFromTask>(
-          'NOT_FOUND',
-          {
-            message: 'Label not found',
-          },
-        );
-      }
+      await labelsService.removeLabelFromTask(userId, taskId, labelId);
       return c.json(
         {
           success: true,

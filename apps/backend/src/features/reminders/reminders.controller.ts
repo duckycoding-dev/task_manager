@@ -1,5 +1,4 @@
 import { AUTH_CTX_KEYS } from 'utils/auth-context/';
-import { EndpointError } from 'utils/errors/http-errors/';
 
 import type { AppRouteHandler } from '../../types/app_context';
 
@@ -25,12 +24,6 @@ export const createRemindersController = (
         userId,
         reminderId,
       );
-      if (!reminderFound) {
-        throw new EndpointError<typeof remindersRoutes.getReminderById>(
-          'NOT_FOUND',
-          { message: 'Reminder not found' },
-        );
-      }
       return c.json(
         {
           success: true,
@@ -79,12 +72,6 @@ export const createRemindersController = (
         reminderId,
         reminderUpdate,
       );
-      if (!reminderUpdated) {
-        throw new EndpointError<typeof remindersRoutes.updateReminder>(
-          'NOT_FOUND',
-          { message: 'Reminder not found' },
-        );
-      }
       return c.json(
         {
           success: true,
@@ -97,16 +84,7 @@ export const createRemindersController = (
     deleteReminder: async (c) => {
       const { reminderId } = c.req.valid('param');
       const { id: userId } = c.get(AUTH_CTX_KEYS.user);
-      const reminderDeleted = await remindersService.deleteReminder(
-        userId,
-        reminderId,
-      );
-      if (!reminderDeleted) {
-        throw new EndpointError<typeof remindersRoutes.deleteReminder>(
-          'NOT_FOUND',
-          { message: 'Reminder not found' },
-        );
-      }
+      await remindersService.deleteReminder(userId, reminderId);
       return c.json(
         {
           success: true,

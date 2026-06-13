@@ -1,3 +1,5 @@
+import { EntityNotFoundError } from 'utils/errors/domain-errors/';
+
 import type { Task } from '../tasks/tasks.db';
 
 import type { InsertProject, Project, UpdateProject } from './projects.db';
@@ -5,10 +7,7 @@ import type { ProjectsRepository } from './projects.repository';
 
 export type ProjectsService = {
   getProjects: (userId: string) => Promise<Project[]>;
-  getProjectById: (
-    userId: string,
-    projectId: string,
-  ) => Promise<Project | undefined>;
+  getProjectById: (userId: string, projectId: string) => Promise<Project>;
   createProject: (
     userId: string,
     newProject: InsertProject,
@@ -17,8 +16,8 @@ export type ProjectsService = {
     userId: string,
     projectId: string,
     project: UpdateProject,
-  ) => Promise<Project | undefined>;
-  deleteProject: (userId: string, projectId: string) => Promise<boolean>;
+  ) => Promise<Project>;
+  deleteProject: (userId: string, projectId: string) => Promise<void>;
   getProjectTasks: (userId: string, projectId: string) => Promise<Task[]>;
 };
 
@@ -31,7 +30,12 @@ export const createProjectsService = (
     },
 
     getProjectById: async (userId, projectId) => {
-      return await projectsRepository.getProjectById(userId, projectId);
+      const project = await projectsRepository.getProjectById(
+        userId,
+        projectId,
+      );
+      if (!project) throw new EntityNotFoundError('Project', projectId);
+      return project;
     },
 
     createProject: async (userId, project) => {
@@ -39,11 +43,18 @@ export const createProjectsService = (
     },
 
     updateProject: async (userId, projectId, project) => {
-      return await projectsRepository.updateProject(userId, projectId, project);
+      const updated = await projectsRepository.updateProject(
+        userId,
+        projectId,
+        project,
+      );
+      if (!updated) throw new EntityNotFoundError('Project', projectId);
+      return updated;
     },
 
     deleteProject: async (userId, projectId) => {
-      return await projectsRepository.deleteProject(userId, projectId);
+      const deleted = await projectsRepository.deleteProject(userId, projectId);
+      if (!deleted) throw new EntityNotFoundError('Project', projectId);
     },
 
     getProjectTasks: async (userId, projectId) => {

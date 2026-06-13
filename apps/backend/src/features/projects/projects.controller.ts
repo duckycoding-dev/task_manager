@@ -1,5 +1,4 @@
 import { AUTH_CTX_KEYS } from 'utils/auth-context/';
-import { EndpointError } from 'utils/errors/http-errors/';
 
 import type { AppRouteHandler } from '../../types/app_context';
 
@@ -44,15 +43,6 @@ export const createProjectsController = (
         userId,
         projectId,
       );
-
-      if (!projectFound) {
-        throw new EndpointError<typeof projectsRoutes.getProjectById>(
-          'NOT_FOUND',
-          {
-            message: 'Project not found',
-          },
-        );
-      }
       return c.json(
         { success: true, data: projectFound, message: 'Project fetched' },
         200,
@@ -81,14 +71,6 @@ export const createProjectsController = (
         projectId,
         project,
       );
-      if (!updatedProject) {
-        throw new EndpointError<typeof projectsRoutes.updateProject>(
-          'NOT_FOUND',
-          {
-            message: 'Project not found',
-          },
-        );
-      }
       return c.json(
         { success: true, data: updatedProject, message: 'Project updated' },
         200,
@@ -98,15 +80,7 @@ export const createProjectsController = (
     deleteProject: async (c) => {
       const { projectId } = c.req.valid('param');
       const { id: userId } = c.get(AUTH_CTX_KEYS.user);
-      const deleted = await projectsService.deleteProject(userId, projectId);
-      if (!deleted) {
-        throw new EndpointError<typeof projectsRoutes.deleteProject>(
-          'NOT_FOUND',
-          {
-            message: 'Project not found',
-          },
-        );
-      }
+      await projectsService.deleteProject(userId, projectId);
       return c.json({ success: true, message: 'Project deleted' }, 200);
     },
 

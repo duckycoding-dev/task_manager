@@ -1,5 +1,4 @@
 import { AUTH_CTX_KEYS } from 'utils/auth-context/';
-import { EndpointError } from 'utils/errors/http-errors/';
 
 import type { AppRouteHandler } from '../../types/app_context';
 
@@ -49,12 +48,6 @@ export const createTasksController = (
       const { taskId } = c.req.valid('param');
       const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const taskFound = await tasksService.getTaskById(userId, taskId);
-
-      if (!taskFound) {
-        throw new EndpointError<typeof tasksRoutes.getTaskById>('NOT_FOUND', {
-          message: 'Task not found',
-        });
-      }
       return c.json(
         { success: true, data: taskFound, message: 'Task fetched' },
         200,
@@ -76,11 +69,6 @@ export const createTasksController = (
       const task = c.req.valid('json');
       const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const updatedTask = await tasksService.updateTask(userId, taskId, task);
-      if (!updatedTask) {
-        throw new EndpointError<typeof tasksRoutes.updateTask>('NOT_FOUND', {
-          message: 'Task not found',
-        });
-      }
       return c.json(
         { success: true, data: updatedTask, message: 'Task updated' },
         200,
@@ -90,12 +78,7 @@ export const createTasksController = (
     deleteTask: async (c) => {
       const { taskId } = c.req.valid('param');
       const { id: userId } = c.get(AUTH_CTX_KEYS.user);
-      const deleted = await tasksService.deleteTask(userId, taskId);
-      if (!deleted) {
-        throw new EndpointError<typeof tasksRoutes.deleteTask>('NOT_FOUND', {
-          message: 'Task not found',
-        });
-      }
+      await tasksService.deleteTask(userId, taskId);
       return c.json({ success: true, message: 'Task deleted' }, 200);
     },
 
@@ -108,14 +91,6 @@ export const createTasksController = (
         taskId,
         priority,
       );
-      if (!updatedTask) {
-        throw new EndpointError<typeof tasksRoutes.updateTaskPriority>(
-          'NOT_FOUND',
-          {
-            message: 'Task not found',
-          },
-        );
-      }
       return c.json(
         { success: true, data: updatedTask, message: 'Task updated' },
         200,
@@ -131,14 +106,6 @@ export const createTasksController = (
         taskId,
         recurringInterval,
       );
-      if (!updatedTask) {
-        throw new EndpointError<typeof tasksRoutes.updateTaskRecurringInterval>(
-          'NOT_FOUND',
-          {
-            message: 'Task not found',
-          },
-        );
-      }
       return c.json(
         { success: true, data: updatedTask, message: 'Task updated' },
         200,
@@ -154,14 +121,6 @@ export const createTasksController = (
         taskId,
         isRecurring,
       );
-      if (!updatedTask) {
-        throw new EndpointError<typeof tasksRoutes.updateTaskIsRecurring>(
-          'NOT_FOUND',
-          {
-            message: 'Task not found',
-          },
-        );
-      }
       return c.json(
         { success: true, data: updatedTask, message: 'Task updated' },
         200,
@@ -177,14 +136,6 @@ export const createTasksController = (
         taskId,
         status,
       );
-      if (!updatedTask) {
-        throw new EndpointError<typeof tasksRoutes.updateTaskStatus>(
-          'NOT_FOUND',
-          {
-            message: 'Task not found',
-          },
-        );
-      }
       return c.json(
         { success: true, data: updatedTask, message: 'Task updated' },
         200,

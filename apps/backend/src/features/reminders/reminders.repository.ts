@@ -27,7 +27,7 @@ export type RemindersRepository = {
     userId: string,
     id: string,
     reminder: UpdateReminder,
-  ) => Promise<Reminder>;
+  ) => Promise<Reminder | undefined>;
   deleteReminder: (userId: string, id: string) => Promise<boolean>;
 };
 
@@ -115,6 +115,9 @@ export const createRemindersRepository = (
           and(eq(remindersModel.userId, userId), eq(remindersModel.id, id)),
         )
         .returning();
+      if (updatedReminder.length === 0) {
+        return undefined;
+      }
       const parsed = selectReminderSchema.safeParse(updatedReminder[0]);
       if (parsed.success) {
         return parsed.data;

@@ -1,3 +1,5 @@
+import { EntityNotFoundError } from 'utils/errors/domain-errors/';
+
 import type { Reminder } from '../reminders';
 
 import type { InsertTask, Task, UpdateTask } from './tasks.db';
@@ -14,34 +16,30 @@ export type TasksService = {
     userId: string,
     filters: Omit<GetTasksQuery, 'dueDate'> & { dueDate?: Date },
   ) => Promise<Task[]>;
-  getTaskById: (userId: string, id: string) => Promise<Task | undefined>;
+  getTaskById: (userId: string, id: string) => Promise<Task>;
   createTask: (userId: string, newTask: InsertTask) => Promise<Task>;
-  updateTask: (
-    userId: string,
-    id: string,
-    task: UpdateTask,
-  ) => Promise<Task | undefined>;
-  deleteTask: (userId: string, id: string) => Promise<boolean>;
+  updateTask: (userId: string, id: string, task: UpdateTask) => Promise<Task>;
+  deleteTask: (userId: string, id: string) => Promise<void>;
   updateTaskPriority: (
     userId: string,
     id: string,
     priority: TaskPriorityOption,
-  ) => Promise<Task | undefined>;
+  ) => Promise<Task>;
   updateTaskRecurringInterval: (
     userId: string,
     id: string,
     recurringInterval: TaskRecurringOption,
-  ) => Promise<Task | undefined>;
+  ) => Promise<Task>;
   updateTaskIsRecurring: (
     userId: string,
     id: string,
     recurringInterval: boolean,
-  ) => Promise<Task | undefined>;
+  ) => Promise<Task>;
   updateTaskStatus: (
     userId: string,
     id: string,
     status: TaskStatusOption,
-  ) => Promise<Task | undefined>;
+  ) => Promise<Task>;
   getTaskReminders: (userId: string, taskId: string) => Promise<Reminder[]>;
 };
 
@@ -53,7 +51,9 @@ export const createTasksService = (
       return await tasksRepository.getTasks(userId, filters);
     },
     getTaskById: async (userId, taskId) => {
-      return await tasksRepository.getTaskById(userId, taskId);
+      const task = await tasksRepository.getTaskById(userId, taskId);
+      if (!task) throw new EntityNotFoundError('Task', taskId);
+      return task;
     },
 
     createTask: async (userId, task) => {
@@ -61,35 +61,54 @@ export const createTasksService = (
     },
 
     updateTask: async (userId, id, task) => {
-      return await tasksRepository.updateTask(userId, id, task);
+      const updated = await tasksRepository.updateTask(userId, id, task);
+      if (!updated) throw new EntityNotFoundError('Task', id);
+      return updated;
     },
 
     deleteTask: async (userId, taskId) => {
-      return await tasksRepository.deleteTask(userId, taskId);
+      const deleted = await tasksRepository.deleteTask(userId, taskId);
+      if (!deleted) throw new EntityNotFoundError('Task', taskId);
     },
 
     updateTaskPriority: async (userId, taskId, priority) => {
-      return await tasksRepository.updateTaskPriority(userId, taskId, priority);
+      const updated = await tasksRepository.updateTaskPriority(
+        userId,
+        taskId,
+        priority,
+      );
+      if (!updated) throw new EntityNotFoundError('Task', taskId);
+      return updated;
     },
 
     updateTaskRecurringInterval: async (userId, taskId, recurringInterval) => {
-      return await tasksRepository.updateTaskRecurringInterval(
+      const updated = await tasksRepository.updateTaskRecurringInterval(
         userId,
         taskId,
         recurringInterval,
       );
+      if (!updated) throw new EntityNotFoundError('Task', taskId);
+      return updated;
     },
 
     updateTaskIsRecurring: async (userId, taskId, isRecurring) => {
-      return await tasksRepository.updateTaskIsRecurring(
+      const updated = await tasksRepository.updateTaskIsRecurring(
         userId,
         taskId,
         isRecurring,
       );
+      if (!updated) throw new EntityNotFoundError('Task', taskId);
+      return updated;
     },
 
     updateTaskStatus: async (userId, taskId, status) => {
-      return await tasksRepository.updateTaskStatus(userId, taskId, status);
+      const updated = await tasksRepository.updateTaskStatus(
+        userId,
+        taskId,
+        status,
+      );
+      if (!updated) throw new EntityNotFoundError('Task', taskId);
+      return updated;
     },
 
     getTaskReminders: async (userId, taskId) => {
