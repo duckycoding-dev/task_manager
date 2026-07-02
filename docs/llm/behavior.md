@@ -76,7 +76,7 @@ This way `docs/plans/` and `docs/handoffs/` only ever show active work; `docs/st
 
 Use these `<feature>` segments inside `docs/plans/`, `docs/handoffs/`, `docs/stable/`:
 
-- Backend domain features: `tasks`, `projects`, `labels`, `reminders`, `auth` (match `apps/backend/src/features/*`).
+- Backend domain features: `tasks`, `projects`, `labels`, `reminders`, `auth`, `export` (match `apps/backend/src/features/*`).
 - Backend-wide topics that aren't a single domain feature: `backend`.
 - Frontend-specific: `react19` (and future `vue`, `next`, etc.).
 - Monorepo-wide / cross-cutting: `_shared`.

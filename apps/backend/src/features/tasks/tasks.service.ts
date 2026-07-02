@@ -12,11 +12,13 @@ import type {
 } from './tasks.types';
 
 export type TasksService = {
-  getTasks: (
+  getTasks: (userId: string, filters: GetTasksQuery) => Promise<Task[]>;
+  getTaskById: (
     userId: string,
-    filters: Omit<GetTasksQuery, 'dueDate'> & { dueDate?: Date },
-  ) => Promise<Task[]>;
-  getTaskById: (userId: string, id: string) => Promise<Task>;
+    id: string,
+    opts?: { includeDeleted?: boolean },
+  ) => Promise<Task>;
+  restoreTask: (userId: string, id: string) => Promise<Task>;
   createTask: (userId: string, newTask: InsertTask) => Promise<Task>;
   updateTask: (userId: string, id: string, task: UpdateTask) => Promise<Task>;
   deleteTask: (userId: string, id: string) => Promise<void>;
@@ -45,8 +47,13 @@ export const createTasksService = (
     getTasks: async (userId, filters) => {
       return await tasksRepository.getTasks(userId, filters);
     },
-    getTaskById: async (userId, taskId) => {
-      const task = await tasksRepository.getTaskById(userId, taskId);
+    getTaskById: async (userId, taskId, opts) => {
+      const task = await tasksRepository.getTaskById(userId, taskId, opts);
+      if (!task) throw new EntityNotFoundError('Task', taskId);
+      return task;
+    },
+    restoreTask: async (userId, taskId) => {
+      const task = await tasksRepository.restoreTask(userId, taskId);
       if (!task) throw new EntityNotFoundError('Task', taskId);
       return task;
     },

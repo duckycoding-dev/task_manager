@@ -1,6 +1,7 @@
 import { createRoute, z } from '@hono/zod-openapi';
 
 import { checkAuthMiddleware } from 'utils/auth/';
+import { includeDeletedQuerySchema } from 'utils/query-params/';
 import { createRequiredJsonBody } from 'utils/request/body/';
 import {
   createErrorResponse,
@@ -48,6 +49,7 @@ const getTaskById = createRoute({
   method: 'get',
   request: {
     params: taskIdParamSchema,
+    query: includeDeletedQuerySchema,
   },
   responses: {
     [statusCodeMap['OK'].status]: createSuccessJsonResponse(
@@ -59,7 +61,29 @@ const getTaskById = createRoute({
       statusCodeMap['INTERNAL_SERVER_ERROR'].message,
     ),
   },
-  description: 'Get a specific task by ID',
+  description:
+    'Get a specific task by ID. A soft-deleted task is a 404 unless `includeDeleted=true` (ADR-0002).',
+  middleware: checkAuthMiddleware,
+});
+
+const restoreTask = createRoute({
+  path: '/:taskId/restore',
+  method: 'post',
+  request: {
+    params: taskIdParamSchema,
+  },
+  responses: {
+    [statusCodeMap['OK'].status]: createSuccessJsonResponse(
+      selectTaskSchema,
+      'Task restored',
+    ),
+    [statusCodeMap['NOT_FOUND'].status]: createErrorResponse('Task not found'),
+    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]: createErrorResponse(
+      statusCodeMap['INTERNAL_SERVER_ERROR'].message,
+    ),
+  },
+  description:
+    'Restore a soft-deleted task (nulls `deletedAt`). Idempotent: restoring a live task succeeds. See ADR-0002.',
   middleware: checkAuthMiddleware,
 });
 
@@ -232,5 +256,6 @@ export const tasksRoutes = {
   updateTaskStatus,
   updateTaskPriority,
   updateTaskRecurringInterval,
+  restoreTask,
   getTaskReminders,
 } as const satisfies AppRoutes;

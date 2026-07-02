@@ -16,6 +16,7 @@ export type TasksController = {
     typeof tasksRoutes.updateTaskRecurringInterval
   >;
   updateTaskStatus: AppRouteHandler<typeof tasksRoutes.updateTaskStatus>;
+  restoreTask: AppRouteHandler<typeof tasksRoutes.restoreTask>;
   getTaskReminders: AppRouteHandler<typeof tasksRoutes.getTaskReminders>;
 };
 
@@ -26,11 +27,7 @@ export const createTasksController = (
     getTasks: async (c) => {
       const filters = c.req.valid('query');
       const { id: userId } = c.get(AUTH_CTX_KEYS.user);
-      const dueDate = filters.dueDate ? new Date(filters.dueDate) : undefined;
-      const tasksFound = await tasksService.getTasks(userId, {
-        ...filters,
-        dueDate,
-      });
+      const tasksFound = await tasksService.getTasks(userId, filters);
 
       return c.json(
         {
@@ -43,10 +40,23 @@ export const createTasksController = (
     },
     getTaskById: async (c) => {
       const { taskId } = c.req.valid('param');
+      const { includeDeleted } = c.req.valid('query');
       const { id: userId } = c.get(AUTH_CTX_KEYS.user);
-      const taskFound = await tasksService.getTaskById(userId, taskId);
+      const taskFound = await tasksService.getTaskById(userId, taskId, {
+        includeDeleted,
+      });
       return c.json(
         { success: true, data: taskFound, message: 'Task fetched' },
+        200,
+      );
+    },
+
+    restoreTask: async (c) => {
+      const { taskId } = c.req.valid('param');
+      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
+      const restoredTask = await tasksService.restoreTask(userId, taskId);
+      return c.json(
+        { success: true, data: restoredTask, message: 'Task restored' },
         200,
       );
     },

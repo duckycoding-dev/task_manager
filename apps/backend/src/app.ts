@@ -1,3 +1,4 @@
+import { exportRouter } from './features/export/export.router';
 import { labelsRouter } from './features/labels/labels.router';
 import { projectsRouter } from './features/projects/projects.router';
 import { remindersRouter } from './features/reminders/reminders.router';
@@ -12,6 +13,7 @@ const routers = [
   labelsRouter,
   remindersRouter,
   projectsRouter,
+  exportRouter,
 ] as const satisfies AppOpenAPI[];
 
 routers.forEach((router) => {

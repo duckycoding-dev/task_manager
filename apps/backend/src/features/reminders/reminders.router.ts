@@ -17,4 +17,8 @@ export const remindersRouter = createRouter()
   .openapi(remindersRoutes.getReminderById, remindersController.getReminderById)
   .openapi(remindersRoutes.createReminder, remindersController.createReminder)
   .openapi(remindersRoutes.updateReminder, remindersController.updateReminder)
-  .openapi(remindersRoutes.deleteReminder, remindersController.deleteReminder);
+  .openapi(remindersRoutes.deleteReminder, remindersController.deleteReminder)
+  .openapi(
+    remindersRoutes.restoreReminder,
+    remindersController.restoreReminder,
+  );

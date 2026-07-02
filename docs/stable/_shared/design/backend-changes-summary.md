@@ -1,6 +1,6 @@
 ---
 created: 2026-05-14
-updated: 2026-05-14
+updated: 2026-07-02
 summary: Consolidated checklist of every backend change surfaced across design specs 01–05. Schema migrations + endpoint additions + deferred items, grouped for the backend planning round.
 ---
 
@@ -38,8 +38,7 @@ Legend:
 | `GET /reminders` | Multi-value `taskId` filter | 🟢 | 03 · Project page |
 | `GET /reminders` | Range filters (`remindAtGte`, `remindAtLte`) | 🟢 | 03 · Inbox |
 | `GET /reminders` | Filter `deletedAt IS NULL` by default | 🟢 | cross-cutting (soft delete) |
-| `PATCH /labels/:id` | Accept `removeFromTasks: boolean` flag (two-mode delete) | 🟢 | 03 · Labels |
-| `DELETE /labels/:id` | New endpoint — permanent delete; server-validates already soft-deleted | 🟢 | 03 · Labels |
+| `DELETE /labels/:id` | Three delete tiers via query flags (`removeFromTasks=true`, `permanent=true`) per ADR-0007 | 🟢 | 03 · Labels |
 | `GET /labels` | Include per-label task count (filtered by live tasks) | 🟢 | 03 · Labels |
 | `GET /labels` | Filter `deletedAt IS NULL` by default | 🟢 | cross-cutting (soft delete) |
 | `GET /export/tasks` | New endpoint — JSON bundle of user data | 🟢 | 03 · Settings |
@@ -174,31 +173,16 @@ Extend response shape:
 
 Default filter: `labels.deleted_at IS NULL`.
 
-### `PATCH /labels/:labelId` — two-mode delete
+### `DELETE /labels/:labelId` — all three delete tiers, selected by query flags
 
-Accept `removeFromTasks: boolean` along with the standard fields.
+Finalized in [ADR-0007](../adr/0007-two-mode-label-delete.md) — supersedes an earlier draft of this section that routed soft-delete through `PATCH /labels/:labelId` with `deletedAt` in the body (`deletedAt` is server-controlled per [ADR-0002](../adr/0002-soft-delete-via-deletedat.md) and never client-writable).
 
-```jsonc
-PATCH /labels/abc-123
-{
-  "deletedAt": "2026-05-14T12:00:00Z",
-  "removeFromTasks": false
-}
-```
-
-When `removeFromTasks: true`, in the same transaction also:
-
-```sql
-DELETE FROM task_labels WHERE label_id = :labelId;
-```
-
-When `false` or absent, only `deleted_at` is written; `task_labels` rows are preserved (so restore returns the label to all previously-tagged tasks).
-
-### `DELETE /labels/:labelId` — permanent delete
-
-- Server validates: `labels.deleted_at IS NOT NULL` (only soft-deleted labels can be permanently deleted).
-- If validation fails, return `409 CONFLICT`.
-- Otherwise hard `DELETE FROM labels WHERE id = :id`; FK cascade on `task_labels` (already configured `ON DELETE CASCADE`) cleans up join rows.
+| Call | Behavior |
+|---|---|
+| `DELETE /labels/:labelId` | Soft delete (writes `deleted_at`); `task_labels` rows preserved — restore returns the label to all previously-tagged tasks |
+| `DELETE /labels/:labelId?removeFromTasks=true` | Soft delete **plus** `DELETE FROM task_labels WHERE label_id = :labelId` in the same transaction |
+| `DELETE /labels/:labelId?permanent=true` | Hard delete. Server validates `labels.deleted_at IS NOT NULL` (only soft-deleted labels can be permanently deleted); returns `409 CONFLICT` otherwise. FK cascade on `task_labels` (already `ON DELETE CASCADE`) cleans up join rows |
+| both flags together | `400 BAD_REQUEST` — combo signals client misunderstanding; rejected loudly |
 
 ### `GET /export/tasks`
 
@@ -238,7 +222,7 @@ Three tables now have `deletedAt`:
 - `reminders.deleted_at`
 - `labels.deleted_at`
 
-**Convention**: all list endpoints filter `deleted_at IS NULL` by default. An optional `includeDeleted=true` param flips the filter for "deleted items" admin views. Single-row reads (`GET /tasks/:id`) still return the row even if soft-deleted (so undo flows can re-show details before restoring), but PATCH/DELETE operations on a soft-deleted row may be rejected depending on context.
+**Convention** (finalized in [ADR-0002](../adr/0002-soft-delete-via-deletedat.md) — supersedes an earlier draft of this paragraph): ALL reads — list and single-row — filter `deleted_at IS NULL` by default, with `includeDeleted=true` as the uniform opt-in. A soft-deleted row is a 404 to a default single-row read. PATCH/domain-verb writes target live rows only; restore happens via dedicated `POST /:resource/:id/restore` endpoints (deletedAt is server-controlled, never client-writable).
 
 ### Default values vs explicit defaults
 

@@ -1,6 +1,7 @@
 import { createRoute, z } from '@hono/zod-openapi';
 
 import { checkAuthMiddleware } from 'utils/auth/';
+import { includeDeletedQuerySchema } from 'utils/query-params/';
 import { createRequiredJsonBody } from 'utils/request/body/';
 import {
   createErrorResponse,
@@ -44,6 +45,7 @@ const getReminderById = createRoute({
   method: 'get',
   request: {
     params: reminderIdParamSchema,
+    query: includeDeletedQuerySchema,
   },
   responses: {
     [statusCodeMap['OK'].status]: createSuccessJsonResponse(
@@ -56,6 +58,30 @@ const getReminderById = createRoute({
       statusCodeMap['INTERNAL_SERVER_ERROR'].message,
     ),
   },
+  description:
+    'Get a specific reminder by ID. A soft-deleted reminder is a 404 unless `includeDeleted=true` (ADR-0002).',
+  middleware: checkAuthMiddleware,
+});
+
+const restoreReminder = createRoute({
+  path: '/:reminderId/restore',
+  method: 'post',
+  request: {
+    params: reminderIdParamSchema,
+  },
+  responses: {
+    [statusCodeMap['OK'].status]: createSuccessJsonResponse(
+      selectReminderSchema,
+      'Reminder restored',
+    ),
+    [statusCodeMap['NOT_FOUND'].status]:
+      createErrorResponse('No reminder found'),
+    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]: createErrorResponse(
+      statusCodeMap['INTERNAL_SERVER_ERROR'].message,
+    ),
+  },
+  description:
+    'Restore a soft-deleted reminder (nulls `deletedAt`). Idempotent: restoring a live reminder succeeds. See ADR-0002.',
   middleware: checkAuthMiddleware,
 });
 
@@ -139,4 +165,5 @@ export const remindersRoutes = {
   createReminder,
   deleteReminder,
   updateReminder,
+  restoreReminder,
 } as const satisfies AppRoutes;

@@ -11,6 +11,7 @@ export type RemindersController = {
   createReminder: AppRouteHandler<typeof remindersRoutes.createReminder>;
   updateReminder: AppRouteHandler<typeof remindersRoutes.updateReminder>;
   deleteReminder: AppRouteHandler<typeof remindersRoutes.deleteReminder>;
+  restoreReminder: AppRouteHandler<typeof remindersRoutes.restoreReminder>;
 };
 
 export const createRemindersController = (
@@ -19,16 +20,34 @@ export const createRemindersController = (
   return {
     getReminderById: async (c) => {
       const { reminderId } = c.req.valid('param');
+      const { includeDeleted } = c.req.valid('query');
       const { id: userId } = c.get(AUTH_CTX_KEYS.user);
       const reminderFound = await remindersService.getReminderById(
         userId,
         reminderId,
+        { includeDeleted },
       );
       return c.json(
         {
           success: true,
           data: reminderFound,
           message: 'Reminder found',
+        },
+        200,
+      );
+    },
+    restoreReminder: async (c) => {
+      const { reminderId } = c.req.valid('param');
+      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
+      const reminder = await remindersService.restoreReminder(
+        userId,
+        reminderId,
+      );
+      return c.json(
+        {
+          success: true,
+          data: reminder,
+          message: 'Reminder restored',
         },
         200,
       );

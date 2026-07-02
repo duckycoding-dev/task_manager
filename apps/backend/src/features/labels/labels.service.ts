@@ -1,19 +1,39 @@
-import { EntityNotFoundError } from 'utils/errors/domain-errors/';
+import {
+  ConflictError,
+  EntityNotFoundError,
+  ValidationError,
+} from 'utils/errors/domain-errors/';
 
 import type { InsertLabel, Label, UpdateLabel } from './labels.db';
 import type { LabelsRepository } from './labels.repository';
-import type { GetLabelsQuery } from './labels.types';
+import type {
+  DeleteLabelQuery,
+  GetLabelsQuery,
+  LabelWithTaskCount,
+} from './labels.types';
 
 export type LabelsService = {
-  getLabels: (userId: string, filters: GetLabelsQuery) => Promise<Label[]>;
-  getLabelById: (userId: string, labelId: string) => Promise<Label>;
+  getLabels: (
+    userId: string,
+    filters: GetLabelsQuery,
+  ) => Promise<LabelWithTaskCount[]>;
+  getLabelById: (
+    userId: string,
+    labelId: string,
+    opts?: { includeDeleted?: boolean },
+  ) => Promise<Label>;
+  restoreLabel: (userId: string, labelId: string) => Promise<Label>;
   createLabel: (userId: string, newLabel: InsertLabel) => Promise<Label>;
   updateLabel: (
     userId: string,
     labelId: string,
     labelUpdate: UpdateLabel,
   ) => Promise<Label>;
-  deleteLabel: (userId: string, labelId: string) => Promise<void>;
+  deleteLabel: (
+    userId: string,
+    labelId: string,
+    opts: DeleteLabelQuery,
+  ) => Promise<void>;
   assignLabelToTask: (
     userId: string,
     taskId: string,
@@ -33,8 +53,13 @@ export const createLabelsService = (
     getLabels: async (userId, filters) => {
       return await labelsRepository.getLabels(userId, filters);
     },
-    getLabelById: async (userId, labelId) => {
-      const label = await labelsRepository.getLabelById(userId, labelId);
+    getLabelById: async (userId, labelId, opts) => {
+      const label = await labelsRepository.getLabelById(userId, labelId, opts);
+      if (!label) throw new EntityNotFoundError('Label', labelId);
+      return label;
+    },
+    restoreLabel: async (userId, labelId) => {
+      const label = await labelsRepository.restoreLabel(userId, labelId);
       if (!label) throw new EntityNotFoundError('Label', labelId);
       return label;
     },
@@ -50,8 +75,43 @@ export const createLabelsService = (
       if (!updated) throw new EntityNotFoundError('Label', labelId);
       return updated;
     },
-    deleteLabel: async (userId, labelId) => {
-      const deleted = await labelsRepository.deleteLabel(userId, labelId);
+    deleteLabel: async (userId, labelId, { removeFromTasks, permanent }) => {
+      // Delete tiers per ADR-0007.
+      if (removeFromTasks && permanent) {
+        throw new ValidationError(
+          [
+            {
+              message:
+                '`removeFromTasks` and `permanent` cannot be combined: permanent deletion cascades task links via FK',
+            },
+          ],
+          { removeFromTasks, permanent },
+          {
+            message:
+              '`removeFromTasks` and `permanent` cannot be combined: permanent deletion cascades task links via FK',
+            showToClient: true,
+          },
+        );
+      }
+      if (permanent) {
+        const label = await labelsRepository.getLabelById(userId, labelId, {
+          includeDeleted: true,
+        });
+        if (!label) throw new EntityNotFoundError('Label', labelId);
+        if (!label.deletedAt) {
+          throw new ConflictError(
+            'only soft-deleted labels can be permanently deleted',
+            { showToClient: true },
+          );
+        }
+        await labelsRepository.hardDeleteLabel(userId, labelId);
+        return;
+      }
+      const deleted = await labelsRepository.deleteLabel(
+        userId,
+        labelId,
+        removeFromTasks,
+      );
       if (!deleted) throw new EntityNotFoundError('Label', labelId);
     },
     assignLabelToTask: async (userId, taskId, labelId) => {

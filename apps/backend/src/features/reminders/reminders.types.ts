@@ -1,26 +1,20 @@
 import { z } from 'zod/v4';
 
-import { selectReminderSchema } from './reminders.db';
+import { multiValueQueryParam } from 'utils/query-params/';
 
 // 📌 Query Params Schemas
-export const getRemindersQuerySchema = selectReminderSchema
-  .omit({
-    remindAt: true,
-    userId: true,
-    title: true,
-    content: true,
-    deletedAt: true,
-  })
-  .extend({
-    expired: z.boolean(),
-    beforeOf: selectReminderSchema.shape.remindAt,
-  })
-  .partial()
-  .extend({
-    // When `true`, soft-deleted rows are included. Default `false` filters
-    // `deleted_at IS NULL`. See ADR-0002.
-    includeDeleted: z.stringbool().default(false),
-  });
+export const getRemindersQuerySchema = z.object({
+  // Multi-value filter (repeated key: `?taskId=A&taskId=B`).
+  // OR semantics within the field.
+  taskId: multiValueQueryParam(z.string().uuid()).optional(),
+  // Inclusive remind-at range bounds. The Inbox "Now" bucket is
+  // `remindAtLte=<now>`; no dedicated `expired` flag needed.
+  remindAtGte: z.coerce.date().optional(),
+  remindAtLte: z.coerce.date().optional(),
+  // When `true`, soft-deleted rows are included. Default `false` filters
+  // `deleted_at IS NULL`. See ADR-0002.
+  includeDeleted: z.stringbool().default(false),
+});
 
 // 📌 Path Params Schemas
 export const reminderIdParamSchema = z.object({

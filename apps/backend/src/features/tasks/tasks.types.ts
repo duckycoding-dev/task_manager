@@ -1,5 +1,7 @@
 import { z } from 'zod/v4';
 
+import { multiValueQueryParam } from 'utils/query-params/';
+
 import {
   PRIORITY_OPTIONS,
   RECURRING_OPTIONS,
@@ -8,10 +10,20 @@ import {
 
 // 📌 Query Params Schemas
 export const getTasksQuerySchema = z.object({
-  projectId: z.string().uuid().optional(),
-  status: z.enum(STATUS_OPTIONS).optional(),
-  priority: z.enum(PRIORITY_OPTIONS).optional(),
-  dueDate: z.string().datetime().optional(),
+  // Multi-value filters (repeated key: `?status=todo&status=done`).
+  // OR semantics within a field, AND across fields.
+  projectId: multiValueQueryParam(z.string().uuid()).optional(),
+  status: multiValueQueryParam(z.enum(STATUS_OPTIONS)).optional(),
+  priority: multiValueQueryParam(z.enum(PRIORITY_OPTIONS)).optional(),
+  labelId: multiValueQueryParam(z.string().uuid()).optional(),
+  // Exact-match on due date, kept for backwards compat with the original
+  // single-value filter. Prefer the range params below.
+  dueDate: z.coerce.date().optional(),
+  // Inclusive due-date range bounds.
+  dueDateGte: z.coerce.date().optional(),
+  dueDateLte: z.coerce.date().optional(),
+  // Case-insensitive "title contains" search.
+  q: z.string().trim().min(1).optional(),
   // When `true`, soft-deleted rows are included. Default `false` filters
   // `deleted_at IS NULL`. See ADR-0002.
   includeDeleted: z.stringbool().default(false),

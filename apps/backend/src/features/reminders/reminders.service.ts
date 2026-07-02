@@ -9,7 +9,12 @@ export type RemindersService = {
     userId: string,
     filters: GetRemindersQuery,
   ) => Promise<Reminder[]>;
-  getReminderById: (userId: string, id: string) => Promise<Reminder>;
+  getReminderById: (
+    userId: string,
+    id: string,
+    opts?: { includeDeleted?: boolean },
+  ) => Promise<Reminder>;
+  restoreReminder: (userId: string, id: string) => Promise<Reminder>;
   getRemindersByTaskId: (userId: string, taskId: string) => Promise<Reminder[]>;
   createReminder: (
     userId: string,
@@ -27,8 +32,17 @@ export const createRemindersService = (
   remindersRepository: RemindersRepository,
 ): RemindersService => {
   return {
-    getReminderById: async (userId, id) => {
-      const reminder = await remindersRepository.getReminderById(userId, id);
+    getReminderById: async (userId, id, opts) => {
+      const reminder = await remindersRepository.getReminderById(
+        userId,
+        id,
+        opts,
+      );
+      if (!reminder) throw new EntityNotFoundError('Reminder', id);
+      return reminder;
+    },
+    restoreReminder: async (userId, id) => {
+      const reminder = await remindersRepository.restoreReminder(userId, id);
       if (!reminder) throw new EntityNotFoundError('Reminder', id);
       return reminder;
     },

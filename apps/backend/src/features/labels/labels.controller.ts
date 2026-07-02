@@ -11,6 +11,7 @@ export type LabelsController = {
   createLabel: AppRouteHandler<typeof labelsRoutes.createLabel>;
   updateLabel: AppRouteHandler<typeof labelsRoutes.updateLabel>;
   deleteLabel: AppRouteHandler<typeof labelsRoutes.deleteLabel>;
+  restoreLabel: AppRouteHandler<typeof labelsRoutes.restoreLabel>;
   assignLabelToTask: AppRouteHandler<typeof labelsRoutes.assignLabelToTask>;
   removeLabelFromTask: AppRouteHandler<typeof labelsRoutes.removeLabelFromTask>;
 };
@@ -21,13 +22,29 @@ export const createLabelsController = (
   return {
     getLabelById: async (c) => {
       const { labelId } = c.req.valid('param');
+      const { includeDeleted } = c.req.valid('query');
       const { id: userId } = c.get(AUTH_CTX_KEYS.user);
-      const label = await labelsService.getLabelById(userId, labelId);
+      const label = await labelsService.getLabelById(userId, labelId, {
+        includeDeleted,
+      });
       return c.json(
         {
           success: true,
           data: label,
           message: 'Label fetched',
+        },
+        200,
+      );
+    },
+    restoreLabel: async (c) => {
+      const { labelId } = c.req.valid('param');
+      const { id: userId } = c.get(AUTH_CTX_KEYS.user);
+      const label = await labelsService.restoreLabel(userId, labelId);
+      return c.json(
+        {
+          success: true,
+          data: label,
+          message: 'Label restored',
         },
         200,
       );
@@ -78,8 +95,9 @@ export const createLabelsController = (
     },
     deleteLabel: async (c) => {
       const { labelId } = c.req.valid('param');
+      const deleteOpts = c.req.valid('query');
       const { id: userId } = c.get(AUTH_CTX_KEYS.user);
-      await labelsService.deleteLabel(userId, labelId);
+      await labelsService.deleteLabel(userId, labelId, deleteOpts);
       return c.json(
         {
           success: true,

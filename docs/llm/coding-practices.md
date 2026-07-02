@@ -1,6 +1,6 @@
 ---
 created: 2026-05-14
-updated: 2026-05-19
+updated: 2026-07-02
 summary: Living code-style rules — how code is written in this repo. Populated organically as the Grill-with-me protocol resolves style decisions. Rules describe behavior + intent, not code snippets (those rot).
 ---
 
@@ -321,6 +321,10 @@ Service methods take one of three shapes; no others:
 #### Method-name plurality mirrors return cardinality
 
 `getTasks` returns many; `getTaskById` returns one. `findX` follows the same convention. A method named with plural that returns a single value (or vice versa) is a typo. Holds across all layers — repository, service, controller method names.
+
+#### Multi-value query params use repeated keys
+
+A query param accepting multiple values is encoded as a **repeated key** (`?status=todo&status=done`), never comma-separated (`?status=todo,done`). Repeated-key is OpenAPI's default encoding for query arrays (`style: form, explode: true`) and — decisively — Hono's RPC client serializes array query values as repeated keys natively, so typed FE clients pass `string[]` and it works with zero glue. Zod schemas declare these fields via the `multiValueQueryParam(itemSchema)` helper in `apps/backend/src/utils/query-params.ts`, which accepts a single occurrence OR a repeated key and always yields an array (Hono's query validator hands over a string when the key appears once and an array when repeated). Semantics: OR within a field, AND across fields.
 
 #### Route path params are entity-prefixed, never bare `:id`
 

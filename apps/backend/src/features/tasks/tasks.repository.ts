@@ -1,9 +1,20 @@
-import { and, eq, isNull } from 'drizzle-orm';
+import {
+  and,
+  eq,
+  exists,
+  gte,
+  ilike,
+  inArray,
+  isNull,
+  lte,
+  sql,
+} from 'drizzle-orm';
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 
 import { RepositoryValidationError } from 'utils/errors/domain-errors/';
 import { formatZodError } from 'utils/mapping/';
 
+import { taskLabels } from '../labels/labels.db';
 import type { Reminder } from '../reminders';
 import {
   remindersModel,
@@ -25,11 +36,13 @@ import type {
 } from './tasks.types';
 
 export type TasksRepository = {
-  getTasks: (
+  getTasks: (userId: string, filters: GetTasksQuery) => Promise<Task[]>;
+  getTaskById: (
     userId: string,
-    filters: Omit<GetTasksQuery, 'dueDate'> & { dueDate?: Date },
-  ) => Promise<Task[]>;
-  getTaskById: (userId: string, id: string) => Promise<Task | undefined>;
+    id: string,
+    opts?: { includeDeleted?: boolean },
+  ) => Promise<Task | undefined>;
+  restoreTask: (userId: string, id: string) => Promise<Task | undefined>;
   createTask: (userId: string, newTask: InsertTask) => Promise<Task>;
   updateTask: (
     userId: string,
@@ -70,13 +83,49 @@ export const createTasksRepository = (
 
   return {
     getTasks: async (userId, filters) => {
-      const { dueDate, priority, projectId, status, includeDeleted } = filters;
+      const {
+        dueDate,
+        dueDateGte,
+        dueDateLte,
+        labelId,
+        priority,
+        projectId,
+        q,
+        status,
+        includeDeleted,
+      } = filters;
 
       const conditions = [eq(tasksModel.userId, userId)];
-      if (projectId) conditions.push(eq(tasksModel.projectId, projectId));
+      // Multi-value filters: OR within a field (inArray), AND across fields.
+      if (projectId?.length)
+        conditions.push(inArray(tasksModel.projectId, projectId));
+      if (status?.length) conditions.push(inArray(tasksModel.status, status));
+      if (priority?.length)
+        conditions.push(inArray(tasksModel.priority, priority));
       if (dueDate) conditions.push(eq(tasksModel.dueDate, dueDate));
-      if (priority) conditions.push(eq(tasksModel.priority, priority));
-      if (status) conditions.push(eq(tasksModel.status, status));
+      if (dueDateGte) conditions.push(gte(tasksModel.dueDate, dueDateGte));
+      if (dueDateLte) conditions.push(lte(tasksModel.dueDate, dueDateLte));
+      if (q) {
+        // Escape LIKE wildcards so user input matches literally.
+        const escaped = q.replace(/[\\%_]/g, (m) => `\\${m}`);
+        conditions.push(ilike(tasksModel.title, `%${escaped}%`));
+      }
+      if (labelId?.length) {
+        // Task matches when tagged with ANY of the given labels.
+        conditions.push(
+          exists(
+            db
+              .select({ one: sql`1` })
+              .from(taskLabels)
+              .where(
+                and(
+                  eq(taskLabels.taskId, tasksModel.id),
+                  inArray(taskLabels.labelId, labelId),
+                ),
+              ),
+          ),
+        );
+      }
       if (!includeDeleted) conditions.push(isNull(tasksModel.deletedAt));
 
       const tasks = await db
@@ -93,11 +142,13 @@ export const createTasksRepository = (
         cause: parsed.error,
       });
     },
-    getTaskById: async (userId, id) => {
+    getTaskById: async (userId, id, opts) => {
+      const conditions = [eq(tasksModel.userId, userId), eq(tasksModel.id, id)];
+      if (!opts?.includeDeleted) conditions.push(isNull(tasksModel.deletedAt));
       const task = await db
         .select()
         .from(tasksModel)
-        .where(activeTaskWhere(userId, id))
+        .where(and(...conditions))
         .limit(1);
 
       if (task.length === 0) {
@@ -108,6 +159,28 @@ export const createTasksRepository = (
         return parsed.data;
       }
       throw new RepositoryValidationError(task[0], parsed.error.issues, {
+        message: formatZodError(parsed.error),
+        cause: parsed.error,
+      });
+    },
+    restoreTask: async (userId, id) => {
+      // Nulls `deletedAt`. Intentionally no `deletedAt IS NOT NULL` guard —
+      // restoring a live row is an idempotent success (end state achieved),
+      // which also makes double-click races from the deleted-items view
+      // harmless. 0 rows = the task doesn't exist at all.
+      const restored = await db
+        .update(tasksModel)
+        .set({ deletedAt: null })
+        .where(and(eq(tasksModel.userId, userId), eq(tasksModel.id, id)))
+        .returning();
+      if (restored.length === 0) {
+        return undefined;
+      }
+      const parsed = selectTaskSchema.safeParse(restored[0]);
+      if (parsed.success) {
+        return parsed.data;
+      }
+      throw new RepositoryValidationError(restored[0], parsed.error.issues, {
         message: formatZodError(parsed.error),
         cause: parsed.error,
       });

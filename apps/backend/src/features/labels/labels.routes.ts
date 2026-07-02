@@ -1,6 +1,7 @@
 import { createRoute, z } from '@hono/zod-openapi';
 
 import { checkAuthMiddleware } from 'utils/auth/';
+import { includeDeletedQuerySchema } from 'utils/query-params/';
 import { createRequiredJsonBody } from 'utils/request/body/';
 import {
   createErrorResponse,
@@ -16,7 +17,12 @@ import {
   selectLabelSchema,
   updateLabelSchema,
 } from './labels.db';
-import { getLabelsQuerySchema, labelIdParamSchema } from './labels.types';
+import {
+  deleteLabelQuerySchema,
+  getLabelsQuerySchema,
+  labelIdParamSchema,
+  labelWithTaskCountSchema,
+} from './labels.types';
 
 const getLabels = createRoute({
   path: '/',
@@ -26,7 +32,7 @@ const getLabels = createRoute({
   },
   responses: {
     [statusCodeMap['OK'].status]: createSuccessJsonResponse(
-      z.array(selectLabelSchema),
+      z.array(labelWithTaskCountSchema),
       'Labels fetched',
     ),
     [statusCodeMap['INTERNAL_SERVER_ERROR'].status]: createErrorResponse(
@@ -41,6 +47,7 @@ const getLabelById = createRoute({
   method: 'get',
   request: {
     params: labelIdParamSchema,
+    query: includeDeletedQuerySchema,
   },
   responses: {
     [statusCodeMap['OK'].status]: createSuccessJsonResponse(
@@ -52,6 +59,29 @@ const getLabelById = createRoute({
       statusCodeMap['INTERNAL_SERVER_ERROR'].message,
     ),
   },
+  description:
+    'Get a specific label by ID. A soft-deleted label is a 404 unless `includeDeleted=true` (ADR-0002).',
+  middleware: checkAuthMiddleware,
+});
+
+const restoreLabel = createRoute({
+  path: '/:labelId/restore',
+  method: 'post',
+  request: {
+    params: labelIdParamSchema,
+  },
+  responses: {
+    [statusCodeMap['OK'].status]: createSuccessJsonResponse(
+      selectLabelSchema,
+      'Label restored',
+    ),
+    [statusCodeMap['NOT_FOUND'].status]: createErrorResponse('Label not found'),
+    [statusCodeMap['INTERNAL_SERVER_ERROR'].status]: createErrorResponse(
+      statusCodeMap['INTERNAL_SERVER_ERROR'].message,
+    ),
+  },
+  description:
+    'Restore a soft-deleted label (nulls `deletedAt`). Idempotent: restoring a live label succeeds. See ADR-0002.',
   middleware: checkAuthMiddleware,
 });
 
@@ -102,17 +132,26 @@ const deleteLabel = createRoute({
   method: 'delete',
   request: {
     params: labelIdParamSchema,
+    query: deleteLabelQuerySchema,
   },
   responses: {
     [statusCodeMap['OK'].status]: createSuccessJsonResponse(
       z.never().openapi({ type: 'null' }),
       'Label deleted',
     ),
+    [statusCodeMap['BAD_REQUEST'].status]: createErrorResponse(
+      '`removeFromTasks` and `permanent` cannot be combined',
+    ),
     [statusCodeMap['NOT_FOUND'].status]: createErrorResponse('Label not found'),
+    [statusCodeMap['CONFLICT'].status]: createErrorResponse(
+      'Only soft-deleted labels can be permanently deleted',
+    ),
     [statusCodeMap['INTERNAL_SERVER_ERROR'].status]: createErrorResponse(
       statusCodeMap['INTERNAL_SERVER_ERROR'].message,
     ),
   },
+  description:
+    'Delete tiers per ADR-0007: bare call = soft delete keeping task links; `removeFromTasks=true` = soft delete + remove label from all tasks; `permanent=true` = permanent delete (allowed only when already soft-deleted).',
   middleware: checkAuthMiddleware,
 });
 
@@ -170,6 +209,7 @@ export const labelsRoutes = {
   getLabels,
   updateLabel,
   deleteLabel,
+  restoreLabel,
   assignLabelToTask,
   removeLabelFromTask,
 } as const satisfies AppRoutes;

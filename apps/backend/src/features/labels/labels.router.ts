@@ -18,6 +18,7 @@ export const labelsRouter = createRouter()
   .openapi(labelsRoutes.createLabel, labelsController.createLabel)
   .openapi(labelsRoutes.updateLabel, labelsController.updateLabel)
   .openapi(labelsRoutes.deleteLabel, labelsController.deleteLabel)
+  .openapi(labelsRoutes.restoreLabel, labelsController.restoreLabel)
   .openapi(labelsRoutes.assignLabelToTask, labelsController.assignLabelToTask)
   .openapi(
     labelsRoutes.removeLabelFromTask,

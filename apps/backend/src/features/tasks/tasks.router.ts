@@ -24,4 +24,5 @@ export const tasksRouter = createRouter()
     tasksController.updateTaskRecurringInterval,
   )
   .openapi(tasksRoutes.updateTaskStatus, tasksController.updateTaskStatus)
+  .openapi(tasksRoutes.restoreTask, tasksController.restoreTask)
   .openapi(tasksRoutes.getTaskReminders, tasksController.getTaskReminders);
