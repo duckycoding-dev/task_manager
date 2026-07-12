@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Labels</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+  body { margin: 0; padding: 24px; background: #0F0F13; color: #E8E6EF; font-family: 'Inter', system-ui, sans-serif; }
+  h2 { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; }
+  code { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.9em; }
+  .subtitle { font-size: 12px; color: #A8A5B5; }
+  .device { border-radius: 12px; overflow: hidden; background: #0F0F13; border: 1px solid #2A2A35; max-width: 860px; }
+  .device-chrome { height: 22px; background: #1A1A22; border-bottom: 1px solid #2A2A35; display: flex; align-items: center; gap: 6px; padding: 0 10px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; } .dot.r { background: #F87171; } .dot.y { background: #FBBF24; } .dot.g { background: #34D399; }
+  .shell { display: grid; grid-template-columns: 56px 1fr; grid-template-rows: 44px 1fr; height: 600px; font-size: 12px; }
+  .topbar { grid-column: 1 / -1; display: flex; align-items: center; padding: 0 14px; background: #1A1A22; border-bottom: 1px solid #2A2A35; gap: 14px; }
+  .logo { font-weight: 700; color: #E8E6EF; } .logo b { color: #C084FC; }
+  .search { flex: 1; max-width: 340px; height: 28px; background: #15151B; border: 1px solid #2A2A35; border-radius: 8px; padding: 0 10px; display: flex; align-items: center; gap: 8px; color: #7A7787; font-size: 11px; }
+  .kbd { padding: 1px 6px; border-radius: 4px; background: #1A1A22; border: 1px solid #2A2A35; color: #A8A5B5; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+  .topbar-spacer { flex: 1; } .icon-btn { width: 30px; height: 30px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; color: #A8A5B5; font-size: 14px; }
+  .avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #C084FC, #67E8F9); }
+  .rail { background: #15151B; border-right: 1px solid #2A2A35; padding: 12px 6px; display: flex; flex-direction: column; gap: 2px; }
+  .rail-item { width: 100%; padding: 8px 0; border-radius: 8px; color: #A8A5B5; text-align: center; font-size: 14px; }
+  .rail-item.active { background: rgba(192,132,252,0.12); color: #C084FC; }
+  .content { background: #0F0F13; padding: 18px 22px; overflow: hidden; display: flex; flex-direction: column; }
+
+  .page-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .page-title { font-size: 22px; margin: 0; color: #E8E6EF; font-weight: 700; letter-spacing: -0.015em; }
+  .page-sub { font-size: 11px; color: #A8A5B5; }
+  .ghost-btn { padding: 5px 10px; border-radius: 6px; background: #1A1A22; border: 1px solid #2A2A35; color: #CFCAD9; font-size: 11px; margin-left: auto; }
+
+  .search-bar { display: flex; align-items: center; gap: 8px; background: #1A1A22; border: 1px solid #2A2A35; border-radius: 8px; padding: 6px 10px; font-size: 11px; color: #7A7787; margin-bottom: 14px; max-width: 360px; }
+
+  /* Inline create row */
+  .create-row {
+    background: #1A1A22; border: 1.5px solid rgba(192,132,252,0.4); border-radius: 10px;
+    padding: 10px 12px; display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+  }
+  .create-row .swatch {
+    width: 22px; height: 22px; border-radius: 6px; flex-shrink: 0; cursor: pointer; position: relative;
+  }
+  .create-row .swatch::after {
+    content: '▾'; position: absolute; bottom: -2px; right: -2px; width: 12px; height: 12px;
+    background: #15151B; border-radius: 3px; color: #A8A5B5; font-size: 9px; display: flex; align-items: center; justify-content: center;
+  }
+  .create-row input {
+    background: transparent; border: 0; outline: none; color: #E8E6EF; font-family: inherit; font-size: 13px; flex: 1;
+  }
+  .create-row input::placeholder { color: #7A7787; }
+  .create-row .btn-primary {
+    padding: 4px 10px; border-radius: 6px; background: #C084FC; color: #0F0F13; font-size: 11px; font-weight: 600;
+  }
+  .create-row .btn-ghost {
+    padding: 4px 10px; border-radius: 6px; background: #15151B; border: 1px solid #2A2A35; color: #A8A5B5; font-size: 11px;
+  }
+
+  /* Color picker popover — 12 curated presets (matches the backend palette) + custom hex */
+  .color-pop {
+    position: absolute; left: 14px; top: 70px; background: #22222E; border: 1px solid #36364A;
+    border-radius: 10px; padding: 12px; box-shadow: 0 12px 40px rgba(0,0,0,0.6); width: 200px; z-index: 5;
+  }
+  .color-pop-title { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #7A7787; font-weight: 600; margin-bottom: 8px; }
+  .color-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+  .color-grid .c { width: 20px; height: 20px; border-radius: 5px; cursor: pointer; border: 1.5px solid transparent; }
+  .color-grid .c.selected { border-color: #E8E6EF; box-shadow: 0 0 0 2px #22222E, 0 0 0 3.5px #C084FC; }
+  .color-pop-custom { margin-top: 10px; padding-top: 8px; border-top: 1px solid #36364A; display: flex; align-items: center; gap: 8px; font-size: 11px; color: #A8A5B5; }
+  .color-pop-custom input { background: #15151B; border: 1px solid #36364A; color: #E8E6EF; padding: 3px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 11px; width: 70px; }
+
+  /* Table */
+  .labels-table { background: #1A1A22; border: 1px solid #2A2A35; border-radius: 10px; overflow: hidden; }
+  .thead { display: grid; grid-template-columns: 28px 1fr 80px 130px; background: #15151B; padding: 9px 14px; gap: 14px; font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: #7A7787; font-weight: 600; border-bottom: 1px solid #2A2A35; align-items: center; }
+  .trow { display: grid; grid-template-columns: 28px 1fr 80px 130px; padding: 10px 14px; gap: 14px; align-items: center; font-size: 12px; color: #E8E6EF; border-bottom: 1px solid #2A2A35; }
+  .trow:last-child { border-bottom: 0; }
+  .trow:hover { background: rgba(192,132,252,0.04); }
+  .trow .swatch { width: 16px; height: 16px; border-radius: 4px; cursor: pointer; }
+  .trow .name-edit { font-size: 13px; color: #E8E6EF; padding: 3px 6px; margin: -3px -6px; border-radius: 4px; }
+  .trow .name-edit:hover { background: #15151B; }
+  .trow .name-edit.editing { background: #15151B; outline: 1.5px solid rgba(192,132,252,0.4); }
+  .trow .count { font-family: 'JetBrains Mono', monospace; color: #A8A5B5; font-size: 11px; }
+  .trow .count.zero { color: #6B6770; }
+  .trow .actions { display: flex; gap: 4px; justify-content: flex-end; }
+  .trow .actions .a {
+    padding: 3px 8px; border-radius: 6px; background: transparent; color: #7A7787; font-size: 11px; cursor: pointer;
+  }
+  .trow .actions .a:hover { background: #15151B; color: #CFCAD9; }
+  .trow .actions .a.danger:hover { color: #F87171; }
+  .deleted-link { margin-top: auto; padding-top: 12px; text-align: right; font-size: 11px; color: #7A7787; }
+  .deleted-link b { color: #A8A5B5; cursor: pointer; }
+
+  /* Deleted-labels view */
+  .trow.deleted .swatch { opacity: 0.45; }
+  .trow.deleted .name-edit { color: #7A7787; text-decoration: line-through; }
+  .trow.deleted .count { color: #6B6770; }
+  .info-tip { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 50%; border: 1px solid #36364A; color: #7A7787; font-size: 9px; margin-left: 6px; cursor: help; }
+
+  /* Delete confirmation modal — two soft-delete modes */
+  .delete-modal {
+    position: absolute; top: 12%; left: 50%; transform: translateX(-50%);
+    background: #22222E; border: 1px solid #36364A; border-radius: 10px;
+    padding: 16px 18px; box-shadow: 0 12px 40px rgba(0,0,0,0.6); width: 360px; z-index: 6;
+  }
+  .delete-modal h3 { font-size: 14px; color: #E8E6EF; margin: 0 0 6px; }
+  .delete-modal p { font-size: 12px; color: #CFCAD9; margin: 0 0 12px; line-height: 1.5; }
+  .delete-modal .stat { font-family: 'JetBrains Mono', monospace; color: #C084FC; background: rgba(192,132,252,0.10); padding: 1px 6px; border-radius: 4px; }
+  .mode-option { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border: 1px solid #36364A; border-radius: 8px; margin-bottom: 8px; cursor: pointer; }
+  .mode-option.selected { border-color: rgba(192,132,252,0.55); background: rgba(192,132,252,0.06); }
+  .mode-option .radio { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid #4E4E66; flex-shrink: 0; margin-top: 1px; }
+  .mode-option.selected .radio { border-color: #C084FC; box-shadow: inset 0 0 0 3px #22222E; background: #C084FC; }
+  .mode-option .mo-title { font-size: 12px; font-weight: 600; color: #E8E6EF; }
+  .mode-option .mo-desc { font-size: 11px; color: #A8A5B5; line-height: 1.5; margin-top: 2px; }
+  .delete-modal .actions { display: flex; gap: 6px; justify-content: flex-end; margin-top: 12px; }
+  .delete-modal .btn { padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+  .delete-modal .btn.cancel { background: #15151B; border: 1px solid #36364A; color: #CFCAD9; }
+  .delete-modal .btn.danger { background: #F87171; color: #0F0F13; }
+</style>
+</head>
+<body>
+
+<h2>Labels · <code>/labels</code></h2>
+<p class="subtitle">Manage your labels: name + color + count of tasks using it. Inline create row at top, table below. Single flat page; deleted labels live behind the "View deleted" link.</p>
+
+<div class="device">
+  <div class="device-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+  <div class="shell">
+    <div class="topbar">
+      <div class="logo">task<b>·</b>mgr</div>
+      <div class="search">⌕ Search…<span class="kbd">⌘K</span></div>
+      <div class="topbar-spacer"></div><div class="icon-btn">🔔</div><div class="icon-btn">☾</div><div class="avatar"></div>
+    </div>
+    <div class="rail">
+      <div class="rail-item">▢</div><div class="rail-item">⌖</div><div class="rail-item">▥</div>
+      <div class="rail-item">≡</div><div class="rail-item">▦</div><div class="rail-item active">🏷</div><div class="rail-item">⚙</div>
+    </div>
+    <div class="content" style="position: relative;">
+      <div class="page-head">
+        <h2 class="page-title">Labels</h2>
+        <span class="page-sub">6 labels · 18 tasks tagged</span>
+        <span class="ghost-btn">Sort: usage ↓</span>
+      </div>
+
+      <div class="search-bar">⌕ Filter by name…</div>
+
+      <!-- Inline create row: default color is hash-derived from the typed name until the user picks manually -->
+      <div class="create-row">
+        <div class="swatch" style="background: #D946EF;"></div>
+        <input value="docs" placeholder="Label name…">
+        <span class="btn-ghost">Cancel</span>
+        <span class="btn-primary">⏎ Create</span>
+      </div>
+
+      <!-- Color popover (opens from the swatch) — 12 curated presets + custom hex -->
+      <div class="color-pop">
+        <div class="color-pop-title">Color</div>
+        <div class="color-grid">
+          <div class="c" style="background: #EF4444;"></div>
+          <div class="c" style="background: #F97316;"></div>
+          <div class="c" style="background: #F59E0B;"></div>
+          <div class="c" style="background: #EAB308;"></div>
+          <div class="c" style="background: #84CC16;"></div>
+          <div class="c" style="background: #22C55E;"></div>
+          <div class="c" style="background: #10B981;"></div>
+          <div class="c" style="background: #06B6D4;"></div>
+          <div class="c" style="background: #3B82F6;"></div>
+          <div class="c" style="background: #8B5CF6;"></div>
+          <div class="c selected" style="background: #D946EF;"></div>
+          <div class="c" style="background: #EC4899;"></div>
+        </div>
+        <div class="color-pop-custom">
+          <span>Custom:</span>
+          <input value="#D946EF">
+        </div>
+      </div>
+
+      <!-- Labels table -->
+      <div class="labels-table">
+        <div class="thead">
+          <span></span>
+          <span>Name</span>
+          <span>Tasks</span>
+          <span style="text-align: right;">Actions</span>
+        </div>
+
+        <div class="trow">
+          <div class="swatch" style="background: #06B6D4;"></div>
+          <div class="name-edit">backend</div>
+          <div class="count">8</div>
+          <div class="actions">
+            <span class="a">Filter →</span>
+            <span class="a">Edit</span>
+            <span class="a danger">Delete</span>
+          </div>
+        </div>
+
+        <div class="trow">
+          <div class="swatch" style="background: #EF4444;"></div>
+          <div class="name-edit">security</div>
+          <div class="count">3</div>
+          <div class="actions">
+            <span class="a">Filter →</span>
+            <span class="a">Edit</span>
+            <span class="a danger">Delete</span>
+          </div>
+        </div>
+
+        <div class="trow">
+          <div class="swatch" style="background: #F59E0B;"></div>
+          <div class="name-edit editing">priority-research</div>
+          <div class="count">4</div>
+          <div class="actions">
+            <span class="a" style="color:#34D399;">✓ Save</span>
+            <span class="a" style="color:#A8A5B5;">✗</span>
+          </div>
+        </div>
+
+        <div class="trow">
+          <div class="swatch" style="background: #10B981;"></div>
+          <div class="name-edit">infra</div>
+          <div class="count">2</div>
+          <div class="actions">
+            <span class="a">Filter →</span>
+            <span class="a">Edit</span>
+            <span class="a danger">Delete</span>
+          </div>
+        </div>
+
+        <div class="trow">
+          <div class="swatch" style="background: #8B5CF6;"></div>
+          <div class="name-edit">migration</div>
+          <div class="count">1</div>
+          <div class="actions">
+            <span class="a">Filter →</span>
+            <span class="a">Edit</span>
+            <span class="a danger">Delete</span>
+          </div>
+        </div>
+
+        <div class="trow">
+          <div class="swatch" style="background: #3B82F6;"></div>
+          <div class="name-edit">low-effort</div>
+          <div class="count zero">0</div>
+          <div class="actions">
+            <span class="a">Edit</span>
+            <span class="a danger">Delete</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="deleted-link">View deleted (<b>2</b>) →</div>
+
+    </div>
+  </div>
+</div>
+
+<h2 style="margin-top: 28px;">Delete confirmation — two soft-delete modes</h2>
+<p class="subtitle">Deleting an active label always soft-deletes; the modal asks what happens to its task links. Permanent delete is never available from here — only from the deleted-labels view.</p>
+
+<div class="device" style="height: 360px; position: relative;">
+  <div class="device-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+  <div style="background: #0F0F13; padding: 18px; height: 100%; position: relative;">
+    <div style="opacity: 0.4;">
+      <div class="trow" style="background:#1A1A22; border: 1px solid #2A2A35; border-radius:10px; margin-bottom: 6px;">
+        <div class="swatch" style="background: #EF4444;"></div>
+        <div class="name-edit">security</div>
+        <div class="count">3</div>
+        <div class="actions"><span class="a danger">Delete</span></div>
+      </div>
+    </div>
+    <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.55);"></div>
+    <div class="delete-modal">
+      <h3>Delete label "security"?</h3>
+      <p>This will affect <span class="stat">3 tasks</span>. The label is soft-deleted either way and can be restored from the deleted view.</p>
+      <div class="mode-option selected">
+        <div class="radio"></div>
+        <div>
+          <div class="mo-title">Keep task links</div>
+          <div class="mo-desc">Tasks stay tagged under the hood. Restoring the label brings it back on every task it was on.</div>
+        </div>
+      </div>
+      <div class="mode-option">
+        <div class="radio"></div>
+        <div>
+          <div class="mo-title">Remove from tasks</div>
+          <div class="mo-desc">Untags all 3 tasks now. Restoring the label later brings it back with no tasks tagged.</div>
+        </div>
+      </div>
+      <div class="actions">
+        <span class="btn cancel">Cancel</span>
+        <span class="btn danger">Delete label</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2 style="margin-top: 28px;">Deleted labels view</h2>
+<p class="subtitle">Reached via "View deleted (N)". Restore sets the label live again; Permanently delete is irreversible and asks a second confirmation.</p>
+
+<div class="device" style="position: relative;">
+  <div class="device-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+  <div style="background: #0F0F13; padding: 18px;">
+    <div class="page-head" style="margin-bottom: 12px;">
+      <h2 class="page-title" style="font-size: 16px;">Deleted labels</h2>
+      <span class="page-sub">2 deleted<span class="info-tip">i</span></span>
+      <span class="ghost-btn">← Back to labels</span>
+    </div>
+    <div class="labels-table">
+      <div class="thead">
+        <span></span>
+        <span>Name</span>
+        <span>Tasks</span>
+        <span style="text-align: right;">Actions</span>
+      </div>
+      <div class="trow deleted">
+        <div class="swatch" style="background: #EC4899;"></div>
+        <div class="name-edit">experiments</div>
+        <div class="count">still tagged on 5</div>
+        <div class="actions">
+          <span class="a" style="color:#34D399;">Restore</span>
+          <span class="a danger">Permanently delete</span>
+        </div>
+      </div>
+      <div class="trow deleted">
+        <div class="swatch" style="background: #F97316;"></div>
+        <div class="name-edit">q1-goals</div>
+        <div class="count zero">untagged</div>
+        <div class="actions">
+          <span class="a" style="color:#34D399;">Restore</span>
+          <span class="a danger">Permanently delete</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2 style="margin-top: 22px;">Interactions summary</h2>
+<ul style="color: #CFCAD9; font-size: 12px; line-height: 1.7;">
+  <li><b>Inline create row at top</b> — swatch (click opens the color popover: 12 presets + custom hex) + name input + Enter to create. Default color is hash-derived from the name and recalculates as the user types, freezing on the first manual pick. After create, the row clears and stays focused for rapid creation.</li>
+  <li><b>Click name</b> in a row → edits in place with ✓ / ✗ commit buttons (single-tap-to-edit; lighter than the pencil pattern used for task titles).</li>
+  <li><b>Click swatch</b> in a row → opens the color popover; commits immediately on selection.</li>
+  <li><b>Click task count</b> or <b>Filter →</b> → navigates to All-tasks with the label preselected (<code>/tasks?labelId=&lt;id&gt;</code>).</li>
+  <li><b>Delete</b> → modal with the two soft-delete modes above; "Keep task links" is the default.</li>
+  <li><b>Restore</b> (deleted view) → label reappears; whether its tasks are still tagged depends on the mode picked at delete time.</li>
+  <li><b>Permanently delete</b> (deleted view only) → hard delete after a second confirmation; remaining task links are cascade-removed. No recovery.</li>
+  <li><b>Sort</b> → toggle "Sort: usage ↓ / name ↑ / recent ↓". Persisted via URL.</li>
+  <li><b>Filter by name</b> → client-side string match across the loaded list.</li>
+</ul>
+
+<p class="subtitle" style="margin-top: 18px;">Mobile: same single-column table; row actions collapse into a ⋯ menu below the md breakpoint; the color popover renders as a bottom sheet.</p>
+
+</body>
+</html>

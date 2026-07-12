@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>All tasks · task_manager UI</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  body { margin: 0; padding: 24px; background: #0F0F13; color: #E8E6EF; font-family: 'Inter', system-ui, sans-serif; }
+  .page { max-width: 960px; margin: 0 auto; }
+  .caption { font-size: 16px; font-weight: 700; color: #E8E6EF; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .caption code { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #C084FC; background: #1A1A22; border: 1px solid #2A2A35; border-radius: 6px; padding: 1px 6px; }
+
+  .device { border-radius: 12px; overflow: hidden; background: #0F0F13; border: 1px solid #2A2A35; }
+  .device-chrome { height: 22px; background: #1A1A22; border-bottom: 1px solid #2A2A35; display: flex; align-items: center; gap: 6px; padding: 0 10px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; } .dot.r { background: #F87171; } .dot.y { background: #FBBF24; } .dot.g { background: #34D399; }
+  .shell { display: grid; grid-template-columns: 56px 1fr; grid-template-rows: 44px 1fr; height: 820px; font-size: 12px; }
+  .topbar { grid-column: 1 / -1; display: flex; align-items: center; padding: 0 14px; background: #1A1A22; border-bottom: 1px solid #2A2A35; gap: 14px; }
+  .logo { font-weight: 700; color: #E8E6EF; } .logo b { color: #C084FC; }
+  .search { flex: 1; max-width: 380px; height: 28px; background: #15151B; border: 1px solid #2A2A35; border-radius: 8px; padding: 0 10px; display: flex; align-items: center; gap: 8px; color: #7A7787; font-size: 11px; }
+  .kbd { padding: 1px 6px; border-radius: 4px; background: #1A1A22; border: 1px solid #2A2A35; color: #A8A5B5; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+  .topbar-spacer { flex: 1; } .icon-btn { width: 30px; height: 30px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; color: #A8A5B5; font-size: 14px; }
+  .avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #C084FC, #67E8F9); }
+  .rail { background: #15151B; border-right: 1px solid #2A2A35; padding: 12px 6px; display: flex; flex-direction: column; gap: 2px; }
+  .rail-item { width: 100%; padding: 8px 0; border-radius: 8px; color: #A8A5B5; text-align: center; font-size: 14px; }
+  .rail-item.active { background: rgba(192,132,252,0.12); color: #C084FC; }
+  .content { background: #0F0F13; padding: 18px 22px; overflow: hidden; display: flex; flex-direction: column; }
+
+  .page-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .page-title { font-size: 22px; margin: 0; color: #E8E6EF; font-weight: 700; letter-spacing: -0.015em; }
+  .page-sub { font-size: 11px; color: #A8A5B5; }
+  .new-btn { padding: 6px 12px; border-radius: 8px; background: #C084FC; color: #0F0F13; font-weight: 600; font-size: 12px; margin-left: auto; }
+
+  /* Filter row — composable predicate chips */
+  .filter-bar { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 0 12px; align-items: center; border-bottom: 1px solid #2A2A35; }
+  .filter-chip { padding: 4px 10px; border-radius: 6px; background: #1A1A22; border: 1px solid #2A2A35; color: #CFCAD9; font-size: 11px; display: inline-flex; align-items: center; gap: 6px; }
+  .filter-chip.active { background: rgba(192,132,252,0.10); border-color: rgba(192,132,252,0.3); color: #C084FC; }
+  .filter-chip .x { color: #6B6770; font-size: 9px; cursor: pointer; }
+  .filter-chip .ico { font-size: 10px; opacity: 0.7; }
+  .filter-add { padding: 4px 8px; border-radius: 6px; background: transparent; border: 1px dashed #36364A; color: #7A7787; font-size: 11px; }
+
+  /* Toolbar row — Columns / Density / Sort */
+  .toolbar { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; align-items: center; }
+  .toolbar-btn { padding: 4px 10px; border-radius: 6px; background: #15151B; border: 1px solid #2A2A35; color: #CFCAD9; font-size: 11px; display: inline-flex; align-items: center; gap: 6px; }
+  .toolbar-btn .lbl { color: #7A7787; font-size: 10px; }
+  .toolbar-btn .val { color: #C084FC; font-weight: 600; }
+
+  /* Grouped list — fixed relative-date sections */
+  .section-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: #7A7787; font-weight: 600; margin-top: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .section-label .count { background: #1A1A22; color: #A8A5B5; padding: 1px 6px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+  .section-label.overdue { color: #F87171; }
+  .section-label.overdue .count { background: rgba(248,113,113,0.12); color: #F87171; }
+  .section-label .chev { font-size: 9px; color: #7A7787; }
+  .task-row { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; margin-top: 4px; background: #1A1A22; border: 1px solid #2A2A35; font-size: 12px; }
+  .task-row:hover { border-color: #36364A; }
+  .task-row.overdue { border-color: rgba(248,113,113,0.3); }
+  .checkbox { width: 14px; height: 14px; border-radius: 4px; border: 1.5px solid #4E4E66; flex-shrink: 0; }
+  .task-row .title { flex: 1; color: #E8E6EF; }
+
+  .badge { padding: 1px 6px; border-radius: 8px; font-size: 9px; font-weight: 600; }
+  .badge.priority-h { background: rgba(248,113,113,0.12); color: #F87171; }
+  .badge.priority-m { background: rgba(192,132,252,0.12); color: #C084FC; }
+  .badge.priority-l { background: rgba(168,165,181,0.12); color: #A8A5B5; }
+  .badge.project { background: #15151B; border: 1px solid #2A2A35; color: #CFCAD9; display: inline-flex; align-items: center; gap: 5px; }
+  .badge.project .pdot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .badge.label { background: rgba(103,232,249,0.12); color: #67E8F9; }
+  .mono-meta { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #A8A5B5; min-width: 52px; text-align: right; }
+  .mono-meta.danger { color: #F87171; }
+  .mono-meta.warning { color: #FBBF24; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<h1 class="caption">All tasks · <code>/tasks</code></h1>
+
+<div class="device">
+  <div class="device-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+  <div class="shell">
+    <div class="topbar">
+      <div class="logo">task<b>·</b>mgr</div>
+      <div class="search">⌕ Search…<span class="kbd">⌘K</span></div>
+      <div class="topbar-spacer"></div>
+      <div class="icon-btn">🔔</div><div class="icon-btn">☾</div><div class="avatar"></div>
+    </div>
+    <div class="rail">
+      <div class="rail-item">▢</div><div class="rail-item">⌖</div><div class="rail-item">▥</div>
+      <div class="rail-item active">≡</div><div class="rail-item">▦</div><div class="rail-item">🏷</div><div class="rail-item">⚙</div>
+    </div>
+    <div class="content">
+      <div class="page-head">
+        <h2 class="page-title">All tasks</h2>
+        <span class="page-sub">23 open · 47 completed this week</span>
+        <span class="new-btn">+ New task</span>
+      </div>
+
+      <div class="filter-bar">
+        <span class="filter-chip active">status = open <span class="x">×</span></span>
+        <span class="filter-chip active"><span class="ico" style="color:#06B6D4;">●</span>project ∈ Backend <span class="x">×</span></span>
+        <span class="filter-chip active">priority ≥ medium <span class="x">×</span></span>
+        <span class="filter-add">+ Add filter…</span>
+      </div>
+
+      <div class="toolbar">
+        <span class="toolbar-btn">Columns ▾</span>
+        <span class="toolbar-btn">Density ▾</span>
+        <span class="toolbar-btn" style="margin-left:auto;"><span class="lbl">Sort:</span><span class="val">Due ↑</span></span>
+      </div>
+
+      <div class="section-label overdue">Overdue <span class="count">2</span></div>
+      <div class="task-row overdue"><div class="checkbox"></div><div class="title">Refactor auth middleware</div><span class="badge priority-h">!high</span><span class="badge project"><span class="pdot" style="background:#06B6D4;"></span>Backend</span><span class="badge label">backend</span><span class="mono-meta danger">2d late</span></div>
+      <div class="task-row overdue"><div class="checkbox"></div><div class="title">Pay car insurance</div><span class="badge priority-m">!med</span><span class="badge project"><span class="pdot" style="background:#8B5CF6;"></span>Personal</span><span class="mono-meta danger">1d late</span></div>
+
+      <div class="section-label">Today <span class="count">2</span></div>
+      <div class="task-row"><div class="checkbox"></div><div class="title">Write zod-schemas migration doc</div><span class="badge priority-m">!med</span><span class="badge project"><span class="pdot" style="background:#06B6D4;"></span>Backend</span><span class="badge label">docs</span><span class="mono-meta">today</span></div>
+      <div class="task-row"><div class="checkbox"></div><div class="title">Call dentist</div><span class="badge priority-l">!low</span><span class="badge project"><span class="pdot" style="background:#8B5CF6;"></span>Personal</span><span class="mono-meta">today</span></div>
+
+      <div class="section-label">Tomorrow <span class="count">1</span></div>
+      <div class="task-row"><div class="checkbox"></div><div class="title">Review multi-value filter queries</div><span class="badge priority-m">!med</span><span class="badge project"><span class="pdot" style="background:#06B6D4;"></span>Backend</span><span class="badge label">backend</span><span class="mono-meta">tomorrow</span></div>
+
+      <div class="section-label">This week <span class="count">2</span></div>
+      <div class="task-row"><div class="checkbox"></div><div class="title">Onboard new team lead</div><span class="badge priority-h">!high</span><span class="mono-meta warning">Wed</span></div>
+      <div class="task-row"><div class="checkbox"></div><div class="title">Weekly status writeup</div><span class="badge priority-l">!low</span><span class="badge project"><span class="pdot" style="background:#F59E0B;"></span>Side gig</span><span class="mono-meta">Fri</span></div>
+
+      <div class="section-label">Later <span class="count">1</span></div>
+      <div class="task-row"><div class="checkbox"></div><div class="title">Plan next quarter learning goals</div><span class="badge priority-l">!low</span><span class="badge project"><span class="pdot" style="background:#10B981;"></span>Learning</span><span class="mono-meta">Jul 21</span></div>
+
+      <div class="section-label">No date <span class="count">1</span></div>
+      <div class="task-row"><div class="checkbox"></div><div class="title">Sketch labels color picker UX</div><span class="badge priority-l">!low</span><span class="badge project"><span class="pdot" style="background:#06B6D4;"></span>Backend</span><span class="mono-meta">—</span></div>
+
+      <div class="section-label"><span class="chev">▸</span> Completed <span class="count">47</span></div>
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

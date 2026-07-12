@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calendar</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  body { margin: 0; padding: 24px; background: #0F0F13; color: #E8E6EF; font-family: 'Inter', system-ui, sans-serif; }
+  .demo { max-width: 1200px; margin: 0 auto; }
+  h1 { font-size: 20px; margin: 0 0 4px; color: #E8E6EF; letter-spacing: -0.01em; }
+  .subtitle { color: #A8A5B5; font-size: 13px; margin: 0 0 16px; }
+  code { font-family: 'JetBrains Mono', monospace; font-size: 0.9em; }
+
+  .device-scroll { overflow-x: auto; }
+  .device { border-radius: 12px; overflow: hidden; background: #0F0F13; border: 1px solid #2A2A35; }
+  .device-chrome { height: 22px; background: #1A1A22; border-bottom: 1px solid #2A2A35; display: flex; align-items: center; gap: 6px; padding: 0 10px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot.r { background: #F87171; } .dot.y { background: #FBBF24; } .dot.g { background: #34D399; }
+
+  .shell { display: grid; grid-template-columns: 56px 1fr; grid-template-rows: 44px 1fr; height: 640px; min-width: 1100px; font-size: 12px; }
+  .topbar { grid-column: 1 / -1; display: flex; align-items: center; padding: 0 14px; background: #1A1A22; border-bottom: 1px solid #2A2A35; gap: 14px; }
+  .logo { font-weight: 700; color: #E8E6EF; }
+  .logo b { color: #C084FC; }
+  .search { flex: 1; max-width: 380px; height: 28px; background: #15151B; border: 1px solid #2A2A35; border-radius: 8px; padding: 0 10px; display: flex; align-items: center; gap: 8px; color: #7A7787; font-size: 11px; }
+  .kbd { margin-left: auto; padding: 1px 6px; border-radius: 4px; background: #1A1A22; border: 1px solid #2A2A35; color: #A8A5B5; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+  .topbar-spacer { flex: 1; }
+  .icon-btn { width: 30px; height: 30px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; color: #A8A5B5; font-size: 14px; }
+  .avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #C084FC, #67E8F9); }
+  .rail { background: #15151B; border-right: 1px solid #2A2A35; padding: 12px 6px; display: flex; flex-direction: column; gap: 2px; }
+  .rail-item { width: 100%; padding: 8px 0; border-radius: 8px; color: #A8A5B5; text-align: center; font-size: 14px; }
+  .rail-item.active { background: rgba(192,132,252,0.12); color: #C084FC; }
+
+  .content { background: #0F0F13; padding: 18px 22px; overflow: hidden; display: grid; grid-template-columns: 1fr 280px; gap: 14px; }
+
+  .page-head { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+  .page-title { font-size: 22px; margin: 0; color: #E8E6EF; font-weight: 700; letter-spacing: -0.015em; }
+  .month-nav { display: flex; align-items: center; gap: 8px; }
+  .month-arrow { color: #A8A5B5; font-size: 14px; padding: 4px 8px; border-radius: 6px; background: #1A1A22; border: 1px solid #2A2A35; cursor: pointer; }
+  .month-label { color: #E8E6EF; font-weight: 600; font-size: 13px; min-width: 100px; text-align: center; }
+  .today-btn { padding: 4px 10px; border-radius: 6px; background: #1A1A22; border: 1px solid #2A2A35; color: #CFCAD9; font-size: 11px; }
+  .view-switch { display: inline-flex; gap: 2px; background: #15151B; border: 1px solid #2A2A35; border-radius: 8px; padding: 2px; margin-left: auto; }
+  .view-btn { padding: 4px 10px; border-radius: 6px; color: #A8A5B5; font-size: 11px; font-weight: 600; }
+  .view-btn.active { background: rgba(192,132,252,0.15); color: #C084FC; }
+  .new-btn { padding: 6px 12px; border-radius: 8px; background: #C084FC; color: #0F0F13; font-weight: 600; font-size: 12px; }
+
+  .badge { padding: 1px 6px; border-radius: 8px; font-size: 9px; font-weight: 600; }
+  .badge.priority { background: rgba(192,132,252,0.12); color: #C084FC; }
+  .badge.info { background: rgba(103,232,249,0.12); color: #67E8F9; }
+  .badge.danger { background: rgba(248,113,113,0.12); color: #F87171; }
+
+  /* month grid */
+  .cal-month-big { display: flex; flex-direction: column; overflow: hidden; }
+  .cal-header-row { display: grid; grid-template-columns: repeat(7, minmax(96px, 1fr)); gap: 4px; border-bottom: 1px solid #2A2A35; padding-bottom: 6px; margin-bottom: 4px; }
+  .cal-header-cell { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #7A7787; font-weight: 600; text-align: left; padding: 0 6px; }
+  .cal-grid-big { flex: 1; display: grid; grid-template-columns: repeat(7, minmax(96px, 1fr)); grid-template-rows: repeat(5, 1fr); gap: 4px; }
+  .cal-day-big {
+    background: #1A1A22; border: 1px solid #2A2A35; border-radius: 8px; padding: 6px 8px;
+    display: flex; flex-direction: column; gap: 3px; overflow: hidden; min-height: 88px;
+  }
+  .cal-day-big.dim { opacity: 0.4; }
+  .cal-day-big.today { border-color: rgba(192,132,252,0.5); background: rgba(192,132,252,0.05); }
+  .cal-day-big.selected { border-color: rgba(192,132,252,0.7); background: rgba(192,132,252,0.10); }
+  .cal-day-big.has-overdue { border-color: rgba(248,113,113,0.3); }
+  .cal-day-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #CFCAD9; font-weight: 600; display: flex; align-items: center; gap: 4px; margin-bottom: 2px; }
+  .cal-day-num.today { color: #C084FC; }
+  .cal-day-num .pip { font-size: 9px; color: #A8A5B5; font-weight: 400; }
+  .cal-event {
+    font-size: 10px; padding: 2px 5px; border-radius: 4px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    background: rgba(192,132,252,0.15); color: #C084FC; cursor: pointer;
+  }
+  .cal-event.reminder { background: rgba(103,232,249,0.12); color: #67E8F9; }
+  .cal-event.overdue { background: rgba(248,113,113,0.15); color: #F87171; }
+  .cal-more { font-size: 9px; color: #A8A5B5; padding: 0 4px; font-family: 'JetBrains Mono', monospace; }
+
+  /* day detail panel */
+  .day-panel { background: #1A1A22; border: 1px solid #2A2A35; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+  .day-panel-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; padding-bottom: 8px; border-bottom: 1px solid #2A2A35; }
+  .day-panel-date { font-size: 16px; color: #E8E6EF; font-weight: 700; }
+  .day-panel-sub { font-size: 11px; color: #A8A5B5; }
+  .day-panel-counts { margin-left: auto; display: flex; gap: 6px; font-size: 10px; }
+  .day-section-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: #7A7787; font-weight: 600; margin-top: 6px; margin-bottom: 4px; }
+  .day-task-row, .day-reminder-row {
+    display: flex; align-items: center; gap: 8px; padding: 7px 9px; border-radius: 6px;
+    background: #15151B; border: 1px solid #2A2A35; font-size: 11px; margin-top: 4px;
+  }
+  .day-task-row .checkbox { width: 12px; height: 12px; border-radius: 3px; border: 1.5px solid #4E4E66; flex-shrink: 0; }
+  .day-task-row .title { flex: 1; color: #E8E6EF; }
+  .day-reminder-row .clock { color: #67E8F9; font-family: 'JetBrains Mono', monospace; font-size: 10px; min-width: 36px; }
+  .day-reminder-row .rtitle { flex: 1; color: #E8E6EF; }
+  .day-panel-foot { margin-top: auto; padding-top: 10px; border-top: 1px solid #2A2A35; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .panel-link { font-size: 11px; color: #C084FC; cursor: pointer; margin-left: auto; }
+</style>
+</head>
+<body>
+<div class="demo">
+
+<h1>Calendar · <code>/calendar</code></h1>
+<p class="subtitle">Month view of tasks (<code>dueDate</code>) and reminders (<code>remindAt</code>). Clicking a day cell selects it and updates the day-detail panel; today's panel is open by default on page load. Pills navigate to the item's dedicated page.</p>
+
+<div class="device-scroll">
+<div class="device">
+  <div class="device-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+  <div class="shell">
+    <div class="topbar">
+      <div class="logo">task<b>·</b>mgr</div>
+      <div class="search">⌕ Search…<span class="kbd">⌘K</span></div>
+      <div class="topbar-spacer"></div>
+      <div class="icon-btn">🔔</div>
+      <div class="icon-btn">☾</div>
+      <div class="avatar"></div>
+    </div>
+    <div class="rail">
+      <div class="rail-item">▢</div>
+      <div class="rail-item">⌖</div>
+      <div class="rail-item active">▥</div>
+      <div class="rail-item">≡</div>
+      <div class="rail-item">▦</div>
+      <div class="rail-item">🏷</div>
+      <div class="rail-item">⚙</div>
+    </div>
+
+    <div class="content">
+      <div style="display: flex; flex-direction: column; overflow: hidden;">
+        <div class="page-head">
+          <h2 class="page-title" style="margin: 0;">Calendar</h2>
+          <div class="month-nav">
+            <span class="month-arrow">◂</span>
+            <span class="month-label">May 2026</span>
+            <span class="month-arrow">▸</span>
+            <span class="today-btn">Today</span>
+          </div>
+          <div class="view-switch">
+            <span class="view-btn active">Month</span>
+            <span class="view-btn">Week</span>
+            <span class="view-btn">Day</span>
+          </div>
+          <span class="new-btn">+ New task</span>
+        </div>
+
+        <div class="cal-month-big">
+          <div class="cal-header-row">
+            <div class="cal-header-cell">Mon</div><div class="cal-header-cell">Tue</div><div class="cal-header-cell">Wed</div><div class="cal-header-cell">Thu</div><div class="cal-header-cell">Fri</div><div class="cal-header-cell">Sat</div><div class="cal-header-cell">Sun</div>
+          </div>
+          <div class="cal-grid-big">
+            <div class="cal-day-big dim"><div class="cal-day-num">28</div></div>
+            <div class="cal-day-big dim"><div class="cal-day-num">29</div></div>
+            <div class="cal-day-big dim"><div class="cal-day-num">30</div></div>
+            <div class="cal-day-big"><div class="cal-day-num">1</div></div>
+            <div class="cal-day-big"><div class="cal-day-num">2 <span class="pip">·1</span></div><div class="cal-event">Quarterly review</div></div>
+            <div class="cal-day-big"><div class="cal-day-num">3</div></div>
+            <div class="cal-day-big"><div class="cal-day-num">4</div></div>
+
+            <div class="cal-day-big"><div class="cal-day-num">5</div></div>
+            <div class="cal-day-big"><div class="cal-day-num">6 <span class="pip">·2</span></div><div class="cal-event">Refactor auth</div><div class="cal-event reminder">⏰ Standup prep</div></div>
+            <div class="cal-day-big"><div class="cal-day-num">7</div></div>
+            <div class="cal-day-big"><div class="cal-day-num">8</div></div>
+            <div class="cal-day-big has-overdue"><div class="cal-day-num">9 <span class="pip">·4</span></div><div class="cal-event overdue">Pay car insurance</div><div class="cal-event">Doctor appt</div><div class="cal-event reminder">⏰ Book follow-up</div><div class="cal-more">+1 more</div></div>
+            <div class="cal-day-big"><div class="cal-day-num">10</div></div>
+            <div class="cal-day-big"><div class="cal-day-num">11</div></div>
+
+            <div class="cal-day-big"><div class="cal-day-num">12 <span class="pip">·1</span></div><div class="cal-event">Weekly status writeup</div></div>
+            <div class="cal-day-big"><div class="cal-day-num">13</div></div>
+            <div class="cal-day-big today selected"><div class="cal-day-num today">14 <span class="pip">·3</span></div><div class="cal-event">Write zod doc</div><div class="cal-event">Call dentist</div><div class="cal-event reminder">⏰ 15:30 Standup</div></div>
+            <div class="cal-day-big"><div class="cal-day-num">15 <span class="pip">·1</span></div><div class="cal-event">Refactor auth (due)</div></div>
+            <div class="cal-day-big"><div class="cal-day-num">16</div></div>
+            <div class="cal-day-big"><div class="cal-day-num">17</div></div>
+            <div class="cal-day-big"><div class="cal-day-num">18</div></div>
+
+            <div class="cal-day-big"><div class="cal-day-num">19</div></div>
+            <div class="cal-day-big"><div class="cal-day-num">20 <span class="pip">·1</span></div><div class="cal-event">Onboard team lead</div></div>
+            <div class="cal-day-big"><div class="cal-day-num">21</div></div>
+            <div class="cal-day-big"><div class="cal-day-num">22</div></div>
+            <div class="cal-day-big"><div class="cal-day-num">23</div></div>
+            <div class="cal-day-big"><div class="cal-day-num">24</div></div>
+            <div class="cal-day-big"><div class="cal-day-num">25</div></div>
+
+            <div class="cal-day-big"><div class="cal-day-num">26</div></div>
+            <div class="cal-day-big"><div class="cal-day-num">27</div></div>
+            <div class="cal-day-big"><div class="cal-day-num">28</div></div>
+            <div class="cal-day-big"><div class="cal-day-num">29</div></div>
+            <div class="cal-day-big"><div class="cal-day-num">30</div></div>
+            <div class="cal-day-big"><div class="cal-day-num">31</div></div>
+            <div class="cal-day-big dim"><div class="cal-day-num">1</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- day detail panel — today open by default -->
+      <div class="day-panel">
+        <div class="day-panel-head">
+          <div>
+            <div class="day-panel-date">Thu 14</div>
+            <div class="day-panel-sub">May 2026 · today</div>
+          </div>
+          <div class="day-panel-counts"><span class="badge priority">2 tasks</span><span class="badge info">1 reminder</span></div>
+        </div>
+
+        <div class="day-section-label">Tasks</div>
+        <div class="day-task-row"><div class="checkbox"></div><div class="title">Write zod-schemas migration doc</div><span class="badge info">backend</span></div>
+        <div class="day-task-row"><div class="checkbox"></div><div class="title">Call dentist</div></div>
+
+        <div class="day-section-label" style="margin-top: 8px;">Reminders</div>
+        <div class="day-reminder-row"><span class="clock">15:30</span><div class="rtitle">Standup prep</div></div>
+
+        <div class="day-panel-foot">
+          <span class="new-btn" style="font-size: 11px; padding: 5px 10px;">+ New task</span>
+          <span class="today-btn" style="font-size: 11px;">+ New reminder</span>
+          <span class="panel-link">All-tasks for Thu →</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+</div>
+</body>
+</html>

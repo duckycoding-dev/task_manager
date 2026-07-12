@@ -1,12 +1,12 @@
 ---
 created: 2026-05-19
-updated: 2026-07-02
-summary: Backend v1 is COMPLETE. Fix phase (Clusters A+B+C), TS style grill round (11 topics), config-merge, ADR-0012 restructure, and ALL backend v1 items are done — items 1–4 committed, items 5–10 + restore endpoints + single-read includeDeleted in the working tree (2026-07-02, uncommitted). ADR-0002 + ADR-0007 amended by the soft-delete/label-delete grill. Remaining backlog: phase-1 carry-forwards (minor chores), library-API drift audit (optional), Vue/Nuxt FE scaffolding (the next chapter), personal-standards extraction (indefinite).
+updated: 2026-07-03
+summary: Backend v1 is COMPLETE AND COMMITTED (`0f464cd`). Fix phase (Clusters A+B+C), TS style grill round (11 topics), config-merge, ADR-0012 restructure, all backend v1 items, and the final-UI mockup consolidation are done. Schema-sharing resolved — deferred until the next FE starts; approach locked to spec-driven codegen from the emitted OpenAPI spec. ADR-0002 + ADR-0007 amended by the soft-delete/label-delete grill. Remaining backlog: phase-1 carry-forwards (minor chores), library-API drift audit (optional), next FE from scratch (stack decision kept out of repo docs), personal-standards extraction (indefinite).
 ---
 
-# Handoff — backend fix + TS style + ADR-0012 + v1 items 1–4 complete (paused 2026-06-14)
+# Handoff — backend v1 complete + committed, prep work wrapped (2026-07-03)
 
-**Status**: everything through backend-v1 item 4 (`labels.color` NOT NULL with hash backfill) is **complete and committed** on `main`. Working tree clean at pause. The next chunk is v1 item 5 (`GET /tasks` filter extensions). No in-flight work to recover.
+**Status**: ALL backend v1 items are **complete and committed** on `main` (HEAD `0f464cd chore: complete backend v1`). Working tree clean apart from doc/mockup additions. Final-UI mockups consolidated into `docs/stable/_shared/design/final-ui/`. No in-flight code work to recover. Untested at runtime — no test infrastructure exists yet (test-strategy decision never locked).
 
 Recent commits in chronological order (oldest first within session windows):
 
@@ -16,6 +16,7 @@ Recent commits in chronological order (oldest first within session windows):
 - `af40186` v1 item 1 — soft-delete pattern across tasks/reminders/labels (deletedAt + partial indexes + repo filtering + `includeDeleted` query param). Migration `0002_clever_prism.sql`.
 - `69b66aa` v1 item 2 — drop `tasks.isRecurring` column + remove `updateTaskIsRecurring` endpoint (also satisfies ADR-0014 no-granular-PATCH ban). Migration `0003_thick_the_professor.sql`.
 - `f07c238` v1 items 3+4 — `projects.color` + `labels.color` NOT NULL with deterministic SQL `md5()` backfill. New `apps/backend/src/utils/color.ts` (curated 12-color palette + `colorFromName`). Migration `0004_safe_guardsmen.sql` hand-edited from drizzle-kit output to insert the backfill before `SET NOT NULL`.
+- `0f464cd` v1 items 5–10 + restore endpoints + single-read `includeDeleted` (per-item detail in §Backlog item 5 below).
 
 ## How to resume cold
 
@@ -25,12 +26,12 @@ Recent commits in chronological order (oldest first within session windows):
 4. Skim [`docs/llm/coding-practices.md`](../../llm/coding-practices.md) — the TS style rules are now all there. Most relevant if touching backend code: §"Casing rules", §"Named exports default …", §"Barrels: public-API only (Pattern B)", §"`extendZodWithOpenApi(z)` registered once via `utils/openapi-extension.ts`", §"Side-effect-only imports + boot-time top-level side effects", §"Import order", §"Nullish fallback uses `??`, never `||`", §"Zero `any` — use `unknown` and narrow", §"`null` at external boundaries, `undefined` internally", §"Async iteration".
 5. (Optional, if touching phase-1 leftovers) read [`./phase-1-followup-2026-05-13.md`](./phase-1-followup-2026-05-13.md).
 6. (Optional, if starting frontend work) read [`./design-phase-complete-2026-05-14.md`](./design-phase-complete-2026-05-14.md).
-7. Verify git state: `git log --oneline | head -10` should show `f07c238 chore: add colors` as HEAD on `main`. `git status` should be clean.
-8. Run `bun --cwd apps/backend run db:migrate` if migrations `0002` / `0003` / `0004` haven't been applied locally yet (per `apps/backend/src/db/migrations/`). Then pick the next chunk from §Backlog — the recommended next is v1 item 5 (`GET /tasks` filter extensions).
+7. Verify git state: `git log --oneline | head -10` should show `0f464cd chore: complete backend v1` (or newer) on `main`.
+8. Run `bun --cwd apps/backend run db:migrate` if migrations `0002` / `0003` / `0004` haven't been applied locally yet (per `apps/backend/src/db/migrations/`). Then pick the next chunk from §Backlog.
 
 ## What's done (committed on `main`)
 
-All of the below is merged — no uncommitted work as of pause (2026-06-14).
+All of the below is merged — no uncommitted code work as of 2026-07-03.
 
 - **Round-1 grilling** — all 17 architectural/behavioral items locked in [ADRs 0008–0020](../../stable/_shared/adr/), backend coding-practice rules in [`docs/llm/coding-practices.md`](../../llm/coding-practices.md), and entries in [`docs/stable/_shared/glossary.md`](../../stable/_shared/glossary.md). 2 TypeScript pre-locks (arrow-default, `type` default) also recorded in coding-practices.
 - **Fix-phase Cluster A** (security) — committed (`db05afe`).
@@ -53,9 +54,13 @@ Per-commit narrative lives in `git log`; ADRs + coding-practices + glossary are 
 
 ## Working tree at pause
 
-**Clean.** `git status` shows zero modified / untracked files. HEAD on `main` is `f07c238 chore: add colors`.
+HEAD on `main` is `0f464cd chore: complete backend v1`. Code is fully committed; the 2026-07-03 session added uncommitted **docs only**: `docs/stable/_shared/design/final-ui/` (13 mockup HTML files + README) and this handoff's update. User commits manually.
 
 The only startup action the next session may need: `bun --cwd apps/backend run db:migrate` to apply migrations `0002` / `0003` / `0004` to the local Postgres (if not already done since the user last ran the script).
+
+## Final-UI mockups (2026-07-03)
+
+`docs/stable/_shared/design/final-ui/` — one standalone HTML file per v1 surface, containing **only the chosen design direction** (the exploratory multi-direction mockups included scrapped variants). Rebuilt against specs 01–05 with drift corrected: locked 12-color picker palette (matches `apps/backend/src/utils/color.ts`), recurrence as a single 4-option enum picker (no boolean), two-mode label delete + deleted-labels view, v1-scope Inbox ("Now" only), no rejected layout variants. `final-ui/README.md` is the index. Specs remain authoritative on any disagreement.
 
 
 ## Backlog (priority order)
@@ -74,9 +79,9 @@ From [`./phase-1-followup-2026-05-13.md`](./phase-1-followup-2026-05-13.md) — 
 
 - **`apps/backend/tsconfig.json`** still has `baseUrl: "./"` + `ignoreDeprecations: "6.0"` shim (lines 13–14). Must remove + adapt `paths` before TS 7. (Note: a similar shim was also added to the **root** `tsconfig.json` during the session that landed `08a7b30` — both files carry the same future-removal flag.)
 - ~~**Misplaced `extendZodWithOpenApi(z)`**~~ — **DONE** as part of the Phase Z mechanical renames in `800f9a5`. Registration extracted to dedicated `apps/backend/src/utils/openapi-extension.ts`; `*.types.ts` files are all pure-Zod; side-effect-only import lives in `apps/backend/src/index.ts`. See coding-practices §"`extendZodWithOpenApi(z)` registered once via `utils/openapi-extension.ts`".
-- **Schema-sharing architecture** — `apps/react19/src/features/tasks/tasks.service.ts:1` already value-imports `selectTaskSchema` from `@task-manager/backend/tasks`. Bundle scan of `apps/react19/dist/assets/` (2026-05-19) shows Vite/Rollup tree-shakes drizzle-orm's `pg-core` builders entirely (0 hits for `pgTable` / `pg-core` / `postgres-js` / BetterAuth runtime), but **drizzle-zod runtime stays** (18 `drizzle` hits + `createSelectSchema` / `createInsertSchema` symbols in the tasks chunk). Hono / `@hono/zod-openapi` stay out (barrel never re-exports from `*.types.ts`). Net cost today is drizzle-zod runtime + Zod, which is small. **Defer the restructure** until either (a) Vue/Nuxt FE adds more value-imports, (b) measured bundle has >50KB drizzle-zod chain weight, or (c) dev-mode HMR/cold-start becomes annoying (dev mode does **not** tree-shake — full chain loads). When triggered, take **Option 5** from the source-of-truth analysis: keep Drizzle as SoT, add a codegen build step that emits pure Zod schemas (no `drizzle-zod` runtime) into `packages/schemas/` or `apps/backend/dist/public-schemas/`, and re-point the FE imports there. **Never** hand-author a parallel Zod mirror — codegen avoids dual-source drift.
-- **`apps/react19` + `packages/utils` deps** — runtime deps still on phase-1 versions. Low priority (Vue/Nuxt is the planned next FE).
-- **ESLint warnings** — 7 remaining (down from the original 10 after the `allowExportNames: ['Route']` extension on `react-refresh/only-export-components`). All on tanstack-router route files; resolution requires either (a) per-route file structural split (move the component out of the same file as `createFileRoute(...)`), or (b) extending `allowExportNames` further. Low-priority FE-discipline cleanup.
+- **Schema-sharing architecture — RESOLVED 2026-07-03 (deferred, approach locked)**. Background: FE *value*-imports of backend Zod schemas pull the drizzle-zod runtime + Zod into the FE bundle (bundle scan 2026-05-19: pg-core / postgres / BetterAuth / Hono all tree-shaken out in prod; drizzle-zod + Zod stay; dev mode doesn't tree-shake at all). With the current FE being scrapped there is zero live value-import today, so nothing to do now. **When the next FE starts and needs runtime schemas**, use spec-driven codegen from the OpenAPI spec the backend already emits via `@hono/zod-openapi`: `openapi-typescript` for types, `openapi-zod-client` / `orval` for generated Zod validators (orval can also emit query-hook clients). This is the industry-standard contract-first shape (backend → spec ← FE), needs no custom tooling, and fully decouples the FE from the backend source tree. It supersedes the earlier idea of a custom codegen script mirroring drizzle-zod schemas into `packages/schemas/` — same single-SoT guarantee (Drizzle stays SoT for tables; the spec is generated from it), standard tools instead of bespoke ones. **Never** hand-author a parallel Zod mirror — generation avoids dual-source drift. Type-only sharing via Hono RPC `AppType` stays as-is (erased at compile, zero runtime cost).
+- **`apps/react19` + `packages/utils` deps** — runtime deps still on phase-1 versions. **Moot for react19** (app will be scrapped; see §6); `packages/utils` bump still nice-to-have.
+- **ESLint warnings** — 7 remaining, all on `apps/react19` tanstack-router route files. **Moot** — react19 will be scrapped (see §6). Leave as-is.
 
 ### 3 · Controller error-throwing restructure (ADR-0012) — **COMPLETE + COMMITTED**
 
@@ -92,9 +97,9 @@ The project was originally scaffolded against older versions of Drizzle, Zod, an
 
 Output: coding-practice updates · ADRs (when load-bearing) · rewrite tickets. Best run after the TS style grill round (§1) so style is locked first, and folded into §3 where overlap exists. The redundant `extendZodWithOpenApi(z)` in §2 is a known sub-item of this audit.
 
-### 5 · Backend v1 changes (from design phase) — **ALL ITEMS DONE** (5–10 uncommitted as of 2026-07-02)
+### 5 · Backend v1 changes (from design phase) — **ALL ITEMS DONE + COMMITTED**
 
-Authoritative list: [`docs/stable/_shared/design/backend-changes-summary.md`](../../stable/_shared/design/backend-changes-summary.md). Items 1–4 committed earlier (see "What's done"); items 5–10 + the grill-resolved additions (9b restore endpoints, 9c single-read `includeDeleted`) landed 2026-07-02 in the working tree. Verification: backend `tsc` clean · react19 build clean · lint 0 errors / 7 pre-existing warnings. Per-item detail:
+Authoritative list: [`docs/stable/_shared/design/backend-changes-summary.md`](../../stable/_shared/design/backend-changes-summary.md). Items 1–4 committed earlier (see "What's done"); items 5–10 + the grill-resolved additions (9b restore endpoints, 9c single-read `includeDeleted`) committed in `0f464cd`. Verification: backend `tsc` clean · react19 build clean · lint 0 errors / 7 pre-existing warnings. **No runtime testing yet** — no test infra exists. Per-item detail:
 
 5. ✅ **`GET /tasks` filter extensions** — **DONE** (uncommitted, 2026-07-02). Multi-value `projectId` / `status` / `priority` / `labelId` (repeated-key encoding, grilled + locked in coding-practices §"Multi-value query params use repeated keys"; new `multiValueQueryParam` helper at `apps/backend/src/utils/query-params.ts`); inclusive range `dueDateGte` / `dueDateLte` (`z.coerce.date()` — this also replaced the old `dueDate: z.string().datetime()` + controller-side `new Date()` conversion + the `Omit<GetTasksQuery, 'dueDate'> & { dueDate?: Date }` type hack across service/repo — all three layers now just use `GetTasksQuery`); case-insensitive title search `q` (`ilike` with LIKE-wildcard escaping); `labelId` filter via `EXISTS` subquery on `task_labels` (`inArray` for OR-within-field). Backwards-compat single-value `dueDate` (exact match) retained. Filter semantics: OR within a field, AND across fields.
 6. ✅ **`GET /reminders` filter extensions** — **DONE** (uncommitted, 2026-07-02). Multi-value `taskId` (repeated-key) + inclusive `remindAtGte` / `remindAtLte` ranges. `getRemindersQuerySchema` rewritten as an explicit object (the old derived-from-`selectReminderSchema` form carried dead `expired` / `beforeOf` / `id` fields that no repo code ever implemented — dropped; the Inbox "Now" bucket is `remindAtLte=<now>`).
@@ -106,9 +111,9 @@ Authoritative list: [`docs/stable/_shared/design/backend-changes-summary.md`](..
 
 Items deferred to v1.5 / v2 (same doc): `acknowledgedAt` on reminders · `position` on tasks · `task_events` / `comments` / `notifications` tables · server-side `users/preferences` · attachments · subtasks · sharing. Don't start these now.
 
-### 6 · Vue/Nuxt frontend
+### 6 · Next frontend — from scratch
 
-User leans Vue/Nuxt for the next FE exploration. `apps/react19` is on minimal upkeep. Vue scaffolding has not been started. Will be its own multi-session plan informed by design specs 01–05 once §5 above lands. Cross-reference [`./design-phase-complete-2026-05-14.md`](./design-phase-complete-2026-05-14.md).
+`apps/react19` will be **scrapped**, not continued; the next FE restarts from zero. The stack/approach decision is deliberately **not recorded in repo docs** (user preference — lives in session memory `project_next_frontend`). It will be its own multi-session plan informed by design specs 01–05 + the `final-ui/` mockups. Cross-reference [`./design-phase-complete-2026-05-14.md`](./design-phase-complete-2026-05-14.md). When it needs runtime schemas, follow the schema-sharing resolution in §2 above.
 
 ### 7 · Personal standards extraction (indefinite future)
 
@@ -135,4 +140,4 @@ Four superseded handoffs were deleted in the prior session that wrote this file 
 
 - Pause-workflow = handoff doc, no commits (`feedback_pause_workflow`).
 - No tailwind palette names — describe by hex + hue (`feedback_no_tailwind_names`).
-- Vue/Nuxt leaning for next frontend — not in repo docs (`project_next_frontend`).
+- Next-FE direction — kept out of repo docs on purpose (`project_next_frontend`).

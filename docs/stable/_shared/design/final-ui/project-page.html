@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project page</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  body { margin: 0; padding: 24px; background: #0F0F13; color: #E8E6EF; font-family: 'Inter', system-ui, sans-serif; }
+
+  .page-heading { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 4px; color: #E8E6EF; }
+  .page-caption { font-size: 12px; color: #A8A5B5; margin: 0 0 16px; max-width: 740px; line-height: 1.5; }
+  .page-caption code { background: #1A1A22; color: #67E8F9; padding: 1px 5px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+
+  /* device frame */
+  .device { border-radius: 12px; overflow: hidden; background: #0F0F13; border: 1px solid #2A2A35; max-width: 980px; }
+  .device-chrome { height: 22px; background: #1A1A22; border-bottom: 1px solid #2A2A35; display: flex; align-items: center; gap: 6px; padding: 0 10px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; } .dot.r { background: #F87171; } .dot.y { background: #FBBF24; } .dot.g { background: #34D399; }
+
+  /* app shell */
+  .shell { display: grid; grid-template-columns: 56px 1fr; grid-template-rows: 44px 1fr; height: 560px; font-size: 12px; }
+  .topbar { grid-column: 1 / -1; display: flex; align-items: center; padding: 0 14px; background: #1A1A22; border-bottom: 1px solid #2A2A35; gap: 14px; }
+  .logo { font-weight: 700; color: #E8E6EF; } .logo b { color: #C084FC; }
+  .search { flex: 1; max-width: 340px; height: 28px; background: #15151B; border: 1px solid #2A2A35; border-radius: 8px; padding: 0 10px; display: flex; align-items: center; gap: 8px; color: #7A7787; font-size: 11px; }
+  .kbd { padding: 1px 6px; border-radius: 4px; background: #1A1A22; border: 1px solid #2A2A35; color: #A8A5B5; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+  .topbar-spacer { flex: 1; } .icon-btn { width: 30px; height: 30px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; color: #A8A5B5; font-size: 14px; }
+  .avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #C084FC, #67E8F9); }
+  .rail { background: #15151B; border-right: 1px solid #2A2A35; padding: 12px 6px; display: flex; flex-direction: column; gap: 2px; }
+  .rail-item { width: 100%; padding: 8px 0; border-radius: 8px; color: #A8A5B5; text-align: center; font-size: 14px; }
+  .rail-item.active { background: rgba(192,132,252,0.12); color: #C084FC; }
+
+  /* content region: main area + reminders side rail */
+  .content { background: #0F0F13; padding: 18px 22px; overflow: hidden; display: grid; grid-template-columns: 1fr 220px; gap: 14px; }
+  .main-area { display: flex; flex-direction: column; overflow: hidden; }
+
+  /* header */
+  .breadcrumbs { font-size: 11px; color: #7A7787; margin-bottom: 4px; }
+  .breadcrumbs a { color: #A8A5B5; }
+  .page-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .page-title { font-size: 22px; margin: 0; color: #E8E6EF; font-weight: 700; letter-spacing: -0.015em; display: flex; align-items: center; gap: 10px; }
+  .color-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; background: #67E8F9; }
+  .page-sub { font-size: 11px; color: #A8A5B5; }
+  .new-btn { padding: 6px 12px; border-radius: 8px; background: #C084FC; color: #0F0F13; font-weight: 600; font-size: 12px; }
+  .ghost-btn { padding: 5px 10px; border-radius: 6px; background: #1A1A22; border: 1px solid #2A2A35; color: #CFCAD9; font-size: 11px; }
+  .head-spacer { margin-left: auto; }
+
+  /* view-mode segmented control */
+  .seg { display: inline-flex; gap: 2px; background: #15151B; border: 1px solid #2A2A35; border-radius: 8px; padding: 2px; }
+  .seg-btn { padding: 4px 10px; border-radius: 6px; color: #A8A5B5; font-size: 11px; font-weight: 600; cursor: pointer; }
+  .seg-btn.active { background: rgba(192,132,252,0.15); color: #C084FC; }
+
+  /* board */
+  .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; flex: 1; overflow: hidden; }
+  .col { background: #15151B; border: 1px solid #2A2A35; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; }
+  .col-head { padding: 8px 10px; border-bottom: 1px solid #2A2A35; display: flex; align-items: center; gap: 6px; }
+  .col-name { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }
+  .col.todo .col-name { color: #A8A5B5; }
+  .col.inp .col-name { color: #C084FC; }
+  .col.done .col-name { color: #34D399; }
+  .col-count { background: #1A1A22; color: #A8A5B5; padding: 1px 6px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: 9px; }
+  .col-add { margin-left: auto; color: #7A7787; font-size: 14px; cursor: pointer; }
+  .col-body { padding: 6px; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; flex: 1; }
+  .col-footer { padding: 6px; border-top: 1px solid #2A2A35; background: #15151B; }
+  .col-add-idle { padding: 5px 8px; color: #7A7787; font-size: 10px; cursor: pointer; border-radius: 6px; }
+
+  /* kanban card */
+  .kcard { background: #1A1A22; border: 1px solid #2A2A35; border-radius: 8px; padding: 8px 10px; cursor: grab; font-size: 11px; }
+  .kcard:hover { border-color: #36364A; }
+  .kcard .ktitle { color: #E8E6EF; font-weight: 500; line-height: 1.35; }
+  .kcard .kmeta { display: flex; align-items: center; gap: 5px; margin-top: 6px; flex-wrap: wrap; }
+  .badge { padding: 1px 5px; border-radius: 6px; font-size: 8px; font-weight: 600; }
+  .badge.priority-h { background: rgba(248,113,113,0.12); color: #F87171; }
+  .badge.priority-m { background: rgba(192,132,252,0.12); color: #C084FC; }
+  .badge.priority-l { background: rgba(168,168,170,0.12); color: #A8A5B5; }
+  .badge.label-be { background: rgba(103,232,249,0.12); color: #67E8F9; }
+  .mono-meta { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: #A8A5B5; }
+  .mono-meta.danger { color: #F87171; }
+
+  /* inline expanding quick-add (column footer) */
+  .quick-add-inline {
+    background: #1A1A22; border: 1.5px solid rgba(192,132,252,0.5); border-radius: 8px; padding: 8px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .qai-input { background: transparent; border: 0; color: #E8E6EF; outline: none; font-family: inherit; font-size: 11px; padding: 2px; }
+  .qai-input::placeholder { color: #7A7787; }
+  .qai-actions { display: flex; gap: 4px; justify-content: flex-end; align-items: center; font-size: 10px; }
+  .qai-btn { padding: 3px 8px; border-radius: 5px; font-weight: 600; }
+  .qai-btn.primary { background: #C084FC; color: #0F0F13; }
+  .qai-btn.ghost { color: #A8A5B5; background: #15151B; border: 1px solid #2A2A35; }
+  .qai-hint { color: #6B6770; font-size: 9px; font-style: italic; margin-right: auto; }
+
+  /* reminders side rail */
+  .side-rail { background: #1A1A22; border: 1px solid #2A2A35; border-radius: 10px; padding: 12px; overflow: hidden; display: flex; flex-direction: column; }
+  .side-head { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+  .side-title { font-size: 11px; font-weight: 600; color: #E8E6EF; }
+  .side-count { background: #15151B; color: #A8A5B5; padding: 1px 6px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: 9px; }
+  .side-hide { margin-left: auto; color: #7A7787; font-size: 10px; cursor: pointer; }
+  .side-body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+  .rem-time { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: #67E8F9; margin-bottom: 2px; }
+  .rem-title { font-size: 11px; color: #E8E6EF; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rem-parent { font-size: 9px; color: #7A7787; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .side-footer { padding-top: 10px; margin-top: 10px; border-top: 1px solid #2A2A35; font-size: 10px; color: #C084FC; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<h1 class="page-heading">Project page · <code style="font-family:'JetBrains Mono',monospace; font-size:14px; color:#67E8F9;">/projects/:id</code></h1>
+<p class="page-caption">Board view (default) with the collapsible reminders side rail. Tasks are the main content; view mode toggles Board ↔ List. Reminders for this project's tasks live in the 220px right rail. The To do column shows the inline quick-add row expanded — Enter saves, Esc cancels, status and project are inferred from context.</p>
+
+<div class="device">
+  <div class="device-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+  <div class="shell">
+    <div class="topbar">
+      <div class="logo">task<b>·</b>mgr</div>
+      <div class="search">⌕ Search…<span class="kbd">⌘K</span></div>
+      <div class="topbar-spacer"></div><div class="icon-btn">🔔</div><div class="icon-btn">☾</div><div class="avatar"></div>
+    </div>
+    <div class="rail">
+      <div class="rail-item">▢</div><div class="rail-item">⌖</div><div class="rail-item">▥</div>
+      <div class="rail-item">≡</div><div class="rail-item active">▦</div><div class="rail-item">🏷</div><div class="rail-item">⚙</div>
+    </div>
+
+    <div class="content">
+      <div class="main-area">
+        <div class="breadcrumbs"><a>Projects</a> › <a>Backend</a></div>
+        <div class="page-head">
+          <h2 class="page-title"><span class="color-dot"></span>Backend</h2>
+          <span class="page-sub">11 open · 3 overdue</span>
+          <span class="ghost-btn">⋯</span>
+          <div class="seg head-spacer">
+            <span class="seg-btn active">Board</span>
+            <span class="seg-btn">List</span>
+          </div>
+          <span class="ghost-btn">Filters</span>
+          <span class="new-btn">+ Task</span>
+        </div>
+
+        <div class="board">
+          <div class="col todo">
+            <div class="col-head"><span class="col-name">To do</span><span class="col-count">5</span><span class="col-add">+</span></div>
+            <div class="col-body">
+              <div class="kcard"><div class="ktitle">Write zod-schemas migration doc</div><div class="kmeta"><span class="badge priority-m">!med</span><span class="mono-meta">today</span></div></div>
+              <div class="kcard"><div class="ktitle">Audit unused endpoints</div><div class="kmeta"><span class="badge priority-l">!low</span><span class="mono-meta">Sat</span></div></div>
+              <div class="kcard"><div class="ktitle">Multi-value filter on GET /tasks</div><div class="kmeta"><span class="badge priority-h">!high</span><span class="badge label-be">backend</span><span class="mono-meta">Mon</span></div></div>
+            </div>
+            <div class="col-footer">
+              <div class="quick-add-inline">
+                <input class="qai-input" value="Wire up project color picker" placeholder="Task title…">
+                <div class="qai-actions">
+                  <span class="qai-hint">⏎ save · esc cancel</span>
+                  <span class="qai-btn ghost">Cancel</span>
+                  <span class="qai-btn primary">Add</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col inp">
+            <div class="col-head"><span class="col-name">In progress</span><span class="col-count">3</span><span class="col-add">+</span></div>
+            <div class="col-body">
+              <div class="kcard"><div class="ktitle">Refactor auth middleware</div><div class="kmeta"><span class="badge priority-h">!high</span><span class="badge label-be">backend</span><span class="mono-meta danger">2d late</span></div></div>
+              <div class="kcard"><div class="ktitle">Onboard new team lead</div><div class="kmeta"><span class="badge priority-h">!high</span><span class="mono-meta">Wed</span></div></div>
+            </div>
+            <div class="col-footer"><div class="col-add-idle">+ Add task</div></div>
+          </div>
+
+          <div class="col done">
+            <div class="col-head"><span class="col-name">Done</span><span class="col-count">3</span><span class="col-add">+</span></div>
+            <div class="col-body">
+              <div class="kcard" style="opacity:0.6;"><div class="ktitle" style="text-decoration:line-through;">Bump hono stack</div><div class="kmeta"><span class="mono-meta">Mon</span></div></div>
+              <div class="kcard" style="opacity:0.6;"><div class="ktitle" style="text-decoration:line-through;">Doc the zod fix</div><div class="kmeta"><span class="mono-meta">Wed</span></div></div>
+            </div>
+            <div class="col-footer"><div class="col-add-idle">+ Add task</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="side-rail">
+        <div class="side-head">
+          <span class="side-title">Reminders</span>
+          <span class="side-count">5</span>
+          <span class="side-hide">▾ Hide</span>
+        </div>
+        <div class="side-body">
+          <div>
+            <div class="rem-time">15:30 · today</div>
+            <div class="rem-title">⏰ Standup prep</div>
+            <div class="rem-parent">Refactor auth middleware</div>
+          </div>
+          <div>
+            <div class="rem-time">09:30 · tmrw</div>
+            <div class="rem-title">⏰ Daily standup</div>
+            <div class="rem-parent">Refactor auth middleware</div>
+          </div>
+          <div>
+            <div class="rem-time">16:00 · tmrw</div>
+            <div class="rem-title">⏰ Review zod-doc draft</div>
+            <div class="rem-parent">Write zod-schemas migration doc</div>
+          </div>
+          <div>
+            <div class="rem-time">Fri · 09:30</div>
+            <div class="rem-title">⏰ Daily review</div>
+            <div class="rem-parent">Refactor auth middleware</div>
+          </div>
+          <div>
+            <div class="rem-time">Mon · 08:00</div>
+            <div class="rem-title">⏰ Check filter rollout</div>
+            <div class="rem-parent">Multi-value filter on GET /tasks</div>
+          </div>
+        </div>
+        <div class="side-footer">+ New reminder</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

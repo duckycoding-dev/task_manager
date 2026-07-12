@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inbox · UI Mockup</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  body { margin: 0; padding: 24px; background: #0F0F13; color: #E8E6EF; font-family: 'Inter', system-ui, sans-serif; }
+
+  .demo { max-width: 860px; margin: 0 auto; }
+  .demo h2 { font-size: 16px; font-weight: 600; color: #E8E6EF; margin: 0 0 4px; }
+  .demo h2 + .subtitle { margin-top: 0; }
+  .subtitle { font-size: 12px; color: #A8A5B5; margin: 0 0 14px; line-height: 1.5; }
+  code { font-family: 'JetBrains Mono', monospace; font-size: 0.9em; background: #1A1A22; border: 1px solid #2A2A35; padding: 1px 5px; border-radius: 4px; color: #C084FC; }
+
+  .device { border-radius: 12px; overflow: hidden; background: #0F0F13; border: 1px solid #2A2A35; }
+  .device-chrome { height: 22px; background: #1A1A22; border-bottom: 1px solid #2A2A35; display: flex; align-items: center; gap: 6px; padding: 0 10px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; } .dot.r { background: #F87171; } .dot.y { background: #FBBF24; } .dot.g { background: #34D399; }
+  .shell { display: grid; grid-template-columns: 56px 1fr; grid-template-rows: 44px 1fr; height: 470px; font-size: 12px; }
+  .shell.short { height: 330px; }
+  .topbar { grid-column: 1 / -1; display: flex; align-items: center; padding: 0 14px; background: #1A1A22; border-bottom: 1px solid #2A2A35; gap: 14px; }
+  .logo { font-weight: 700; color: #E8E6EF; } .logo b { color: #C084FC; }
+  .search { flex: 1; max-width: 340px; height: 28px; background: #15151B; border: 1px solid #2A2A35; border-radius: 8px; padding: 0 10px; display: flex; align-items: center; gap: 8px; color: #7A7787; font-size: 11px; }
+  .kbd { padding: 1px 6px; border-radius: 4px; background: #1A1A22; border: 1px solid #2A2A35; color: #A8A5B5; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+  .topbar-spacer { flex: 1; } .icon-btn { width: 30px; height: 30px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; color: #A8A5B5; font-size: 14px; }
+  .avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #C084FC, #67E8F9); }
+  .rail { background: #15151B; border-right: 1px solid #2A2A35; padding: 12px 6px; display: flex; flex-direction: column; gap: 2px; }
+  .rail-item { width: 100%; padding: 8px 0; border-radius: 8px; color: #A8A5B5; text-align: center; font-size: 14px; }
+  .rail-item.active { background: rgba(192,132,252,0.12); color: #C084FC; }
+  .content { background: #0F0F13; padding: 18px 22px; overflow: hidden; display: flex; flex-direction: column; }
+
+  .page-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .page-title { font-size: 22px; margin: 0; color: #E8E6EF; font-weight: 700; letter-spacing: -0.015em; }
+  .page-sub { font-size: 11px; color: #A8A5B5; }
+  .new-btn { padding: 6px 12px; border-radius: 8px; background: #C084FC; color: #0F0F13; font-weight: 600; font-size: 12px; margin-left: auto; cursor: pointer; }
+  .ghost-btn { padding: 5px 10px; border-radius: 6px; background: #1A1A22; border: 1px solid #2A2A35; color: #CFCAD9; font-size: 11px; cursor: pointer; }
+
+  .section-h { display: flex; align-items: center; gap: 8px; margin-top: 4px; margin-bottom: 8px; }
+  .section-name { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; color: #C084FC; }
+  .section-count { background: #1A1A22; color: #A8A5B5; padding: 1px 6px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+
+  .rem-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px; border-radius: 10px;
+    background: rgba(192,132,252,0.05); border: 1px solid rgba(192,132,252,0.4);
+    margin-top: 6px; font-size: 12px;
+  }
+  .rem-row .clock { font-family: 'JetBrains Mono', monospace; color: #C084FC; font-size: 11px; min-width: 70px; line-height: 1.3; }
+  .rem-row .clock .rel { color: #7A7787; font-size: 9px; }
+  .rem-body { flex: 1; min-width: 0; }
+  .rem-title { color: #E8E6EF; font-weight: 500; font-size: 13px; }
+  .rem-content { color: #A8A5B5; font-size: 11px; margin-top: 2px; line-height: 1.4; }
+  .rem-task-chip {
+    display: inline-flex; align-items: center; gap: 6px; margin-top: 6px;
+    padding: 2px 8px; border-radius: 999px; background: #15151B; border: 1px solid #2A2A35;
+    font-size: 10px; color: #A8A5B5; cursor: pointer;
+  }
+  .rem-task-chip .cdot { width: 6px; height: 6px; border-radius: 50%; }
+  .rem-task-chip:hover { color: #67E8F9; border-color: rgba(103,232,249,0.3); }
+  .rem-actions { display: flex; gap: 4px; position: relative; }
+  .rem-action {
+    padding: 4px 10px; border-radius: 6px; background: #15151B; border: 1px solid #2A2A35; color: #CFCAD9;
+    font-size: 11px; cursor: pointer;
+  }
+  .rem-action.primary { background: rgba(192,132,252,0.15); border-color: rgba(192,132,252,0.3); color: #C084FC; font-weight: 600; }
+  .rem-action.danger:hover { color: #F87171; border-color: rgba(248,113,113,0.3); }
+  .rem-action.open { background: #1A1A22; border-color: #36364A; color: #E8E6EF; }
+
+  /* snooze popover */
+  .snooze-pop {
+    position: absolute; top: calc(100% + 6px); right: 0; width: 190px;
+    background: #22222E; border: 1px solid #36364A; border-radius: 10px; padding: 6px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6); z-index: 10;
+  }
+  .snooze-pop-title { font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: #7A7787; font-weight: 600; padding: 4px 8px 6px; }
+  .snooze-item { padding: 6px 8px; border-radius: 6px; font-size: 12px; color: #CFCAD9; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
+  .snooze-item:hover { background: rgba(192,132,252,0.10); color: #E8E6EF; }
+  .snooze-item .at { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #7A7787; }
+  .snooze-sep { height: 1px; background: #36364A; margin: 4px 6px; }
+
+  .empty { margin-top: 30px; text-align: center; padding: 30px; }
+  .empty .icon { font-size: 32px; color: #36364A; margin-bottom: 8px; }
+  .empty h3 { font-size: 14px; color: #E8E6EF; font-weight: 600; margin: 0 0 4px; }
+  .empty p { font-size: 12px; color: #A8A5B5; margin: 0 0 14px; }
+</style>
+</head>
+<body>
+
+<div class="demo">
+
+<h2>Inbox · <code>/inbox</code></h2>
+<p class="subtitle">Reminder action-center: the single place where fired reminders wait to be cleared. One section — "Now · awaiting action". Done and Dismiss clear the row; Snooze reschedules it.</p>
+
+<div class="device">
+  <div class="device-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+  <div class="shell">
+    <div class="topbar">
+      <div class="logo">task<b>·</b>mgr</div>
+      <div class="search">⌕ Search reminders…<span class="kbd">⌘K</span></div>
+      <div class="topbar-spacer"></div>
+      <div class="icon-btn" style="position:relative;">🔔<span style="position:absolute; top:6px; right:7px; width:6px; height:6px; border-radius:50%; background:#C084FC;"></span></div>
+      <div class="icon-btn">☾</div>
+      <div class="avatar"></div>
+    </div>
+    <div class="rail">
+      <div class="rail-item">▢</div>
+      <div class="rail-item active">⌖</div>
+      <div class="rail-item">▥</div>
+      <div class="rail-item">≡</div>
+      <div class="rail-item">▦</div>
+      <div class="rail-item">🏷</div>
+      <div class="rail-item">⚙</div>
+    </div>
+    <div class="content">
+      <div class="page-head">
+        <h2 class="page-title">Inbox</h2>
+        <span class="page-sub">3 to action</span>
+        <span class="new-btn">+ New reminder</span>
+      </div>
+
+      <div class="section-h">
+        <span class="section-name">⚡ Now · awaiting action</span>
+        <span class="section-count">3</span>
+      </div>
+
+      <div class="rem-row">
+        <div class="clock">
+          <div>15:30</div>
+          <div class="rel">5 min ago</div>
+        </div>
+        <div class="rem-body">
+          <div class="rem-title">Standup prep</div>
+          <div class="rem-content">Review the auth refactor PR before standup. Pin questions for the team lead.</div>
+          <span class="rem-task-chip"><span class="cdot" style="background:#67E8F9;"></span>Refactor auth middleware · Backend</span>
+        </div>
+        <div class="rem-actions">
+          <span class="rem-action primary">Done</span>
+          <span class="rem-action open">Snooze ▾</span>
+          <span class="rem-action danger">×</span>
+          <div class="snooze-pop">
+            <div class="snooze-pop-title">Snooze until</div>
+            <div class="snooze-item">15 minutes <span class="at">15:50</span></div>
+            <div class="snooze-item">1 hour <span class="at">16:35</span></div>
+            <div class="snooze-item">3 hours <span class="at">18:35</span></div>
+            <div class="snooze-item">Tomorrow morning <span class="at">09:00</span></div>
+            <div class="snooze-sep"></div>
+            <div class="snooze-item">Pick a time…</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rem-row">
+        <div class="clock">
+          <div>14:00</div>
+          <div class="rel">1h 35m ago</div>
+        </div>
+        <div class="rem-body">
+          <div class="rem-title">Lunch with Maria</div>
+          <span class="rem-task-chip"><span class="cdot" style="background:#34D399;"></span>Schedule one-on-one with Maria · Personal</span>
+        </div>
+        <div class="rem-actions">
+          <span class="rem-action primary">Done</span>
+          <span class="rem-action">Snooze ▾</span>
+          <span class="rem-action danger">×</span>
+        </div>
+      </div>
+
+      <div class="rem-row">
+        <div class="clock">
+          <div>Thu · 18:00</div>
+          <div class="rel">yesterday</div>
+        </div>
+        <div class="rem-body">
+          <div class="rem-title">Water the plants</div>
+          <div class="rem-content">Balcony pots + kitchen herbs.</div>
+          <span class="rem-task-chip"><span class="cdot" style="background:#34D399;"></span>Weekly self-care routine · Personal</span>
+        </div>
+        <div class="rem-actions">
+          <span class="rem-action primary">Done</span>
+          <span class="rem-action">Snooze ▾</span>
+          <span class="rem-action danger">×</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<h2 style="margin-top: 28px;">Empty state</h2>
+<p class="subtitle">An empty Inbox is the intended state — it means you're caught up. Positive framing, never failure.</p>
+
+<div class="device">
+  <div class="device-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+  <div class="shell short">
+    <div class="topbar">
+      <div class="logo">task<b>·</b>mgr</div>
+      <div class="search">⌕ Search reminders…<span class="kbd">⌘K</span></div>
+      <div class="topbar-spacer"></div>
+      <div class="icon-btn">🔔</div>
+      <div class="icon-btn">☾</div>
+      <div class="avatar"></div>
+    </div>
+    <div class="rail">
+      <div class="rail-item">▢</div>
+      <div class="rail-item active">⌖</div>
+      <div class="rail-item">▥</div>
+      <div class="rail-item">≡</div>
+      <div class="rail-item">▦</div>
+      <div class="rail-item">🏷</div>
+      <div class="rail-item">⚙</div>
+    </div>
+    <div class="content">
+      <div class="page-head">
+        <h2 class="page-title">Inbox</h2>
+        <span class="page-sub">0 to action</span>
+        <span class="new-btn">+ New reminder</span>
+      </div>
+
+      <div class="empty">
+        <div class="icon">✓</div>
+        <h3>All clear</h3>
+        <p>Nothing waiting for you.</p>
+        <span class="ghost-btn">+ New reminder</span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</div>
+
+</body>
+</html>
